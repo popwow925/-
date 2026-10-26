@@ -31,4 +31,20 @@ for major in 8 17 21; do
   tar -C "$d" -cf - "${files[@]}" | xz -0 -T0 > "$OUT/jre$major.tar.xz"
   echo "::notice::bundled Java $major ($(du -h "$OUT/jre$major.tar.xz" | cut -f1))"
 done
+# fall back to release assets (jre<N>…aarch64….tar.xz) of the known JRE build repositories
+for major in 8 17 21; do
+  [ -f "$OUT/jre$major.tar.xz" ] && continue
+  for repo in $REPO ${JRE_FALLBACK_REPOS:-}; do
+    url=$(gh api "repos/$repo/releases?per_page=30" --jq ".[].assets[] | select(.name | test(\"jre-?${major}[^0-9].*(aarch64|arm64)\"; \"i\")) | .browser_download_url" 2>/dev/null | head -1)
+    [ -z "$url" ] && continue
+    echo "Java $major from $url"
+    if curl -fsSL "$url" -o "$TMP/r$major"; then
+      case "$url" in
+        *.tar.xz) cp "$TMP/r$major" "$OUT/jre$major.tar.xz" ;;
+        *.zip) mkdir -p "$TMP/z$major" && (cd "$TMP/z$major" && unzip -q "../r$major") && tar -C "$TMP/z$major" -cf - . | xz -0 -T0 > "$OUT/jre$major.tar.xz" ;;
+      esac
+      [ -f "$OUT/jre$major.tar.xz" ] && echo "::notice::bundled Java $major (release)" && break
+    fi
+  done
+done
 ls -la "$OUT"

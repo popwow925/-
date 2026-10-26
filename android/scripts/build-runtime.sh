@@ -50,7 +50,10 @@ build_gl4es() {
   local so
   so=$(find gl4es/libs gl4es/obj -name 'libGL*.so' -type f 2>/dev/null | head -1)
   if [ -z "$so" ]; then
-    cmake -S gl4es -B gl4es/build "${CMAKE_ANDROID[@]}" -DNOX11=ON -DNOEGL=OFF -DGBM=OFF -DSTATICLIB=OFF -DUSE_CLOCK=ON > gl4es-cmake.log 2>&1 &&
+    # Android has no librt (it is part of libc): give the linker an empty one
+    mkdir -p fakelibs && "$AR" rcs fakelibs/librt.a
+    cmake -S gl4es -B gl4es/build "${CMAKE_ANDROID[@]}" -DNOX11=ON -DNOEGL=OFF -DGBM=OFF -DSTATICLIB=OFF -DUSE_CLOCK=ON \
+      -DCMAKE_SHARED_LINKER_FLAGS="-L$WORK/fakelibs" > gl4es-cmake.log 2>&1 &&
       cmake --build gl4es/build -j"$(nproc)" >> gl4es-cmake.log 2>&1 || { tail -60 gl4es-cmake.log; return 1; }
     so=$(find gl4es -name 'libGL.so*' -type f | head -1)
   fi
@@ -122,7 +125,7 @@ lwjgl_module() { # module libname [extra link args…]
 ffi_compat() {
   local f="$LW/core/src/generated/c/org_lwjgl_system_libffi_LibFFI.c"
   : > "$WORK/ffi_compat.h"
-  for id in $(grep -o '\bFFI_[A-Z0-9_]*' "$f" | sort -u); do
+  for id in $(grep -o '(jint)FFI_[A-Z0-9_]*' "$f" | sed 's/(jint)//' | sort -u); do
     printf '#include <ffi.h>\nlong x = (long)%s;\n' "$id" > "$WORK/t.c"
     "$CC" -I"$WORK/ffi/include" -c "$WORK/t.c" -o /dev/null 2>/dev/null || echo "#define $id -1" >> "$WORK/ffi_compat.h"
   done
