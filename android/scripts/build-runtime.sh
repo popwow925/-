@@ -40,10 +40,18 @@ clone() { # repo dir [ref]
 # ---------------------------------------------------------------- gl4es
 build_gl4es() {
   clone ptitSeb/gl4es gl4es || return 1
-  cmake -S gl4es -B gl4es/build "${CMAKE_ANDROID[@]}" -DNOX11=ON -DGBM=OFF -DSTATICLIB=OFF -DUSE_CLOCK=ON -DDEFAULT_ES=2 >/dev/null || return 1
-  cmake --build gl4es/build -j"$(nproc)" >/dev/null || return 1
+  # gl4es ships an Android.mk for the NDK (what other Android launchers use)
+  if [ -f gl4es/Android.mk ]; then
+    ( cd gl4es && "$NDK/ndk-build" NDK_PROJECT_PATH=. APP_BUILD_SCRIPT=./Android.mk APP_ABI="$ABI" APP_PLATFORM=android-$API -j"$(nproc)" > ../gl4es.log 2>&1 ) ||
+      { tail -40 gl4es.log; echo "ndk-build failed, trying CMake"; }
+  fi
   local so
-  so=$(find gl4es -name 'libGL.so*' -type f | head -1)
+  so=$(find gl4es/libs gl4es/obj -name 'libGL*.so' -type f 2>/dev/null | head -1)
+  if [ -z "$so" ]; then
+    cmake -S gl4es -B gl4es/build "${CMAKE_ANDROID[@]}" -DNOX11=ON -DNOEGL=OFF -DGBM=OFF -DSTATICLIB=OFF -DUSE_CLOCK=ON > gl4es-cmake.log 2>&1 &&
+      cmake --build gl4es/build -j"$(nproc)" >> gl4es-cmake.log 2>&1 || { tail -60 gl4es-cmake.log; return 1; }
+    so=$(find gl4es -name 'libGL.so*' -type f | head -1)
+  fi
   [ -n "$so" ] || return 1
   cp "$so" "$OUT/libgl4es.so"
 }
@@ -57,7 +65,7 @@ build_mobileglues() {
   [ -n "$dir" ] || return 1
   echo "MobileGlues CMake project: $dir"
   cmake -S "$dir" -B MobileGlues/build "${CMAKE_ANDROID[@]}" -DANDROID_STL=c++_shared >/dev/null || return 1
-  cmake --build MobileGlues/build -j"$(nproc)" || return 1
+  cmake --build MobileGlues/build -j"$(nproc)" > mobileglues.log 2>&1 || { tail -40 mobileglues.log; return 1; }
   local so
   so=$(find MobileGlues/build -iname 'libmobileglues*.so' -type f | head -1)
   [ -n "$so" ] || return 1
@@ -71,7 +79,7 @@ build_openal() {
   clone kcat/openal-soft openal-soft 1.23.1 || return 1
   cmake -S openal-soft -B openal-soft/build "${CMAKE_ANDROID[@]}" -DALSOFT_UTILS=OFF -DALSOFT_EXAMPLES=OFF -DALSOFT_TESTS=OFF \
     -DALSOFT_BACKEND_OPENSL=ON -DALSOFT_REQUIRE_OPENSL=ON -DALSOFT_EMBED_HRTF_DATA=ON -DANDROID_STL=c++_static >/dev/null || return 1
-  cmake --build openal-soft/build -j"$(nproc)" >/dev/null || return 1
+  cmake --build openal-soft/build -j"$(nproc)" > openal.log 2>&1 || { tail -40 openal.log; return 1; }
   cp openal-soft/build/libopenal.so "$OUT/libopenal.so"
 }
 
@@ -102,7 +110,8 @@ lwjgl_module() { # module libname [extra link args…]
   done < <(find "$LW/$mod/src" -name '*.c' \( -path '*/c/*' \) ! -path '*/windows/*' ! -path '*/macos/*' ! -path '*/macosx/*' | sort)
   echo "lwjgl $mod: ${#objs[@]} files compiled, $skipped skipped"
   [ ${#objs[@]} -gt 0 ] || return 1
-  "$CC" -shared -o "$OUT/$lib" "${objs[@]}" "$@" -ldl -lm -llog -Wl,--no-undefined || return 1
+  "$CC" -shared -o "$OUT/$lib" "${objs[@]}" "$@" -ldl -lm -llog -Wl,--no-undefined 2>&1 | tail -30
+  [ -f "$OUT/$lib" ] || return 1
 }
 
 build_lwjgl() {
@@ -121,7 +130,7 @@ build_freetype() {
   clone freetype/freetype freetype VER-2-13-3 || return 1
   cmake -S freetype -B freetype/build "${CMAKE_ANDROID[@]}" -DBUILD_SHARED_LIBS=OFF -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
     -DFT_DISABLE_ZLIB=ON -DFT_DISABLE_BZIP2=ON -DFT_DISABLE_PNG=ON -DFT_DISABLE_HARFBUZZ=ON -DFT_DISABLE_BROTLI=ON >/dev/null || return 1
-  cmake --build freetype/build -j"$(nproc)" >/dev/null || return 1
+  cmake --build freetype/build -j"$(nproc)" > freetype.log 2>&1 || { tail -30 freetype.log; return 1; }
   EXTRA_CFLAGS="-Ifreetype/include" lwjgl_module freetype libfreetype.so freetype/build/libfreetype.a
 }
 
