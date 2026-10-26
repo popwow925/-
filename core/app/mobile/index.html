@@ -1,1 +1,30 @@
-<!doctype html><html lang="zh-CN"><body>placeholder</body></html>
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>樱梨启动器</title>
+<link rel="stylesheet" href="app.css">
+<link rel="stylesheet" href="skin3d.css">
+</head>
+<body>
+<div id="boot"><img src="logo.png" alt=""></div>
+<div id="app">
+  <section class="tab on" id="tab-home"></section>
+  <section class="tab" id="tab-library"></section>
+  <section class="tab" id="tab-discover"></section>
+  <section class="tab" id="tab-me"></section>
+</div>
+<nav class="tabbar" id="tabbar">
+  <button data-tab="home" class="on"><svg class="fillable" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>首页</button>
+  <button data-tab="library"><svg class="fillable" viewBox="0 0 24 24"><rect x="3" y="3" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="2"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2"/></svg>实例</button>
+  <button data-tab="discover"><svg class="fillable" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5z"/></svg>发现</button>
+  <button data-tab="me"><svg class="fillable" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>我的</button>
+</nav>
+<div id="island" class="hidden"><i class="ic"></i><span class="tx"></span><span class="pc"></span><div class="more"><span class="info"></span><div class="bar"><i></i></div><button class="cancel">取消</button></div></div>
+<div id="toasts"></div>
+<script src="skin3d.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
