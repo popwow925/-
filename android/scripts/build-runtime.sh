@@ -51,7 +51,7 @@ build_gl4es() {
   so=$(find gl4es/libs gl4es/obj -name 'libGL*.so' -type f 2>/dev/null | head -1)
   if [ -z "$so" ]; then
     # Android has no librt (it is part of libc): give the linker an empty one
-    mkdir -p fakelibs && "$AR" rcs fakelibs/librt.a
+    mkdir -p fakelibs && printf '!<arch>\n' > fakelibs/librt.a
     cmake -S gl4es -B gl4es/build "${CMAKE_ANDROID[@]}" -DNOX11=ON -DNOEGL=OFF -DGBM=OFF -DSTATICLIB=OFF -DUSE_CLOCK=ON \
       -DCMAKE_SHARED_LINKER_FLAGS="-L$WORK/fakelibs" > gl4es-cmake.log 2>&1 &&
       cmake --build gl4es/build -j"$(nproc)" >> gl4es-cmake.log 2>&1 || { tail -60 gl4es-cmake.log; return 1; }
