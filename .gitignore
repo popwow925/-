@@ -1,0 +1,18 @@
+# Go
+core/el
+core/dist/*.exe
+core/*.syso
+# Android
+android/.gradle/
+android/build/
+android/app/build/
+android/app/.cxx/
+android/local.properties
+android/app/src/main/jniLibs/
+android/app/src/main/assets/runtime/
+android/app/src/main/assets/lwjgl3/
+*.apk
+*.aab
+.idea/
+*.iml
+.DS_Store

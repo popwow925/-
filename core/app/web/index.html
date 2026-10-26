@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EririLily 樱梨启动器</title>
+<link rel="icon" href="logo.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="splash" aria-hidden="true">
+  <div class="sp-logo"><img src="logo.png" alt=""></div>
+  <div class="sp-name">EririLily<span>樱梨启动器</span></div>
+  <div class="sp-line"><i></i></div>
+</div>
+<canvas id="petals" aria-hidden="true"></canvas>
+<div class="blobs" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+
+<div class="titlebar" data-drag>
+  <div class="win-ctl">
+    <button data-win="min" title="最小化"><svg viewBox="0 0 24 24"><path d="M6 12h12"/></svg></button>
+    <button data-win="max" title="最大化"><svg class="i-max" viewBox="0 0 24 24"><rect x="6.5" y="6.5" width="11" height="11" rx="2"/></svg><svg class="i-restore" viewBox="0 0 24 24"><rect x="5.5" y="8.5" width="10" height="10" rx="2"/><path d="M9 5.5h7.5a2 2 0 0 1 2 2V15"/></svg></button>
+    <button data-win="close" class="close" title="关闭"><svg viewBox="0 0 24 24"><path d="m7 7 10 10M17 7 7 17"/></svg></button>
+  </div>
+</div>
+<div class="rz" data-rz="t"></div><div class="rz" data-rz="b"></div><div class="rz" data-rz="l"></div><div class="rz" data-rz="r"></div>
+<div class="rz" data-rz="tl"></div><div class="rz" data-rz="tr"></div><div class="rz" data-rz="bl"></div><div class="rz" data-rz="br"></div>
+
+<div class="shell">
+  <aside class="side glass">
+    <div class="brand" data-drag>
+      <img src="logo.png" alt="">
+      <div><b>EririLily</b><span>樱梨启动器</span></div>
+    </div>
+    <button class="side-search" id="palBtn" title="快速搜索"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg><span>搜索</span><kbd>Ctrl K</kbd></button>
+    <nav id="nav"><i class="nav-ind" aria-hidden="true"></i>
+      <a data-page="home" class="on"><svg viewBox="0 0 24 24"><path d="M4 11.5 12 5l8 6.5V19a1 1 0 0 1-1 1h-4.5v-5h-5v5H5a1 1 0 0 1-1-1z"/></svg>首页</a>
+      <a data-page="skin"><svg viewBox="0 0 24 24"><rect x="8" y="3" width="8" height="7" rx="1"/><path d="M7 10h10v7H7zM7 10H4v7M17 10h3v7M9 17v4M15 17v4"/></svg>角色</a>
+      <a data-page="instances"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg>实例库</a>
+      <a data-page="resources"><svg viewBox="0 0 24 24"><path d="M12 3 4 7v10l8 4 8-4V7z"/><path d="M4 7l8 4 8-4M12 11v10"/></svg>资源中心</a>
+      <a data-page="wiki" id="navWiki"><svg viewBox="0 0 24 24"><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H11v16H5.5A1.5 1.5 0 0 1 4 18.5zM20 5.5A1.5 1.5 0 0 0 18.5 4H13v16h5.5a1.5 1.5 0 0 0 1.5-1.5z"/><path d="M6.5 8h2.5M6.5 11h2.5M15 8h2.5M15 11h2.5"/></svg>Wiki</a>
+      <a data-page="diagnose"><svg viewBox="0 0 24 24"><path d="M3 12h4l2.5-6 5 12 2.5-6h4"/></svg>诊断中心<em id="dxDot" hidden></em></a>
+      <a data-page="settings"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2.8v2.4M12 18.8v2.4M4.2 7.5l2 1.2M17.8 15.3l2 1.2M4.2 16.5l2-1.2M17.8 8.7l2-1.2"/></svg>设置</a>
+    </nav>
+    <button class="account" id="accountChip">
+      <span class="avatar" id="accAvatar">?</span>
+      <span class="acc-text"><b id="accName">添加账户</b><small id="accType">点击登录</small></span>
+    </button>
+  </aside>
+
+  <main id="main">
+    <!-- 首页 -->
+    <section class="page on" id="page-home">
+      <div class="hero glass" id="hero">
+        <div class="hero-art"><img src="hero.jpg" alt=""></div>
+        <div class="hero-body">
+          <button class="inst-switch" id="instSwitch"><span id="heroName">还没有实例</span><svg viewBox="0 0 24 24"><path d="m7 10 5 5 5-5"/></svg></button>
+          <p id="heroMeta">去实例库新建一个，或在资源中心装一个整合包</p>
+          <div class="hero-actions">
+            <div class="launch-state" id="launchState" hidden>
+              <span id="lsStage">准备中</span>
+              <div class="bar"><i id="lsBar"></i></div>
+              <small id="lsInfo"></small>
+            </div>
+            <button class="btn-play" id="playBtn"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z"/></svg><span>开始游戏</span></button>
+          </div>
+        </div>
+      </div>
+      <div class="row-title"><h3>最近游玩</h3><a data-goto="instances">全部实例 →</a></div>
+      <div class="recent" id="recent"></div>
+      <div class="tiles">
+        <div class="tile glass"><small>启动用时</small><b id="tileSpeed">—</b><span>从点击到游戏窗口出现</span></div>
+        <div class="tile glass"><small>内存</small><b id="tileMem">—</b><div class="mem-bar" title="灰色：已被占用 · 彩色：游戏将分配"><i id="memUsed"></i><b id="memGame"></b></div><span id="tileMemSub"></span></div>
+        <div class="tile glass"><small>下载源</small><b id="tileSrc">自动</b><span>BMCLAPI 镜像优先，失败回退官方</span></div>
+      </div>
+    </section>
+
+    <!-- 角色 -->
+    <section class="page" id="page-skin">
+      <header class="page-head" data-drag><div><h2>角色</h2><p>账户与皮肤 · 拖动模型旋转</p></div></header>
+      <div class="skin-layout">
+        <div class="viewer glass">
+          <div class="stage" id="skinStage"></div>
+          <div class="viewer-bar">
+            <div class="seg small" id="skinAnim"><button data-v="idle" class="on">站立</button><button data-v="walk">行走</button><button data-v="run">奔跑</button></div>
+            <div class="seg small" id="skinModel"><button data-v="classic">经典</button><button data-v="slim">纤细</button></div>
+          </div>
+        </div>
+        <div class="skin-side">
+          <div class="card glass">
+          <h4>账户</h4>
+          <div id="accList"></div>
+          <div class="inline">
+            <input id="offName" placeholder="离线玩家名（3–16 位字母数字）" maxlength="16">
+            <button class="btn" id="addOffline">添加离线账户</button>
+          </div>
+          <div class="inline">
+            <button class="btn dark" id="msLogin">微软账户登录</button>
+            <span class="hint" id="msHint">需要先在设置里填写 Azure 客户端 ID</span>
+          </div>
+          <div class="ms-code" id="msCode" hidden></div>
+        </div>
+          <div class="card glass">
+            <h4>皮肤 <small class="hint" id="skinSource"></small></h4>
+            <div class="inline">
+              <label class="btn">上传皮肤<input type="file" id="skinFile" accept="image/png" hidden></label>
+              <label class="chk" id="skinOfficialRow" hidden><input type="checkbox" id="skinOfficial">同步到正版</label>
+              <button class="btn ghost small" id="skinReset">恢复默认</button>
+            </div>
+            <div class="inline">
+              <input id="skinPlayer" placeholder="正版玩家名，例如 Notch" maxlength="16">
+              <button class="btn ghost" id="skinImport">导入皮肤</button>
+            </div>
+            <p class="hint" id="skinHint"></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 实例库 -->
+    <section class="page" id="page-instances">
+      <header class="page-head" data-drag>
+        <div><h2>实例库</h2><p>每个实例的存档、模组、设置互相独立</p></div>
+        <div class="head-actions">
+          <label class="btn ghost">导入整合包<input type="file" id="mrpackFile" accept=".mrpack" hidden></label>
+          <button class="btn" id="newInstBtn">＋ 新建实例</button>
+        </div>
+      </header>
+      <div class="grid" id="instGrid"></div>
+    </section>
+
+    <!-- 资源中心 -->
+    <section class="page" id="page-resources">
+      <header class="page-head" data-drag>
+        <div><h2>资源中心</h2><p>来自 Modrinth，一键安装到 <b id="resTarget">当前实例</b></p></div>
+      </header>
+      <div class="toolbar">
+        <div class="seg" id="resKind">
+          <button data-k="mod" class="on">模组</button><button data-k="modpack">整合包</button>
+          <button data-k="resourcepack">资源包</button><button data-k="shader">光影</button>
+        </div>
+        <div class="search glass"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg><input id="resQuery" placeholder="搜索，例如 sodium、钠、光影"></div>
+      </div>
+      <div class="res-list" id="resList"></div>
+      <div class="more"><button class="btn ghost" id="resMore" hidden>加载更多</button></div>
+    </section>
+
+    <!-- Minecraft Wiki -->
+    <section class="page page-wiki" id="page-wiki">
+      <div class="wiki-bar glass" data-drag>
+        <div class="wiki-nav">
+          <button class="x" data-wk="back" title="后退"><svg viewBox="0 0 24 24"><path d="m14.5 6-6 6 6 6"/></svg></button>
+          <button class="x" data-wk="fwd" title="前进"><svg viewBox="0 0 24 24"><path d="m9.5 6 6 6-6 6"/></svg></button>
+          <button class="x" data-wk="reload" title="刷新"><svg viewBox="0 0 24 24"><path d="M19 12a7 7 0 1 1-2.05-4.95M19 4.5V8h-3.5"/></svg></button>
+          <button class="x" data-wk="home" title="Wiki 首页"><svg viewBox="0 0 24 24"><path d="M4 11.5 12 5l8 6.5V19a1 1 0 0 1-1 1h-4.5v-5h-5v5H5a1 1 0 0 1-1-1z"/></svg></button>
+        </div>
+        <div class="search wiki-search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg><input id="wikiQ" placeholder="搜索 Minecraft Wiki，例如 附魔、末影龙、红石"></div>
+        <button class="btn ghost small" id="wikiOpen" title="在浏览器中打开">浏览器打开</button>
+      </div>
+      <div class="wiki-chips" id="wikiChips"></div>
+      <div class="wiki-host glass" id="wikiHost">
+        <div class="wiki-fallback" id="wikiFallback">
+          <img src="logo.png" alt="">
+          <b>Minecraft Wiki 中文版</b>
+          <p class="hint">Wiki 内嵌在 Windows 版启动器里，直接显示 zh.minecraft.wiki 的实时页面，可以登录、编辑。<br>当前环境不支持内嵌，可以在浏览器中打开。</p>
+          <button class="btn" id="wikiOpen2">在浏览器中打开</button>
+        </div>
+      </div>
+      <div class="wiki-title hint" id="wikiTitle"></div>
+    </section>
+
+    <!-- 诊断中心 -->
+    <section class="page" id="page-diagnose">
+      <header class="page-head" data-drag>
+        <div><h2>诊断中心</h2><p>游戏崩溃时，在本地分析日志并给出修复方法</p></div>
+        <div class="head-actions"><button class="btn ghost" id="exportLog">导出日志</button></div>
+      </header>
+      <div id="dxCard"></div>
+      <div class="log glass-dark"><div class="log-head"><i></i><i></i><i></i><span>latest.log</span></div><pre id="logView"></pre></div>
+    </section>
+
+    <!-- 设置 -->
+    <section class="page" id="page-settings">
+      <header class="page-head" data-drag><div><h2>设置</h2><p>改动会自动保存</p></div></header>
+      <div class="settings">
+        <div class="card glass">
+          <h4>外观</h4>
+          <div class="themes" id="themes">
+            <button class="theme-opt" data-theme-pick="sakura"><span class="sw-prev tp-sakura"></span>樱花</button>
+            <button class="theme-opt" data-theme-pick="white"><span class="sw-prev tp-white"></span>纯白</button>
+            <button class="theme-opt" data-theme-pick="black"><span class="sw-prev tp-black"></span>纯黑</button>
+          </div>
+        </div>
+        <div class="card glass">
+          <h4>功能</h4>
+          <label class="sw"><input type="checkbox" id="featMap"><i></i><span>世界地图预览<small>在存档列表里查看俯视地图，第一次打开会花几秒生成</small></span></label>
+          <label class="sw"><input type="checkbox" id="featWiki"><i></i><span>Minecraft Wiki<small>内嵌 zh.minecraft.wiki 实时页面，不占安装包体积</small></span></label>
+          <button class="btn ghost small" id="wikiClear">清除网页缓存</button>
+        </div>
+        <div class="card glass opt">
+          <div class="opt-head"><div><h4>一键优化</h4><p class="hint">让游戏更顺，也更少被打扰</p></div><button class="btn" id="optAll"><svg viewBox="0 0 24 24"><path d="M13 3 5 13.5h6L10 21l8-10.5h-6z"/></svg>一键优化</button></div>
+          <div id="optWinOnly">
+            <label class="sw"><input type="checkbox" id="optSticky"><i></i><span>防误触粘滞键<small>连按 5 次 Shift 不再弹出粘滞键，同时关闭筛选键、切换键的快捷键</small></span></label>
+            <label class="sw"><input type="checkbox" id="optGPU"><i></i><span>使用独立显卡<small>笔记本双显卡时，让 Java 用高性能显卡运行</small></span></label>
+          </div>
+          <label class="sw"><input type="checkbox" data-cfg="highPriority"><i></i><span>提高游戏进程优先级<small>后台程序多时更不容易掉帧</small></span></label>
+          <label class="sw"><input type="checkbox" data-cfg="zhCN"><i></i><span>新实例默认简体中文<small>第一次进游戏就是中文界面，不改已有设置</small></span></label>
+          <div class="opt-mods"><span><b>性能优化模组</b><small id="optModsHint"></small></span><button class="btn ghost small" id="optMods">安装</button></div>
+        </div>
+        <div class="card glass">
+          <h4>游戏</h4>
+          <label class="field"><span>游戏目录</span><input data-cfg="gameDir"></label>
+          <label class="sw"><input type="checkbox" data-cfg="isolation"><i></i><span>版本隔离<small>每个实例使用自己的存档与模组文件夹</small></span></label>
+          <div class="two">
+            <label class="field"><span>窗口宽度</span><input type="number" data-cfg="width" placeholder="默认"></label>
+            <label class="field"><span>窗口高度</span><input type="number" data-cfg="height" placeholder="默认"></label>
+          </div>
+          <label class="sw"><input type="checkbox" data-cfg="fullscreen"><i></i><span>全屏启动</span></label>
+          <label class="sw"><input type="checkbox" data-cfg="closeOnLaunch"><i></i><span>游戏启动后隐藏启动器</span></label>
+        </div>
+        <div class="card glass">
+          <h4>内存与 Java</h4>
+          <label class="sw"><input type="checkbox" id="memAuto"><i></i><span>自动分配内存<small id="memAutoHint"></small></span></label>
+          <div class="slider" id="memRow"><input type="range" id="memSlider" min="1024" step="256"><b id="memVal"></b></div>
+          <label class="field"><span>额外 JVM 参数</span><input data-cfg="jvmArgs" placeholder="可留空"></label>
+          <div class="seg small" id="javaMode"><button data-v="auto">自动选择 Java</button><button data-v="manual">手动指定</button></div>
+          <label class="field" id="javaPathRow"><span>Java 路径</span><input data-cfg="javaPath" placeholder="C:\\Program Files\\Java\\jdk-21\\bin\\javaw.exe"></label>
+          <div class="java-list" id="javaList"></div>
+          <button class="btn ghost small" id="javaRefresh">重新扫描 Java</button>
+        </div>
+        <div class="card glass">
+          <h4>下载</h4>
+          <div class="seg small" id="srcSeg"><button data-v="auto">自动</button><button data-v="bmclapi">BMCLAPI 镜像</button><button data-v="official">官方</button></div>
+          <div class="slider"><span>并发线程</span><input type="range" data-cfg-num="threads" min="4" max="128" step="4"><b id="thrVal"></b></div>
+          <label class="field"><span id="msIdLabel">Azure 客户端 ID（微软登录用）</span><input data-cfg="msClientId" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"></label>
+          <p class="hint" id="msIdHint">微软登录需要你自己在 Azure 注册一个应用，并向 Mojang 申请 Minecraft API 权限。没有的话可以先用离线账户（只能进单人和离线服务器）。</p>
+        </div>
+        <div class="card glass about">
+          <img src="logo.png" alt="">
+          <div><b>EririLily 樱梨启动器</b><span id="aboutVer"></span><span>D0cK × Claude</span><small>非 Mojang 或 Microsoft 官方产品</small></div>
+          <div class="about-btns"><button class="btn ghost small" data-open="gameDir">打开游戏目录</button><button class="btn ghost small" data-open="data">打开启动器数据</button></div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- 任务进度 -->
+<div class="taskbar glass" id="taskbar" hidden>
+  <div class="tb-text"><b id="tbLabel"></b><span id="tbStage"></span></div>
+  <div class="bar"><i id="tbBar"></i></div>
+  <small id="tbInfo"></small>
+  <button class="x" id="tbCancel" title="取消">✕</button>
+</div>
+
+<!-- 新建实例 -->
+<div class="modal" id="newModal" hidden>
+  <div class="dialog glass">
+    <h3>新建实例</h3>
+    <label class="field"><span>名称</span><input id="niName" placeholder="例如：樱花生存"></label>
+    <div class="field"><span>游戏版本</span>
+      <div class="ver-row"><select id="niGame"></select><label class="chk"><input type="checkbox" id="niSnap">显示快照</label></div>
+    </div>
+    <div class="field"><span>模组加载器</span>
+      <div class="seg" id="niLoader"><button data-v="" class="on">原版</button><button data-v="fabric">Fabric</button><button data-v="quilt">Quilt</button><button data-v="forge">Forge</button><button data-v="neoforge">NeoForge</button></div>
+    </div>
+    <label class="field" id="niLvRow" hidden><span>加载器版本</span><select id="niLv"></select></label>
+    <p class="hint" id="niHint"></p>
+    <div class="dialog-btns"><button class="btn ghost" data-close>取消</button><button class="btn" id="niCreate">安装</button></div>
+  </div>
+</div>
+
+<!-- 实例详情 -->
+<div class="modal" id="instModal" hidden>
+  <div class="dialog glass wide">
+    <div class="im-head"><div class="im-cover"><img id="imThumb" alt=""><button id="imCover" title="更换封面"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="14" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="m4 17 5-5 4 4 2.5-2.5L20 17"/></svg></button></div><div><h3 id="imName"></h3><p id="imMeta"></p></div></div>
+    <div class="seg small" id="imKind"><button data-k="world" class="on">存档</button><button data-k="server">服务器</button><button data-k="mod">模组</button><button data-k="resourcepack">资源包</button><button data-k="shader">光影</button></div>
+    <div class="im-tools" id="imTools"></div>
+    <div class="content-list" id="imList"></div>
+    <div class="dialog-btns spread">
+      <div><button class="btn ghost small danger" id="imDelete">删除实例</button><button class="btn ghost small" id="imRename">重命名</button></div>
+      <div><button class="btn ghost small" id="imFolder">打开文件夹</button><button class="btn small" id="imPlay">开始游戏</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- 封面 / 背景 -->
+<div class="modal" id="coverModal" hidden>
+  <div class="dialog glass wide">
+    <h3 id="cvTitle">更换封面</h3>
+    <div class="cv-preview" id="cvPreview"><span>预览</span></div>
+    <div class="cv-drop" id="cvDrop">
+      <b>拖入图片，或</b><label class="btn small">选择图片<input type="file" id="cvFile" accept="image/png,image/jpeg,image/gif,image/webp" hidden></label>
+      <small>PNG / JPG / GIF / WebP，建议横图</small>
+    </div>
+    <div class="cv-shots-head"><b>从游戏截图选择</b><small class="hint" id="cvShotsHint"></small></div>
+    <div class="cv-shots" id="cvShots"></div>
+    <div class="dialog-btns spread">
+      <div><button class="btn ghost small" id="cvReset">恢复默认</button></div>
+      <div><button class="btn ghost small" data-close>完成</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- 世界地图 -->
+<div class="modal map-modal" id="mapModal" hidden>
+  <div class="map-shell glass">
+    <div class="map-head">
+      <div><h3 id="mapTitle">世界地图</h3><small class="hint" id="mapSub"></small></div>
+      <div class="seg small" id="mapDim"><button data-v="overworld" class="on">主世界</button><button data-v="nether">下界</button><button data-v="end">末地</button></div>
+      <button class="x" data-close title="关闭">✕</button>
+    </div>
+    <div class="map-view" id="mapView">
+      <div class="map-layer" id="mapLayer"></div>
+      <div class="map-empty hint" id="mapEmpty" hidden>这个维度还没有去过</div>
+      <div class="map-ctl">
+        <button id="mapMe" title="回到玩家位置"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg></button>
+        <button id="mapIn" title="放大">＋</button>
+        <button id="mapOut" title="缩小">－</button>
+      </div>
+      <div class="map-coord" id="mapCoord"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 选择实例 -->
+<div class="popover glass" id="instMenu" hidden></div>
+<div class="popover glass" id="accMenu" hidden></div>
+
+<!-- 快速搜索 Ctrl+K -->
+<div class="modal palette-modal" id="palette" hidden>
+  <div class="palette glass">
+    <div class="pal-in"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg><input id="palQ" placeholder="搜索实例、页面、操作，或输入服务器地址…" autocomplete="off" spellcheck="false"><kbd>Esc</kbd></div>
+    <div class="pal-list" id="palList"></div>
+    <div class="pal-foot"><span><kbd>↑</kbd><kbd>↓</kbd> 选择</span><span><kbd>Enter</kbd> 执行</span><span><kbd>Ctrl</kbd><kbd>K</kbd> 随时打开</span></div>
+  </div>
+</div>
+
+<div class="toasts" id="toasts"></div>
+<script src="app.js"></script>
+<script src="skin.js"></script>
+</body>
+</html>
