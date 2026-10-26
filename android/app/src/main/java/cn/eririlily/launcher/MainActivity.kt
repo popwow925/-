@@ -120,7 +120,8 @@ class MainActivity : Activity(), Core.Listener {
 
     override fun onLaunch(spec: String) {
         bridge.haptic("success")
-        startActivity(Intent(this, GameActivity::class.java).putExtra(GameActivity.EXTRA_SPEC, spec))
+        // the game gets its own task: the launcher icon then returns here without closing the game
+        startActivity(Intent(this, GameActivity::class.java).putExtra(GameActivity.EXTRA_SPEC, spec).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
     }
 

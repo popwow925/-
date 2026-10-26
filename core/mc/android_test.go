@@ -171,3 +171,22 @@ func TestGameCmp(t *testing.T) {
 		t.Error("gameCmp")
 	}
 }
+
+func TestMergeGameSettings(t *testing.T) {
+	old := Android
+	Android = true
+	defer func() { Android = old }()
+	dir := t.TempDir()
+	s := OpenStore(dir, dir)
+	_ = os.WriteFile(filepath.Join(dir, "game_settings.json"), []byte(`{"renderScale":60,"fpsLimit":90,"perfHud":"full","controlsLayout":"pvp","dynamicRes":true,"time":42}`), 0o644)
+	MergeGameSettings(dir, s)
+	c := s.Get()
+	if c.RenderScale != 60 || c.FpsLimit != 90 || c.PerfHud != "full" || c.ControlsLayout != "pvp" || !c.DynamicRes {
+		t.Fatalf("not merged: %+v", c)
+	}
+	s.Update(func(c *Config) { c.RenderScale = 80 })
+	MergeGameSettings(dir, s) // same file again: the launcher's newer value stays
+	if s.Get().RenderScale != 80 {
+		t.Fatal("an old game_settings.json must not override later changes")
+	}
+}

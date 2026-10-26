@@ -38,6 +38,7 @@ class GameActivity : Activity(), SurfaceHolder.Callback, ControlsView.Host, Cont
     companion object {
         const val EXTRA_SPEC = "spec"
         @Volatile private var jvmStarted = false
+        @Volatile private var lastSpec: String? = null // the activity can be recreated while the game keeps running
     }
 
     private lateinit var spec: GameSpec
@@ -63,8 +64,13 @@ class GameActivity : Activity(), SurfaceHolder.Callback, ControlsView.Host, Cont
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Bridge.context = applicationContext
-        val path = intent.getStringExtra(EXTRA_SPEC)
-        spec = runCatching { GameSpec.load(path!!) }.getOrElse {
+        val path = intent.getStringExtra(EXTRA_SPEC) ?: lastSpec
+        if (path != null && path != lastSpec && jvmStarted) {
+            // a new launch while an old game still owns this process: restart the process first
+            Toast.makeText(this, "上一局游戏仍在运行", Toast.LENGTH_LONG).show()
+        }
+        lastSpec = lastSpec ?: path
+        spec = runCatching { GameSpec.load(lastSpec!!) }.getOrElse {
             Toast.makeText(this, "启动信息无效", Toast.LENGTH_LONG).show(); finish(); return
         }
         dataDir = File(filesDir, "EririLily")

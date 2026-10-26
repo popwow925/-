@@ -519,7 +519,7 @@ function playUI(stage, f) {
 }
 async function launch(id, server) {
   if (!S.accounts?.length) { toast("先添加一个账户", true); switchTab("me"); return; }
-  if (S.running) { gameRunningSheet(); return; }
+  if (S.running) { if (N?.openGame) N.openGame(); else gameRunningSheet(); return; }
   if (launching) return;
   haptic("medium");
   launching = true; playUI("准备启动");
@@ -566,7 +566,8 @@ function homePage() {
         <p>${i ? esc(ago(i.lastPlayed)) + (i.playTime ? " · 共玩 " + hours(i.playTime) : "") : "新建一个实例，就能在手机上玩 Java 版"}</p></div>
         <button class="play"><i class="fillbar"></i>${ic("play")}<span>开始游戏</span></button></div>`);
       $(".switcher", hero).onclick = () => i ? pickInstanceSheet() : newInstanceSheet();
-      $(".play", hero).onclick = () => i ? (S.running ? gameRunningSheet() : launch()) : newInstanceSheet();
+      $(".play", hero).onclick = () => i ? launch() : newInstanceSheet();
+      longPress($(".play", hero), () => { if (S.running) gameRunningSheet(); });
       b.append(hero);
 
       // widgets

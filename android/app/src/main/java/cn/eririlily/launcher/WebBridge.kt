@@ -15,6 +15,7 @@ import android.view.WindowManager
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import cn.eririlily.launcher.game.ControlsEditorActivity
+import cn.eririlily.launcher.game.GameActivity
 import org.json.JSONObject
 import java.io.File
 import java.net.HttpURLConnection
@@ -112,6 +113,12 @@ class WebBridge(private val act: MainActivity, private val web: WebView) {
             }.isSuccess
             js("window.elToast&&elToast(${JSONObject.quote(if (ok) "已保存" else "保存失败")})")
         }
+    }
+
+    /** Back to the running game (its own task). */
+    @JavascriptInterface
+    fun openGame() = main.post {
+        act.startActivity(Intent(act, GameActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_REORDER_TO_FRONT))
     }
 
     @JavascriptInterface

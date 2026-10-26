@@ -55,6 +55,8 @@
 
         <activity
             android:name=".game.GameActivity"
+            android:label="Minecraft"
+            android:taskAffinity="cn.eririlily.launcher.game"
             android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboard|keyboardHidden|navigation|uiMode|density|touchscreen"
             android:exported="false"
             android:launchMode="singleTask"
