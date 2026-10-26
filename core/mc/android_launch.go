@@ -53,13 +53,15 @@ type GameSettings struct {
 	ControlsOpacity int    `json:"controlsOpacity"`
 	ControlsLayout  string `json:"controlsLayout"`
 	Haptics         bool   `json:"haptics"`
+	DynamicRes      bool   `json:"dynamicRes"`
 	GuiScale        int    `json:"guiScale"` // from options.txt, 0 = auto
 }
 
 func settingsOf(c Config) GameSettings {
 	return GameSettings{RenderScale: c.RenderScale, FpsLimit: c.FpsLimit, Vsync: c.Vsync, PerfHud: c.PerfHud,
 		SustainedPerf: c.SustainedPerf, BigCores: c.BigCores, PerfHint: c.PerfHint, GyroAim: c.GyroAim, GyroSens: c.GyroSens,
-		MouseSpeed: c.MouseSpeed, ControlsOpacity: c.ControlsOpacity, ControlsLayout: c.ControlsLayout, Haptics: c.Haptics}
+		MouseSpeed: c.MouseSpeed, ControlsOpacity: c.ControlsOpacity, ControlsLayout: c.ControlsLayout, Haptics: c.Haptics,
+		DynamicRes: c.DynamicRes}
 }
 
 // AndroidStart is called with the spec path once it is written; the app
@@ -330,4 +332,30 @@ func killPid(pid int) {
 	if p, err := os.FindProcess(pid); err == nil {
 		_ = p.Kill()
 	}
+}
+
+// MergeGameSettings folds in what the player changed in the in-game Control
+// Centre (the game process writes game_settings.json; the core owns config.json).
+func MergeGameSettings(dataDir string, s *Store) {
+	p := filepath.Join(dataDir, "game_settings.json")
+	var g struct {
+		GameSettings
+		Time int64 `json:"time"`
+	}
+	if readJSON(p, &g) != nil || g.Time == 0 {
+		return
+	}
+	stamp := filepath.Join(dataDir, ".game_settings_merged")
+	if b, err := os.ReadFile(stamp); err == nil && strings.TrimSpace(string(b)) == strconv.FormatInt(g.Time, 10) {
+		return
+	}
+	s.Update(func(c *Config) {
+		c.RenderScale, c.FpsLimit, c.Vsync, c.PerfHud = g.RenderScale, g.FpsLimit, g.Vsync, g.PerfHud
+		c.SustainedPerf, c.BigCores, c.PerfHint, c.GyroAim = g.SustainedPerf, g.BigCores, g.PerfHint, g.GyroAim
+		c.GyroSens, c.MouseSpeed, c.ControlsOpacity, c.Haptics, c.DynamicRes = g.GyroSens, g.MouseSpeed, g.ControlsOpacity, g.Haptics, g.DynamicRes
+		if g.ControlsLayout != "" {
+			c.ControlsLayout = g.ControlsLayout
+		}
+	})
+	_ = os.WriteFile(stamp, []byte(strconv.FormatInt(g.Time, 10)), 0o644)
 }

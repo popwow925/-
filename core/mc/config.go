@@ -53,6 +53,7 @@ type Config struct {
 	ControlsOpacity int    `json:"controlsOpacity"` // %
 	ControlsLayout  string `json:"controlsLayout"`  // layout file name
 	Haptics         bool   `json:"haptics"`         // vibrate on button press
+	DynamicRes      bool   `json:"dynamicRes"`      // lower the render scale when the frame rate drops
 	RuntimeMirror   string `json:"runtimeMirror"`   // JRE download URL template ({major}, {abi})
 	Defaults        int    `json:"defaults"`        // first-run defaults version applied
 }

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">樱梨启动器</string>
+    <string name="files_root">EririLily 游戏文件</string>
+    <string name="notif_channel">后台任务</string>
+</resources>

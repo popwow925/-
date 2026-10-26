@@ -1,0 +1,120 @@
+name: Android
+
+on:
+  push:
+    branches: ["**"]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  core:
+    name: Go core (tests + Android/Windows builds)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.24"
+          cache-dependency-path: core/go.sum
+      - name: Vet and test
+        working-directory: core
+        env:
+          GOFLAGS: -mod=mod
+        run: |
+          go vet ./...
+          GOOS=android GOARCH=arm64 go vet ./...
+          go test ./mc ./app
+      - name: Build
+        working-directory: core
+        env:
+          GOFLAGS: -mod=mod
+          CGO_ENABLED: "0"
+        run: |
+          mkdir -p ../out
+          GOOS=android GOARCH=arm64 go build -trimpath -ldflags "-s -w" -o ../out/liberirilily_core.so .
+          GOOS=windows GOARCH=amd64 go build -trimpath -ldflags "-H windowsgui -s -w" -o ../out/EririLily.exe .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: core
+          path: out/
+
+  runtime:
+    name: Game runtime natives (NDK)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: runtime-out
+          key: runtime-${{ hashFiles('android/scripts/build-runtime.sh') }}-v1
+      - name: Build gl4es, MobileGlues, OpenAL, LWJGL
+        run: |
+          if [ -f runtime-out/liblwjgl.so ]; then echo "cached"; ls -la runtime-out; exit 0; fi
+          export ANDROID_NDK_HOME=$ANDROID_SDK_ROOT/ndk/27.2.12479018
+          [ -d "$ANDROID_NDK_HOME" ] || export ANDROID_NDK_HOME=$ANDROID_NDK_LATEST_HOME
+          bash android/scripts/build-runtime.sh runtime-out arm64-v8a
+      - uses: actions/upload-artifact@v4
+        with:
+          name: runtime-arm64-v8a
+          path: runtime-out/
+
+  apk:
+    name: APK
+    needs: [core, runtime]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: actions/download-artifact@v4
+        with:
+          name: core
+          path: out
+      - uses: actions/download-artifact@v4
+        with:
+          name: runtime-arm64-v8a
+          path: android/app/src/main/jniLibs/arm64-v8a
+      - name: Core binary
+        run: cp out/liberirilily_core.so android/app/src/main/jniLibs/arm64-v8a/ && chmod +x android/app/src/main/jniLibs/arm64-v8a/liberirilily_core.so
+      - name: LWJGL 3.3.3 jars
+        run: |
+          d=android/app/src/main/assets/lwjgl3
+          mkdir -p $d
+          for m in lwjgl lwjgl-glfw lwjgl-opengl lwjgl-openal lwjgl-stb lwjgl-tinyfd lwjgl-freetype; do
+            curl -fsSL -o $d/$m.jar https://repo1.maven.org/maven2/org/lwjgl/$m/3.3.3/$m-3.3.3.jar
+          done
+          ls -la $d
+      - name: Bundle JREs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash android/scripts/fetch-jre.sh android/app/src/main/assets/runtime || true
+      - name: Build APK
+        working-directory: android
+        env:
+          EL_KEYSTORE: ${{ secrets.EL_KEYSTORE_B64 != '' && 'release.jks' || '' }}
+          EL_KEYSTORE_PASSWORD: ${{ secrets.EL_KEYSTORE_PASSWORD }}
+          EL_KEY_ALIAS: ${{ secrets.EL_KEY_ALIAS }}
+          EL_KEY_PASSWORD: ${{ secrets.EL_KEY_PASSWORD }}
+        run: |
+          if [ -n "${{ secrets.EL_KEYSTORE_B64 }}" ]; then echo "${{ secrets.EL_KEYSTORE_B64 }}" | base64 -d > app/release.jks; fi
+          chmod +x gradlew
+          ./gradlew --no-daemon assembleRelease
+          mkdir -p ../dist
+          cp app/build/outputs/apk/release/*.apk ../dist/EririLily-android-arm64.apk
+          ls -la ../dist
+      - uses: actions/upload-artifact@v4
+        with:
+          name: EririLily-android
+          path: dist/*.apk
+      - name: Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "${GITHUB_REF_NAME}" dist/*.apk out/EririLily.exe --title "EririLily ${GITHUB_REF_NAME}" --notes "安卓版 + Windows 版" || gh release upload "${GITHUB_REF_NAME}" dist/*.apk --clobber

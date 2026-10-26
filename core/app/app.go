@@ -343,6 +343,9 @@ func (a *App) runDir(id string) string {
 }
 
 func (a *App) state() map[string]any {
+	if mc.Android {
+		mc.MergeGameSettings(a.DataDir, a.store)
+	}
 	cfg := a.store.Get()
 	var accs []map[string]any
 	for _, x := range a.accounts.All() {
