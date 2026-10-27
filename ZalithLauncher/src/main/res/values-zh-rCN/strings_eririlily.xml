@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- EririLily（基于 Zalith Launcher 2 的非官方修改版） -->
+<resources>
+    <string name="el_unofficial_short">非官方修改版 · 基于 Zalith Launcher 2</string>
+    <string name="el_home_card_title">樱梨启动器 · 非官方修改版</string>
+    <string name="el_home_card_text">樱梨启动器（EririLily）是基于 Zalith Launcher 2（GPL-3.0 开源）的非官方修改版。遇到问题请反馈给 EririLily，不要打扰 Zalith Launcher 团队。</string>
+    <string name="el_keystrokes">按键显示</string>
+    <string name="el_keystrokes_cps">显示每秒点击数（CPS）</string>
+    <string name="el_keystrokes_scale">按键显示大小</string>
+    <string name="el_keystrokes_opacity">按键显示不透明度</string>
+    <string name="el_device_hud">手机状态（电量 · 温度 · 时间 · 本次游玩）</string>
+    <string name="el_hud_hint">拖动可移动位置</string>
+</resources>

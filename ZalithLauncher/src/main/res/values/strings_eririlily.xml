@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- EririLily (unofficial modification of Zalith Launcher 2) -->
+<resources>
+    <string name="el_unofficial_short">Unofficial build · based on Zalith Launcher 2</string>
+    <string name="el_home_card_title">EririLily · unofficial modified version</string>
+    <string name="el_home_card_text">EririLily is an unofficial modification of Zalith Launcher 2 (GPL-3.0). Please report problems to EririLily, not to the Zalith Launcher team.</string>
+    <string name="el_keystrokes">Keystrokes</string>
+    <string name="el_keystrokes_cps">Show clicks per second</string>
+    <string name="el_keystrokes_scale">Keystrokes size</string>
+    <string name="el_keystrokes_opacity">Keystrokes opacity</string>
+    <string name="el_device_hud">Phone status (battery · temperature · time · play time)</string>
+    <string name="el_hud_hint">Drag to move</string>
+</resources>
