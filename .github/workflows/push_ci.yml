@@ -16,3 +16,24 @@ jobs:
       STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
       OAUTH_CLIENT_ID: ${{ secrets.OAUTH_CLIENT_ID }}
       CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_KEY }}
+  Release:
+    needs: Build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v5
+        with:
+          path: out
+      - name: Publish pre-release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir apk
+          cp out/"debug apk (arm64)"/*.apk "apk/EririLily-Android-arm64.apk"
+          cp out/"debug apk (all)"/*.apk "apk/EririLily-Android-universal.apk"
+          ls -la apk
+          tag="android-$(date -u +%Y%m%d)-${GITHUB_SHA:0:7}"
+          gh release create "$tag" apk/*.apk -R "$GITHUB_REPOSITORY" --prerelease --target "$GITHUB_SHA" \
+            --title "樱梨启动器 安卓版（测试版）$tag" \
+            --notes "基于 Zalith Launcher 2 的非官方修改版（GPL-3.0），与 Zalith 官方无关。arm64 适合绝大多数手机；universal 包含所有架构。"
