@@ -64,6 +64,29 @@ for theme in sakura white black; do
 done
 rpc setConfig '{"theme":"sakura"}' >> $OUT/rpc.txt
 adb shell input tap $(echo ${TABS[0]} | tr ',' ' '); sleep 2
+# drive the web UI over DevTools (test builds only) for more states
+pip install -q websocket-client >/dev/null 2>&1
+APID=$(adb shell pidof $PKG | awk '{print $1}')
+adb forward tcp:9222 localabstract:webview_devtools_remote_$APID
+js(){ python3 .github/el/cdp.py "$1" >> $OUT/cdp.txt 2>&1; sleep "${2:-2}"; }
+js "setConfig({theme:'sakura'}).then(()=>applyTheme('sakura'))" 2
+js "push(instancePage('$ID0'))" 3; shot detail
+js "while(stack.length) pop()" 1
+js "optimizeSheet('$ID0')" 4; shot optimize
+js "elBack()" 1
+js "newInstanceSheet()" 5; shot newinstance
+js "elBack()" 1
+js "push(perfPage())" 3; shot perf
+js "rendererSheet({refresh(){}})" 2; shot renderer
+js "elBack()" 1
+js "while(stack.length) pop(); push(skinPage())" 4; shot skin
+js "while(stack.length) pop(); accountsSheet()" 3; shot accounts
+js "elBack()" 1
+js "switchTab('discover')" 1
+js "document.querySelector('.search input').value='sodium'; document.querySelector('.search input').dispatchEvent(new Event('input'))" 6; shot search
+js "switchTab('home'); setConfig({theme:'black'}).then(()=>applyTheme('black'))" 2
+js "push(instancePage('$ID0'))" 3; shot detail_black
+js "while(stack.length) pop(); setConfig({theme:'sakura'}).then(()=>applyTheme('sakura')); switchTab('home')" 2
 ID=$(python3 -c "import json;s=json.load(open('$OUT/state.json'));print(s['config']['selected'])")
 # launch; if the file check hits a rate limit (CI network), wait and try again
 for attempt in 1 2 3 4; do
@@ -79,7 +102,13 @@ for attempt in 1 2 3 4; do
   echo "launch attempt $attempt failed, retrying" >> $OUT/rpc.txt
   sleep 45
 done
-for i in 1 2 3 4 5 6 7 8 9 10 11 12; do sleep 20; shot "game_$i"; done
+for i in 1 2 3 4 5 6; do sleep 20; shot "game_$i"; done
+adb shell input tap 1200 26; sleep 3; shot game_cc
+adb shell input tap 1200 26; sleep 2
+# singleplayer with no worlds opens "create new world" straight away
+adb shell input tap 1199 500; sleep 15; shot game_create
+adb shell input tap 880 1008; sleep 150; shot game_world_1
+for i in 1 2 3 4 5 6; do sleep 20; shot "game_world_$((i+1))"; done
 rpc logs > $OUT/core_logs.json
 rpc state > $OUT/state_end.json
 kill $EVPID 2>/dev/null

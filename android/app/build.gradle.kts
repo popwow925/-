@@ -21,6 +21,8 @@ android {
             // The game runtime (JRE, LWJGL natives, renderers) is built for 64-bit ARM.
             abiFilters += listOf(elAbi)
         }
+        // emulator test builds (x86_64) can be inspected over WebView DevTools; phone builds cannot
+        buildConfigField("boolean", "TEST_BUILD", (elAbi != "arm64-v8a").toString())
     }
 
     signingConfigs {

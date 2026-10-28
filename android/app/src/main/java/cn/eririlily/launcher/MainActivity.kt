@@ -39,6 +39,7 @@ class MainActivity : Activity(), Core.Listener {
         window.navigationBarColor = Color.TRANSPARENT
         if (Build.VERSION.SDK_INT >= 29) window.isNavigationBarContrastEnforced = false
 
+        if (BuildConfig.TEST_BUILD) WebView.setWebContentsDebuggingEnabled(true)
         web = WebView(this)
         web.setBackgroundColor(Color.TRANSPARENT)
         web.overScrollMode = View.OVER_SCROLL_NEVER
