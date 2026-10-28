@@ -26,12 +26,18 @@ for i in $(seq 1 30); do sleep 10; dump; grep -q "同意并安装\|正在\|解�
 sleep 5; shot guide
 for i in $(seq 1 12); do adb shell input tap 700 960; sleep 1.5; done
 sleep 2; shot home
+tap "关闭" 3; shot home_closed
 tap "添加账号" 4; shot account; adb shell input keyevent BACK; sleep 3
 tap "下载" 5; shot download
 dump; cp u.xml $OUT/download_dump.xml
+tap "整合包" 6; shot dl_modpack
+tap "模组" 6; shot dl_mods
+tap "资源包" 6; shot dl_res
 adb shell input keyevent BACK; sleep 3
 tap "设置" 4; shot settings
 adb shell input swipe 1400 900 1400 300 400; sleep 2; shot settings2
+for t in "游戏设置" "控制设置" "手柄设置" "启动器设置" "控制管理" "关于"; do tap "$t" 4; shot "set_$t"; done
+adb shell input swipe 1400 900 1400 300 400; sleep 2; shot set_about2
 adb shell input keyevent BACK; sleep 3
 tap "多人联机" 4; shot online; adb shell input keyevent BACK; sleep 3
 shot home_again
