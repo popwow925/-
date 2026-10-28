@@ -1,5 +1,9 @@
 package cn.eririlily.launcher.game
 
+import com.movtery.zalithlauncher.bridge.LoggerBridge
+import cn.eririlily.runtime.RuntimeEnv
+import cn.eririlily.runtime.LaunchSpec
+import cn.eririlily.runtime.GameLauncher
 import android.app.Activity
 import android.hardware.Sensor
 import android.hardware.SensorEvent
@@ -60,6 +64,7 @@ class GameActivity : Activity(), SurfaceHolder.Callback, ControlsView.Host, Cont
     private var dynScale = 100
     private var grabbing = false
     private var mouseSeen = 0L
+    private var pendingStart = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -139,18 +144,31 @@ class GameActivity : Activity(), SurfaceHolder.Callback, ControlsView.Host, Cont
         setContentView(root)
     }
 
+    /** The JVM starts once the first surface exists (the runtime needs a window to bind to). */
     private fun startJvm() {
-        val env = mutableListOf(
-            "EL_GLES=${spec.gles}", "EL_RENDERER_LIB=${spec.rendererLib}",
-            "HOME=${dataDir.absolutePath}", "TMPDIR=${cacheDir.absolutePath}",
-            "LIBGL_ES=${spec.gles}",
-        )
-        spec.env.forEach { (k, v) -> env += "$k=$v" }
-        val r = Bridge.launchJvm(
-            spec.libJvm, spec.jvmArgs.toTypedArray(), spec.classpath.joinToString(":"), spec.libPath.joinToString(":"),
-            spec.mainClass, spec.gameArgs.toTypedArray(), env.toTypedArray(), spec.runDir, spec.logFile, spec.exitFile, spec.pidFile,
-        )
-        if (r != 0) Toast.makeText(this, "无法启动游戏", Toast.LENGTH_LONG).show()
+        pendingStart = true
+    }
+
+    private fun launchOnRuntime(width: Int, height: Int) {
+        pendingStart = false
+        RuntimeEnv.init(applicationContext)
+        RuntimeEnv.activity = this
+        RuntimeEnv.onExit = { code, _ -> runCatching { File(spec.exitFile).writeText(code.toString()) } }
+        val launchSpec = LaunchSpec.parse(spec.file.readText())
+        Thread({
+            runCatching { File(spec.pidFile).writeText(Process.myPid().toString()) }
+            LoggerBridge.start(spec.logFile)
+            val code = runCatching {
+                val launcher = GameLauncher(applicationContext, launchSpec)
+                launcher.prepare { what -> runOnUiThread { Toast.makeText(this, "首次启动：正在准备 $what…", Toast.LENGTH_SHORT).show() } }
+                launcher.launch(width, height)
+            }.getOrElse { e ->
+                LoggerBridge.append("[EririLily] 启动失败：" + e.stackTraceToString())
+                -1
+            }
+            runCatching { File(spec.exitFile).writeText(code.toString()) }
+            Process.killProcess(Process.myPid())
+        }, "Minecraft").start()
     }
 
     // ---------------------------------------------------------------- surface & render scale
@@ -169,6 +187,7 @@ class GameActivity : Activity(), SurfaceHolder.Callback, ControlsView.Host, Cont
         surfW = width; surfH = height
         hud.renderW = width; hud.renderH = height
         Bridge.setSurface(holder.surface, width, height)
+        if (pendingStart) launchOnRuntime(width, height)
         applyFrameRate()
     }
 

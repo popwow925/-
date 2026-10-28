@@ -162,6 +162,9 @@ func probeAndroidJava(home string) *Java {
 }
 
 func androidRuntimes(dataDir string) []*Java {
+	if ZRuntime {
+		return zJavas()
+	}
 	var out []*Java
 	root := filepath.Join(dataDir, "runtime")
 	ents, _ := os.ReadDir(root)
@@ -181,6 +184,9 @@ func androidRuntimes(dataDir string) []*Java {
 // pickAndroidJava is more forgiving than PickJava: Android JREs come in
 // 8 / 17 / 21 (/ 25), and the game runs on a newer one in most cases.
 func pickAndroidJava(all []*Java, major int) *Java {
+	if ZRuntime {
+		return zPickJava(major)
+	}
 	if j := pickJava(all, major); j != nil {
 		return j
 	}
@@ -228,6 +234,9 @@ var RuntimeMirror = ""
 // installAndroidRuntime installs a JRE for the given major version: from the
 // APK if it ships one, otherwise from the configured mirror.
 func installAndroidRuntime(ctx context.Context, dataDir string, major int, threads int, rep Reporter) (*Java, error) {
+	if ZRuntime {
+		return zPickJava(major), nil // bundled in the APK; the app unpacks it before the game starts
+	}
 	want := major
 	have := BundledRuntimes()
 	pick := 0
@@ -610,6 +619,9 @@ type Renderer struct {
 
 // Renderers lists the built-in renderers present in the APK and imported plugins.
 func Renderers(dataDir string) []Renderer {
+	if ZRuntime {
+		return zRenderers()
+	}
 	var out []Renderer
 	builtin := []Renderer{
 		{ID: "mobileglues", Name: "MobileGlues", Desc: "OpenGL 4 over GLES 3.2 · 1.17 及以上推荐", Lib: "libmobileglues.so", GLES: 3, MinGame: "1.17"},
@@ -719,6 +731,9 @@ func versionParts(v string) [3]int {
 
 // PickRenderer resolves the configured renderer for a game version.
 func PickRenderer(dataDir, want, game string) (Renderer, error) {
+	if ZRuntime {
+		return zPickRenderer(want, game), nil
+	}
 	all := Renderers(dataDir)
 	if len(all) == 0 {
 		return Renderer{}, errors.New("安装包里没有可用的渲染器")

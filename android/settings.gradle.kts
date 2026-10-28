@@ -14,3 +14,4 @@ dependencyResolutionManagement {
 }
 rootProject.name = "EririLily"
 include(":app")
+include(":runtime")

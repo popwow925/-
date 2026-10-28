@@ -18,11 +18,6 @@ android {
             // The game runtime (JRE, LWJGL natives, renderers) is built for 64-bit ARM.
             abiFilters += listOf("arm64-v8a")
         }
-        externalNativeBuild {
-            cmake {
-                arguments += listOf("-DANDROID_STL=none")
-            }
-        }
     }
 
     signingConfigs {
@@ -53,21 +48,17 @@ android {
         }
     }
 
-    externalNativeBuild {
-        cmake {
-            path = file("src/main/cpp/CMakeLists.txt")
-            version = "3.22.1"
-        }
-    }
 
     packaging {
         // the core binary and the game's native libraries must exist as real files
         // in nativeLibraryDir (they are exec'd / dlopen'ed by path)
         jniLibs.useLegacyPackaging = true
+        // the runtime module and the prebuilt renderer/LWJGL packages each bring these
+        jniLibs.pickFirsts += listOf("**/libc++_shared.so", "**/libbytehook.so")
     }
 
     androidResources {
-        noCompress += listOf("xz", "jar")
+        noCompress += listOf("xz", "jar", "zip")
     }
 
     compileOptions {
@@ -83,4 +74,8 @@ android {
 }
 
 dependencies {
+    // game runtime: Zalith Launcher 2's native layer + renderers, EririLily's launch code (GPL-3.0)
+    implementation(project(":runtime"))
+    // prebuilt renderers / LWJGL natives / OpenAL / SDL from Zalith Launcher 2
+    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.aar"))))
 }

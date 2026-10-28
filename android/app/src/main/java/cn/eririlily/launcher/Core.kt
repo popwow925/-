@@ -62,6 +62,10 @@ object Core {
             put("ERIRILILY_DEVICE", DeviceInfo.json(app).toString())
             put("ERIRILILY_DNS", dnsServers(app))
             put("ERIRILILY_PARENT_PIPE", "1")
+            // the game runtime (Java, LWJGL, renderers) lives in the APK's runtime module
+            put("ERIRILILY_RUNTIME", "zalith")
+            put("ERIRILILY_JAVA_DIR", java.io.File(app.filesDir, "runtime/java").absolutePath)
+            put("ERIRILILY_BUNDLED_JAVA", cn.eririlily.runtime.RuntimeInstaller.bundledJava.joinToString(","))
             put("HOME", data.absolutePath)
             put("TMPDIR", app.cacheDir.absolutePath)
             put("SSL_CERT_DIR", "/system/etc/security/cacerts")

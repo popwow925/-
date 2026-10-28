@@ -43,29 +43,9 @@ jobs:
           name: core
           path: out/
 
-  runtime:
-    name: Game runtime natives (NDK)
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/cache@v4
-        with:
-          path: runtime-out
-          key: runtime-${{ hashFiles('android/scripts/build-runtime.sh') }}-v1
-      - name: Build gl4es, MobileGlues, OpenAL, LWJGL
-        run: |
-          if [ -f runtime-out/liblwjgl.so ]; then echo "cached"; ls -la runtime-out; exit 0; fi
-          export ANDROID_NDK_HOME=$ANDROID_SDK_ROOT/ndk/27.2.12479018
-          [ -d "$ANDROID_NDK_HOME" ] || export ANDROID_NDK_HOME=$ANDROID_NDK_LATEST_HOME
-          bash android/scripts/build-runtime.sh runtime-out arm64-v8a
-      - uses: actions/upload-artifact@v4
-        with:
-          name: runtime-arm64-v8a
-          path: runtime-out/
-
   apk:
     name: APK
-    needs: [core, runtime]
+    needs: [core]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -77,24 +57,15 @@ jobs:
         with:
           name: core
           path: out
-      - uses: actions/download-artifact@v4
-        with:
-          name: runtime-arm64-v8a
-          path: android/app/src/main/jniLibs/arm64-v8a
       - name: Core binary
-        run: cp out/liberirilily_core.so android/app/src/main/jniLibs/arm64-v8a/ && chmod +x android/app/src/main/jniLibs/arm64-v8a/liberirilily_core.so
-      - name: LWJGL 3.3.3 jars
         run: |
-          d=android/app/src/main/assets/lwjgl3
-          mkdir -p $d
-          for m in lwjgl lwjgl-glfw lwjgl-opengl lwjgl-openal lwjgl-stb lwjgl-tinyfd lwjgl-freetype; do
-            curl -fsSL -o $d/$m.jar https://repo1.maven.org/maven2/org/lwjgl/$m/3.3.3/$m-3.3.3.jar
-          done
-          ls -la $d
-      - name: Bundle JREs
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: bash android/scripts/fetch-jre.sh android/app/src/main/assets/runtime || true
+          mkdir -p android/app/src/main/jniLibs/arm64-v8a
+          cp out/liberirilily_core.so android/app/src/main/jniLibs/arm64-v8a/
+          chmod +x android/app/src/main/jniLibs/arm64-v8a/liberirilily_core.so
+      - name: NDK for the game runtime
+        run: |
+          yes | "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" --install "ndk;25.2.9519653" > /dev/null
+          ls "$ANDROID_SDK_ROOT/ndk"
       - name: Build APK
         working-directory: android
         env:
@@ -113,6 +84,15 @@ jobs:
         with:
           name: EririLily-android
           path: dist/*.apk
+      - name: Pre-release (test build)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/eririlily-v2'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag="v2-android-$(date -u +%Y%m%d)-${GITHUB_SHA:0:7}"
+          gh release create "$tag" dist/*.apk -R "$GITHUB_REPOSITORY" --prerelease --target "$GITHUB_SHA" \
+            --title "樱梨启动器 安卓版 v2（测试版）$tag" \
+            --notes "EririLily 自己的核心与界面；游戏运行层与渲染器来自 Zalith Launcher 2（GPL-3.0）。仅支持 64 位 ARM 手机。"
       - name: Release
         if: startsWith(github.ref, 'refs/tags/v')
         env:

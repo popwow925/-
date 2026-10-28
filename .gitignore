@@ -16,3 +16,5 @@ android/app/src/main/assets/lwjgl3/
 .idea/
 *.iml
 .DS_Store
+android/runtime/build/
+android/runtime/.cxx/

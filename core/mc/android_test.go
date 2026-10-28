@@ -190,3 +190,63 @@ func TestMergeGameSettings(t *testing.T) {
 		t.Fatal("an old game_settings.json must not override later changes")
 	}
 }
+
+func TestZalithSpec(t *testing.T) {
+	data := fakeAndroid(t)
+	old := ZRuntime
+	ZRuntime = true
+	defer func() { ZRuntime = old; resetJavaCache() }()
+	t.Setenv("ERIRILILY_JAVA_DIR", filepath.Join(data, "rt"))
+	resetJavaCache()
+	dir := t.TempDir()
+	js := strings.Replace(vanillaJSON, `{"name":"org.ow2.asm:asm:9.3"}`,
+		`{"name":"org.ow2.asm:asm:9.3"},{"name":"org.lwjgl:lwjgl:3.3.3","downloads":{"artifact":{"path":"org/lwjgl/lwjgl/3.3.3/lwjgl-3.3.3.jar","sha1":"d","size":1,"url":"https://libraries.minecraft.net/z.jar"}}}`, 1)
+	_ = os.MkdirAll(VersionDir(dir, "1.21.1"), 0o755)
+	_ = os.WriteFile(VersionJSON(dir, "1.21.1"), []byte(js), 0o644)
+	_ = os.WriteFile(filepath.Join(VersionDir(dir, "1.21.1"), "1.21.1.jar"), []byte("jar!"), 0o644)
+
+	// the bundled Javas are reported without unpacking anything
+	j, err := InstallRuntime(context.Background(), data, "java-runtime-delta", 4, nil)
+	if err != nil || j.Major != 21 || !strings.HasSuffix(j.Home, "jre-21") {
+		t.Fatalf("java = %+v %v", j, err)
+	}
+	if p := PickJava(DetectJava("", data, true), 8); p == nil || p.Major != 8 {
+		t.Fatalf("java 8 pick = %+v", p)
+	}
+	cfg := DefaultConfig(dir)
+	cfg.GameDir = dir
+	cfg.Renderer = "gl4es"
+	acc, _ := OfflineAccount("Steve")
+	ga, err := BuildArgs(LaunchOptions{GameDir: dir, ID: "1.21.1", Java: j, Account: acc, Isolation: true, MemoryMB: 3072})
+	if err != nil {
+		t.Fatal(err)
+	}
+	sp, err := buildAndroidSpec(cfg, data, LaunchRequest{Config: cfg, DataDir: data, ID: "1.21.1", Account: acc}, ga, j)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if sp.RendererKey != "gl4es" || sp.LWJGL != "3.3.3" || sp.LWJGL2 || !sp.ModernArgs || sp.RAMMB != 3072 {
+		t.Errorf("spec: renderer=%s lwjgl=%s lwjgl2=%v modern=%v ram=%d", sp.RendererKey, sp.LWJGL, sp.LWJGL2, sp.ModernArgs, sp.RAMMB)
+	}
+	if !strings.HasSuffix(sp.ClientJar, "1.21.1.jar") || sp.GameDir != dir {
+		t.Errorf("client jar / game dir: %s %s", sp.ClientJar, sp.GameDir)
+	}
+	for _, p := range sp.Classpath {
+		if strings.Contains(p, "/org/lwjgl/") {
+			t.Errorf("desktop LWJGL left on the class path: %s", p)
+		}
+	}
+	joined := strings.Join(sp.JVMArgs, " ")
+	for _, bad := range []string{"-cp", "libelbridge", "-Djava.library.path", "-Xmx", "UseG1GC"} {
+		if strings.Contains(joined, bad) {
+			t.Errorf("%s must not be in JVM args: %s", bad, joined)
+		}
+	}
+	// a renderer that does not suit the version falls back to Krypton Wrapper
+	if r := zPickRenderer("gl4es", "26.1"); r.ID != "krypton" {
+		t.Errorf("fallback = %s", r.ID)
+	}
+	if xmxOf([]string{"-Xmx4g"}) != 4096 || xmxOf(nil) != 2048 {
+		t.Error("xmxOf")
+	}
+}

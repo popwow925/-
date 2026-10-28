@@ -36,6 +36,16 @@ type AndroidSpec struct {
 	PidFile   string            `json:"pidFile"`
 	Settings  GameSettings      `json:"settings"`
 	Account   string            `json:"account"`
+
+	// Zalith runtime (ZRuntime): what the app's runtime module reads
+	GameVersion string   `json:"gameVersion,omitempty"`
+	GameDir     string   `json:"gameDir,omitempty"`
+	LWJGL       string   `json:"lwjgl,omitempty"`
+	LWJGL2      bool     `json:"lwjgl2,omitempty"`
+	ModernArgs  bool     `json:"modernArgs,omitempty"`
+	RendererKey string   `json:"rendererKey,omitempty"`
+	RAMMB       int      `json:"ramMb,omitempty"`
+	ClientJar   string   `json:"clientJar,omitempty"`
 }
 
 // GameSettings are the in-game options of the Android shell.
@@ -86,6 +96,9 @@ func rewriteCP(list []string, ours []string) []string {
 
 // buildAndroidSpec turns a desktop launch into an in-process launch on Android.
 func buildAndroidSpec(cfg Config, dataDir string, req LaunchRequest, ga *GameArgs, java *Java) (*AndroidSpec, error) {
+	if ZRuntime {
+		return buildZalithSpec(cfg, dataDir, req, ga, java)
+	}
 	if usesLWJGL2(ga.Ver) {
 		return nil, errors.New("1.12.2 及更早的版本使用 LWJGL 2，安卓版暂不支持，请使用 1.13 及以上版本")
 	}
