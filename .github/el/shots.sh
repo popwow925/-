@@ -1,5 +1,5 @@
 #!/bin/bash
-# rerun 5: CDP states + world, TEST_BUILD apk
+# rerun 6: cdp suppress_origin
 # add an offline account, install vanilla, launch it on the runtime module. Screens + logs.
 set -x
 PKG=cn.eririlily.launcher
