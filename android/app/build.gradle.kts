@@ -30,11 +30,11 @@ android {
                 keyAlias = System.getenv("EL_KEY_ALIAS")
                 keyPassword = System.getenv("EL_KEY_PASSWORD")
             } else {
-                val debug = getByName("debug")
-                storeFile = debug.storeFile
-                storePassword = debug.storePassword
-                keyAlias = debug.keyAlias
-                keyPassword = debug.keyPassword
+                // test builds: a fixed key in the repo, so each test APK installs over the last one
+                storeFile = file("el-test.jks")
+                storePassword = "eririlily-test"
+                keyAlias = "el-test"
+                keyPassword = "eririlily-test"
             }
         }
     }

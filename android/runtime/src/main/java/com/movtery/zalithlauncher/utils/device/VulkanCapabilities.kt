@@ -20,7 +20,6 @@ package com.movtery.zalithlauncher.utils.device
 
 import androidx.annotation.Keep
 import android.util.Log
-import org.apache.commons.io.FileUtils
 import java.io.File
 
 private const val TAG = "VulkanCapabilities"
@@ -85,21 +84,6 @@ object VulkanChecker {
             )?.also { caps ->
                 Log.i(TAG, "Vulkan version: ${caps.versionString}")
                 Log.i(TAG, "Version >= 1.2: ${caps.isVersionSupported}")
-                caps.profileSupport().forEach { profile ->
-                    Log.i(
-                        TAG,
-                        "Minecraft ${profile.versionRangeText} Vulkan supported: ${profile.supported}"
-                    )
-                    if (!profile.supported) {
-                        val support = caps.supportFor(profile.since)
-                        val missing = (support.missingRequired + support.missingOptional)
-                            .joinToString { it.dependency.name }
-                        Log.w(
-                            TAG,
-                            "Minecraft ${profile.versionRangeText} missing: $missing"
-                        )
-                    }
-                }
             }
         } catch (e: UnsatisfiedLinkError) {
             Log.e(TAG, "Native library or method not found", e)
@@ -109,7 +93,7 @@ object VulkanChecker {
             null
         } finally {
             if (nativeDir != null && cacheDir != null) {
-                FileUtils.deleteQuietly(File(cacheDir))
+                File(cacheDir).deleteRecursively()
             }
         }
     }
