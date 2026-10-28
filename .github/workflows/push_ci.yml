@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - '**'
+    paths-ignore:
+      - '.github/el/**'
+      - '.github/workflows/el_screens.yml'
   workflow_dispatch:
 
 jobs:

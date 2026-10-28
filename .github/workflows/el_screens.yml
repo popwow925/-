@@ -1,0 +1,41 @@
+name: EririLily screenshots
+
+on:
+  push:
+    branches: [eririlily-android]
+    paths: [".github/el/**"]
+
+permissions:
+  contents: write
+
+jobs:
+  shots:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules && sudo udevadm trigger --name-match=kvm
+      - name: Get APK
+        env: { GH_TOKEN: "${{ github.token }}" }
+        run: |
+          tag=$(gh api repos/$GITHUB_REPOSITORY/releases --jq '[.[]|select(.tag_name|startswith("android-"))][0].tag_name')
+          gh release download "$tag" -R $GITHUB_REPOSITORY -p '*universal.apk' -D apk
+      - name: Emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          arch: x86_64
+          target: google_apis
+          profile: pixel_7
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
+          script: bash .github/el/shots.sh
+      - name: Push screenshots
+        if: always()
+        run: |
+          cd shots || exit 0
+          git init -q -b el-screens && git add -A
+          git -c user.name=ci -c user.email=ci@noreply commit -qm "screens ${GITHUB_SHA:0:7}"
+          git push -f "https://x-access-token:${{ github.token }}@github.com/$GITHUB_REPOSITORY" el-screens
