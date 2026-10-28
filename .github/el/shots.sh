@@ -23,8 +23,16 @@ adb shell monkey -p $PKG -c android.intent.category.LAUNCHER 1
 sleep 15; shot unpack
 tap "同意并安装" 5; shot unpacking
 for i in $(seq 1 30); do sleep 10; dump; grep -q "同意并安装\|正在\|解压" u.xml || break; done
-sleep 5; shot home
-tap "启动" 4; shot after_launch_tap
+sleep 5; shot guide
+for i in $(seq 1 12); do adb shell input tap 700 960; sleep 1.5; done
+sleep 2; shot home
+tap "添加账号" 4; shot account; adb shell input keyevent BACK; sleep 3
+tap "下载" 5; shot download
+dump; cp u.xml $OUT/download_dump.xml
 adb shell input keyevent BACK; sleep 3
-for t in "设置" "下载" "版本" "账户" "关于"; do tap "$t" 4; shot "tab_$t"; done
-adb logcat -d | grep -iE " E |AndroidRuntime" | grep -i eririlily | tail -100 > $OUT/logcat.txt
+tap "设置" 4; shot settings
+adb shell input swipe 1400 900 1400 300 400; sleep 2; shot settings2
+adb shell input keyevent BACK; sleep 3
+tap "多人联机" 4; shot online; adb shell input keyevent BACK; sleep 3
+shot home_again
+adb logcat -d | grep -iE "AndroidRuntime|FATAL" | tail -100 > $OUT/logcat.txt
