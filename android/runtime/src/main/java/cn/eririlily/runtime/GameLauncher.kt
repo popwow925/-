@@ -60,7 +60,8 @@ data class LaunchSpec(
 class GameLauncher(private val context: Context, private val spec: LaunchSpec) {
     private val paths = RuntimePaths(context)
     private val javaMajor = RuntimeInstaller.pickJava(spec.javaMajor)
-    private val java = JavaLayout(paths.jre(javaMajor))
+    // looked up lazily: on the first launch the runtime is only unpacked by prepare()
+    private val java by lazy { JavaLayout(paths.jre(javaMajor)) }
     private val renderer = Renderers.byKey(spec.renderer)
     private val lwjglNatives = paths.lwjglNatives(spec.lwjgl).absolutePath
     private val nativeDir = paths.nativeLibDir
