@@ -1,5 +1,5 @@
 #!/bin/bash
-# rerun after log file fix
+# rerun after lazy java layout
 # add an offline account, install vanilla, launch it on the runtime module. Screens + logs.
 set -x
 PKG=cn.eririlily.launcher
