@@ -51,6 +51,7 @@ class GameActivity : Activity(), SurfaceHolder.Callback, ControlsView.Host, Cont
     private lateinit var surface: SurfaceView
     private lateinit var controls: ControlsView
     private lateinit var hud: HudView
+    private lateinit var keys: KeysView
     private lateinit var cc: ControlCenter
     private lateinit var keyboard: KeyboardInput
     private lateinit var root: FrameLayout
@@ -129,12 +130,14 @@ class GameActivity : Activity(), SurfaceHolder.Callback, ControlsView.Host, Cont
         controls = ControlsView(this, layout, this)
         root.addView(controls, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
 
-        hud = HudView(this, spec.rendererName)
+        val look = OverlayTheme.of(settings.theme)
+        hud = HudView(this, spec.rendererName, look)
         hud.mode = settings.perfHud
         hud.fpsLimit = settings.fpsLimit
-        root.addView(hud, FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.TOP or Gravity.START).apply {
-            leftMargin = dpi(150f); topMargin = dpi(8f)
-        })
+        root.addView(hud, FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.TOP or Gravity.START))
+        keys = KeysView(this, look)
+        keys.visibility = if (settings.keyOverlay) android.view.View.VISIBLE else android.view.View.GONE
+        root.addView(keys, FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.TOP or Gravity.START))
 
         keyboard = KeyboardInput(this)
         root.addView(keyboard, FrameLayout.LayoutParams(1, 1))
@@ -309,6 +312,7 @@ class GameActivity : Activity(), SurfaceHolder.Callback, ControlsView.Host, Cont
 
     override fun hudChanged() {
         hud.mode = settings.perfHud
+        keys.visibility = if (settings.keyOverlay) android.view.View.VISIBLE else android.view.View.GONE
     }
 
     override fun controlsChanged() = controls.invalidate()

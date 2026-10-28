@@ -38,14 +38,14 @@ type AndroidSpec struct {
 	Account   string            `json:"account"`
 
 	// Zalith runtime (ZRuntime): what the app's runtime module reads
-	GameVersion string   `json:"gameVersion,omitempty"`
-	GameDir     string   `json:"gameDir,omitempty"`
-	LWJGL       string   `json:"lwjgl,omitempty"`
-	LWJGL2      bool     `json:"lwjgl2,omitempty"`
-	ModernArgs  bool     `json:"modernArgs,omitempty"`
-	RendererKey string   `json:"rendererKey,omitempty"`
-	RAMMB       int      `json:"ramMb,omitempty"`
-	ClientJar   string   `json:"clientJar,omitempty"`
+	GameVersion string `json:"gameVersion,omitempty"`
+	GameDir     string `json:"gameDir,omitempty"`
+	LWJGL       string `json:"lwjgl,omitempty"`
+	LWJGL2      bool   `json:"lwjgl2,omitempty"`
+	ModernArgs  bool   `json:"modernArgs,omitempty"`
+	RendererKey string `json:"rendererKey,omitempty"`
+	RAMMB       int    `json:"ramMb,omitempty"`
+	ClientJar   string `json:"clientJar,omitempty"`
 }
 
 // GameSettings are the in-game options of the Android shell.
@@ -54,6 +54,8 @@ type GameSettings struct {
 	FpsLimit        int    `json:"fpsLimit"`
 	Vsync           bool   `json:"vsync"`
 	PerfHud         string `json:"perfHud"`
+	KeyOverlay      bool   `json:"keyOverlay"`
+	Theme           string `json:"theme,omitempty"`
 	SustainedPerf   bool   `json:"sustainedPerf"`
 	BigCores        bool   `json:"bigCores"`
 	PerfHint        bool   `json:"perfHint"`
@@ -68,7 +70,7 @@ type GameSettings struct {
 }
 
 func settingsOf(c Config) GameSettings {
-	return GameSettings{RenderScale: c.RenderScale, FpsLimit: c.FpsLimit, Vsync: c.Vsync, PerfHud: c.PerfHud,
+	return GameSettings{RenderScale: c.RenderScale, FpsLimit: c.FpsLimit, Vsync: c.Vsync, PerfHud: c.PerfHud, KeyOverlay: c.KeyOverlay, Theme: c.Theme,
 		SustainedPerf: c.SustainedPerf, BigCores: c.BigCores, PerfHint: c.PerfHint, GyroAim: c.GyroAim, GyroSens: c.GyroSens,
 		MouseSpeed: c.MouseSpeed, ControlsOpacity: c.ControlsOpacity, ControlsLayout: c.ControlsLayout, Haptics: c.Haptics,
 		DynamicRes: c.DynamicRes}
@@ -377,6 +379,7 @@ func MergeGameSettings(dataDir string, s *Store) {
 	}
 	s.Update(func(c *Config) {
 		c.RenderScale, c.FpsLimit, c.Vsync, c.PerfHud = g.RenderScale, g.FpsLimit, g.Vsync, g.PerfHud
+		c.KeyOverlay = g.KeyOverlay
 		c.SustainedPerf, c.BigCores, c.PerfHint, c.GyroAim = g.SustainedPerf, g.BigCores, g.PerfHint, g.GyroAim
 		c.GyroSens, c.MouseSpeed, c.ControlsOpacity, c.Haptics, c.DynamicRes = g.GyroSens, g.MouseSpeed, g.ControlsOpacity, g.Haptics, g.DynamicRes
 		if g.ControlsLayout != "" {

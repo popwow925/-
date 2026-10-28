@@ -89,6 +89,7 @@ class ControlCenter(ctx: Context, private val a: Actions) : FrameLayout(ctx) {
             tile("帧率显示", { mapOf("off" to "关", "fps" to "简洁", "full" to "完整")[s.perfHud] ?: "简洁" }, { s.perfHud != "off" }) {
                 s.perfHud = when (s.perfHud) { "off" -> "fps"; "fps" -> "full"; else -> "off" }; s.save(); a.hudChanged()
             },
+            tile("按键显示", { if (s.keyOverlay) "开" else "关" }, { s.keyOverlay }) { s.keyOverlay = !s.keyOverlay; s.save(); a.hudChanged() },
             tile("垂直同步", { if (s.vsync) "开" else "关" }, { s.vsync }) { s.vsync = !s.vsync; s.save(); a.applyPerf() },
             tile("动态分辨率", { if (s.dynamicRes) "开" else "关" }, { s.dynamicRes }) { s.dynamicRes = !s.dynamicRes; s.save(); a.applyPerf() },
             tile("陀螺仪瞄准", { if (s.gyroAim) "开" else "关" }, { s.gyroAim }) { s.gyroAim = !s.gyroAim; s.save(); a.applyPerf() },

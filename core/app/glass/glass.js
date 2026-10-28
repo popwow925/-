@@ -734,7 +734,8 @@ function perfPage() {
       ]), foot("渲染倍率越低越流畅：画面以较低分辨率绘制，几乎没有额外开销。"));
       const rs = A?.renderers || [], cur = c.renderer || "auto";
       b.append(h2("渲染器"), grp([row({ icon: "layers", color: "indigo", title: "渲染器", val: cur === "auto" ? "自动" : rs.find(r => r.id === cur)?.name || cur, chev: true, onClick: () => rendererSheet(p) })]), foot("自动：按游戏版本和显卡选择最合适的渲染器。"));
-      b.append(h2("游戏内显示"), seg([["off", "关闭"], ["fps", "简洁"], ["full", "完整"]], c.perfHud || "fps", v => setConfig({ perfHud: v })));
+      b.append(h2("游戏内显示"), seg([["off", "关闭"], ["fps", "简洁"], ["full", "完整"]], c.perfHud || "fps", v => setConfig({ perfHud: v })), el(`<div style="height:12px"></div>`),
+        grp([toggleRow({ icon: "pad", color: "pink", title: "按键显示", sub: "WASD、鼠标键与每秒点击数；无背景，游戏中可拖动、点按折叠" }, c.keyOverlay !== false, v => setConfig({ keyOverlay: v }))]));
       if (A?.device) { const d = A.device; b.append(h2("本机"), grp([
         row({ icon: "phone", color: "gray", title: (d.brand || "") + " " + (d.model || ""), sub: `Android ${d.release} · ${d.soc || ""}` }),
         row({ icon: "chip", color: "blue", title: "处理器", val: `${d.cores} 核 · ${(d.maxFreqMHz / 1000).toFixed(2)} GHz` }),

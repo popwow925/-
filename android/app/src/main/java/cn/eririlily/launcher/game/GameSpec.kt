@@ -51,6 +51,8 @@ class GameSettings(private val dataDir: File, s: JSONObject) {
     var fpsLimit = s.optInt("fpsLimit", 0)
     var vsync = s.optBoolean("vsync", false)
     var perfHud = s.optString("perfHud", "fps").ifEmpty { "fps" }
+    var keyOverlay = s.optBoolean("keyOverlay", true)
+    val theme: String = s.optString("theme", "sakura").ifEmpty { "sakura" }
     var sustainedPerf = s.optBoolean("sustainedPerf", true)
     var bigCores = s.optBoolean("bigCores", true)
     var perfHint = s.optBoolean("perfHint", true)
@@ -65,7 +67,7 @@ class GameSettings(private val dataDir: File, s: JSONObject) {
 
     fun save() {
         val o = JSONObject()
-            .put("renderScale", renderScale).put("fpsLimit", fpsLimit).put("vsync", vsync).put("perfHud", perfHud)
+            .put("renderScale", renderScale).put("fpsLimit", fpsLimit).put("vsync", vsync).put("perfHud", perfHud).put("keyOverlay", keyOverlay)
             .put("sustainedPerf", sustainedPerf).put("bigCores", bigCores).put("perfHint", perfHint)
             .put("gyroAim", gyroAim).put("gyroSens", gyroSens).put("mouseSpeed", mouseSpeed)
             .put("controlsOpacity", controlsOpacity).put("controlsLayout", controlsLayout).put("haptics", haptics)

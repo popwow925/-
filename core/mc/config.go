@@ -44,6 +44,7 @@ type Config struct {
 	FpsLimit        int    `json:"fpsLimit"`        // 0 = unlimited
 	Vsync           bool   `json:"vsync"`           //
 	PerfHud         string `json:"perfHud"`         // off | fps | full
+	KeyOverlay      bool   `json:"keyOverlay"`      // WASD / mouse keys shown over the game
 	SustainedPerf   bool   `json:"sustainedPerf"`   // ask for sustained performance (less throttling)
 	BigCores        bool   `json:"bigCores"`        // pin the render thread to the big cores
 	PerfHint        bool   `json:"perfHint"`        // ADPF performance hints
@@ -74,10 +75,14 @@ func DefaultConfig(base string) Config {
 
 // AndroidDefaults fills the Android settings for a fresh or older config.
 func AndroidDefaults(c *Config) {
-	if c.Defaults >= 1 {
+	if c.Defaults == 1 { // older configs: the key overlay arrived with defaults level 2
+		c.Defaults, c.KeyOverlay = 2, true
 		return
 	}
-	c.Defaults = 1
+	if c.Defaults >= 2 {
+		return
+	}
+	c.Defaults, c.KeyOverlay = 2, true
 	c.Renderer, c.RenderScale, c.PerfHud = "auto", 100, "fps"
 	c.SustainedPerf, c.BigCores, c.PerfHint, c.Haptics, c.ZhCN = true, true, true, true, true
 	c.GyroSens, c.MouseSpeed, c.ControlsOpacity, c.ControlsLayout = 100, 100, 70, "default"
