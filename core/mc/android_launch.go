@@ -317,6 +317,19 @@ func startAndroid(sp *AndroidSpec, g *Game, h Hooks, finish func(code int)) {
 					finish(-1)
 					return
 				}
+			} else if ZRuntime {
+				// the game process refreshes its pid file every 2 s; /proc of another process is
+				// not visible to the core on Android
+				if st, err := os.Stat(sp.PidFile); err != nil || time.Since(st.ModTime()) > 10*time.Second {
+					if b, err := os.ReadFile(sp.ExitFile); err == nil {
+						code, _ := strconv.Atoi(strings.TrimSpace(string(b)))
+						finish(code)
+						return
+					}
+					g.addLine("[EririLily] 游戏进程被系统结束（可能是内存不足或渲染器崩溃）")
+					finish(-9)
+					return
+				}
 			} else if _, err := os.Stat("/proc/" + strconv.Itoa(pid)); err != nil {
 				// the process is gone without writing an exit code: killed (memory) or crashed natively
 				if gone.IsZero() {

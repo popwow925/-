@@ -157,6 +157,13 @@ class GameActivity : Activity(), SurfaceHolder.Callback, ControlsView.Host, Cont
         val launchSpec = LaunchSpec.parse(spec.file.readText())
         Thread({
             runCatching { File(spec.pidFile).writeText(Process.myPid().toString()) }
+            // heartbeat for the core (it cannot see this process in /proc): refresh the pid file
+            Thread({
+                while (true) {
+                    runCatching { File(spec.pidFile).writeText(Process.myPid().toString()) }
+                    Thread.sleep(2000)
+                }
+            }, "heartbeat").apply { isDaemon = true }.start()
             // the native logger opens the file without creating it
             runCatching { File(spec.logFile).apply { parentFile?.mkdirs(); if (!exists()) createNewFile() } }
             LoggerBridge.start(spec.logFile)
