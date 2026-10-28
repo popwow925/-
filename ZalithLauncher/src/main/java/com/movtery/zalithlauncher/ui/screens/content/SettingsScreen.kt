@@ -44,6 +44,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.entryProvider
@@ -176,6 +177,17 @@ private fun TabMenu(
 
             Spacer(modifier = Modifier.height(8.dp))
         }
+
+        // EririLily：非官方修改版说明（小字）
+        Text(
+            modifier = Modifier
+                .width(88.dp)
+                .padding(top = 8.dp, bottom = 16.dp)
+                .alpha(0.5f),
+            text = stringResource(R.string.el_settings_note),
+            style = MaterialTheme.typography.labelSmall,
+            textAlign = TextAlign.Center
+        )
     }
 }
 

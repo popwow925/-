@@ -10,4 +10,5 @@
     <string name="el_keystrokes_opacity">Keystrokes opacity</string>
     <string name="el_device_hud">Phone status (battery · temperature · time · play time)</string>
     <string name="el_hud_hint">Drag to move</string>
+    <string name="el_settings_note">Unofficial build\nBased on Zalith Launcher 2</string>
 </resources>

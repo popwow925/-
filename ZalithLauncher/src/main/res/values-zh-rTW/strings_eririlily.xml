@@ -10,4 +10,5 @@
     <string name="el_keystrokes_opacity">按键显示不透明度</string>
     <string name="el_device_hud">手机状态（电量 · 温度 · 时间 · 本次游玩）</string>
     <string name="el_hud_hint">拖动可移动位置</string>
+    <string name="el_settings_note">非官方修改版\n基於 Zalith Launcher 2</string>
 </resources>

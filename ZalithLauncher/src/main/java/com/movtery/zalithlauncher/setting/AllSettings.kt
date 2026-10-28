@@ -518,6 +518,9 @@ object AllSettings : SettingsRegistry() {
     val keystrokesOpacity = intSetting("elKeystrokesOpacity", 85, 20..100)
     /** 手机状态条：帧率、电量、温度、时间、本次游玩时长 */
     val showDeviceHud = boolSetting("elShowDeviceHud", true)
+
+    /** EririLily：主界面「非官方修改版」说明卡片（可关闭，设置页底部始终保留小字说明） */
+    val showUnofficialCard = boolSetting("elShowUnofficialCard", true)
     /** 手机状态条位置 */
     val deviceHudPos = offsetSetting("elDeviceHudPos", Offset(24f, 24f))
 
