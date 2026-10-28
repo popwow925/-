@@ -1,5 +1,5 @@
 #!/bin/bash
-# rerun after GameActivity window fix
+# rerun after GameActivity window fix (2)
 # add an offline account, install vanilla, launch it on the runtime module. Screens + logs.
 set -x
 PKG=cn.eririlily.launcher
