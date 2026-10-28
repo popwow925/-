@@ -166,12 +166,12 @@ class IosSlider(
         val f = (value - min).toFloat() / (max - min)
         c.save()
         c.clipRect(0f, 0f, width * f, h)
-        p.color = Color.WHITE
+        p.color = Ui.BLUE
         c.drawRoundRect(r, 14 * d, 14 * d, p)
         c.restore()
         t.textSize = 14 * d
         t.textAlign = Paint.Align.LEFT
-        t.color = if (f > .3f) Ui.ON_ACCENT else Ui.LABEL
+        t.color = if (f > .22f) Ui.ON_ACCENT else Ui.LABEL
         c.drawText(title, 14 * d, h / 2 - (t.descent() + t.ascent()) / 2, t)
         t.textAlign = Paint.Align.RIGHT
         t.color = if (f > .95f) Ui.ON_ACCENT else Ui.LABEL
