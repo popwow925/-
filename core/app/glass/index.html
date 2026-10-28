@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>樱梨启动器</title>
+<link rel="stylesheet" href="glass.css">
+</head>
+<body>
+<div id="bg"><i class="b1"></i><i class="b2"></i><i class="b3"></i><i class="grain"></i></div>
+<div id="boot"><img src="logo.png" alt=""></div>
+<main id="stage"></main>
+<nav id="dock" class="glass">
+  <i class="pill"></i>
+  <button data-tab="home" class="on"><svg viewBox="0 0 24 24"><path d="M4 11 12 4l8 7v8a1 1 0 0 1-1 1h-4v-5H9v5H5a1 1 0 0 1-1-1z"/></svg><span>首页</span></button>
+  <button data-tab="library"><svg viewBox="0 0 24 24"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9z"/><path d="m4 7.5 8 4.5 8-4.5M12 12v9"/></svg><span>实例</span></button>
+  <button data-tab="discover"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/></svg><span>发现</span></button>
+  <button data-tab="me"><svg viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20.5c.8-4 4-5.8 7.5-5.8s6.7 1.8 7.5 5.8"/></svg><span>我的</span></button>
+</nav>
+<div id="island" class="glass hidden"><i class="ring"></i><div class="tx"><b></b><small></small></div><button class="x">取消</button><i class="bar"><u></u></i></div>
+<div id="toasts"></div>
+<script src="glass.js"></script>
+</body>
+</html>

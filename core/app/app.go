@@ -25,13 +25,19 @@ import (
 	"eririlily/mc"
 )
 
-//go:embed web mobile
+//go:embed web mobile glass
 var webFS embed.FS
 
-// webRoot is the desktop UI, or the phone UI on Android (ERIRILILY_UI=mobile to preview it).
+// webRoot is the desktop UI, or the phone UI on Android (ERIRILILY_UI=glass to preview it on desktop).
 var webRoot = func() string {
-	if mc.Android || os.Getenv("ERIRILILY_UI") == "mobile" {
+	switch os.Getenv("ERIRILILY_UI") {
+	case "mobile":
 		return "mobile"
+	case "glass":
+		return "glass"
+	}
+	if mc.Android {
+		return "glass"
 	}
 	return "web"
 }()
