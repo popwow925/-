@@ -24,7 +24,7 @@ android {
         // CI signs with a release key when the secrets exist; otherwise the debug key
         create("release") {
             val ks = System.getenv("EL_KEYSTORE")
-            if (ks != null && file(ks).exists()) {
+            if (!ks.isNullOrBlank() && file(ks).exists()) {
                 storeFile = file(ks)
                 storePassword = System.getenv("EL_KEYSTORE_PASSWORD")
                 keyAlias = System.getenv("EL_KEY_ALIAS")
