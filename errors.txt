@@ -1,0 +1,18 @@
+26:C/C++:         if (!bindResult) printf("EGLBridge: bind failed: %p\n", eglGetError_p());
+35:C/C++:             printf("EGLBridge: Error: eglMakeCurrent() failed: %p\n", eglGetError_p());
+45:C/C++:             printf("EGLBridge: Error eglGetDefaultDisplay() failed: %p\n", eglGetError_p());
+49:C/C++:         printf("EGLBridge: Error eglInitialize() failed: %s\n", eglGetError_p());
+53:C/C++:         printf("EGLBridge: Error couldn't get an EGL visual config: %s\n", eglGetError_p());
+57:C/C++:         printf("EGLBridge: Error eglGetConfigAttrib() failed: %s\n", eglGetError_p());
+61:C/C++:         printf("EGLBridge: Error eglCreateWindowSurface failed: %p\n", eglGetError_p());
+72:C/C++: /home/runner/work/-/-/android/runtime/src/main/jni/utils.h:41:75: note: passing argument to parameter 'charArray' here
+86:C/C++: /usr/local/lib/android/sdk/ndk/25.2.9519653/toolchains/llvm/prebuilt/linux-x86_64/lib64/clang/14.0.7/include/stddef.h:89:16: note: expanded from macro 'NULL'
+111:Unable to strip the following libraries, packaging them as they are: libEGL_angle.so, libEGL_mesa.so, libGLESv2_angle.so, libOSMesa_2121.so, libOSMesa_2300d.so, libOSMesa_8.so, libSDL2.so, libSDL3.so, libVkLayer_khronos_timeline_semaphore.so, libawt_headless.so, libawt_xawt.so, libbytehook.so, libc++_shared.so, libcutils.so, libdriver_helper.so, liberirilily_core.so, libexithook.so, libflite.so, libfliteWrapper.so, libflite_cmu_us_kal16.so, libgl4es_114.so, libglapi.so, libglxshim.so, libjnidispatch.so, liblinkerhook.so, libng_gl4es.so, libopenal.so, libpojavexec.so, libpojavexec_awt.so, libshaderconv.so, libspirv-cross-c-shared.so, libunpack200.so, libvirgl_test_server.so, libvulkan_check.so, libvulkan_freedreno.so, libzink_dri.so.
+164:Note: Some input files use or override a deprecated API.
+165:Note: Recompile with -Xlint:deprecation for details.
+179:e: file:///home/runner/work/-/-/android/app/src/main/java/cn/eririlily/launcher/game/Ui.kt:174:32 Unresolved reference 'ON_ACCENT'.
+180:e: file:///home/runner/work/-/-/android/app/src/main/java/cn/eririlily/launcher/game/Ui.kt:174:47 Unresolved reference 'LABEL'.
+181:e: file:///home/runner/work/-/-/android/app/src/main/java/cn/eririlily/launcher/game/Ui.kt:177:33 Unresolved reference 'ON_ACCENT'.
+182:e: file:///home/runner/work/-/-/android/app/src/main/java/cn/eririlily/launcher/game/Ui.kt:177:48 Unresolved reference 'LABEL'.
+188:FAILURE: Build failed with an exception.
+190:* What went wrong:

@@ -1,0 +1,208 @@
+Downloading https://services.gradle.org/distributions/gradle-8.14.3-bin.zip
+.............10%.............20%.............30%.............40%.............50%.............60%.............70%.............80%.............90%..............100%
+
+Welcome to Gradle 8.14.3!
+
+Here are the highlights of this release:
+ - Java 24 support
+ - GraalVM Native Image toolchain selection
+ - Enhancements to test reporting
+ - Build Authoring improvements
+
+For more details see https://docs.gradle.org/8.14.3/release-notes.html
+
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.14.3/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preReleaseBuild UP-TO-DATE
+> Task :app:mergeReleaseJniLibFolders
+> Task :runtime:preBuild UP-TO-DATE
+> Task :runtime:preReleaseBuild UP-TO-DATE
+> Task :runtime:configureNdkBuildRelease[arm64-v8a]
+
+> Task :runtime:buildNdkBuildRelease[arm64-v8a]
+C/C++: rm: cannot remove '/home/runner/work/-/-/android/runtime/src/main/jni/../jniLibs/*/libawt_headless.so': No such file or directory
+C/C++: /home/runner/work/-/-/android/runtime/src/main/jni/ctxbridges/gl_bridge.c:105:65: warning: format specifies type 'void *' but the argument has type 'EGLint' (aka 'int') [-Wformat]
+C/C++:         if (!bindResult) printf("EGLBridge: bind failed: %p\n", eglGetError_p());
+C/C++:                                                          ~~     ^~~~~~~~~~~~~~~
+C/C++:                                                          %d
+C/C++: 1 warning generated.
+C/C++: /home/runner/work/-/-/android/runtime/src/main/jni/ctxbridges/swap_interval_no_egl.c:238:29: warning: format specifies type 'int' but the argument has type 'unsigned long' [-Wformat]
+C/C++:                             sizeof(struct ANativeWindow_real), nativeWindowReal->common.version);
+C/C++:                             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C/C++: 1 warning generated.
+C/C++: /home/runner/work/-/-/android/runtime/src/main/jni/ctxbridges/virgl_bridge.c:35:71: warning: format specifies type 'void *' but the argument has type 'EGLint' (aka 'int') [-Wformat]
+C/C++:             printf("EGLBridge: Error: eglMakeCurrent() failed: %p\n", eglGetError_p());
+C/C++:                                                                ~~     ^~~~~~~~~~~~~~~
+C/C++:                                                                %d
+C/C++: /home/runner/work/-/-/android/runtime/src/main/jni/ctxbridges/virgl_bridge.c:41:25: warning: passing 'const char *[5]' to parameter of type 'char **' discards qualifiers in nested pointer types [-Wincompatible-pointer-types-discards-qualifiers]
+C/C++:         vtest_main_p(3, (const char*[]){"vtest", "--no-loop-or-fork", "--use-gles", NULL, NULL});
+C/C++:                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C/C++: /home/runner/work/-/-/android/runtime/src/main/jni/ctxbridges/virgl_bridge.c:45:1: warning: non-void function does not return a value in all control paths [-Wreturn-type]
+C/C++: }
+C/C++: ^
+C/C++: /home/runner/work/-/-/android/runtime/src/main/jni/ctxbridges/virgl_bridge.c:77:76: warning: format specifies type 'void *' but the argument has type 'EGLint' (aka 'int') [-Wformat]
+C/C++:             printf("EGLBridge: Error eglGetDefaultDisplay() failed: %p\n", eglGetError_p());
+C/C++:                                                                     ~~     ^~~~~~~~~~~~~~~
+C/C++:                                                                     %d
+C/C++: /home/runner/work/-/-/android/runtime/src/main/jni/ctxbridges/virgl_bridge.c:85:65: warning: format specifies type 'char *' but the argument has type 'EGLint' (aka 'int') [-Wformat]
+C/C++:         printf("EGLBridge: Error eglInitialize() failed: %s\n", eglGetError_p());
+C/C++:                                                          ~~     ^~~~~~~~~~~~~~~
+C/C++:                                                          %d
+C/C++: /home/runner/work/-/-/android/runtime/src/main/jni/ctxbridges/virgl_bridge.c:105:76: warning: format specifies type 'char *' but the argument has type 'EGLint' (aka 'int') [-Wformat]
+C/C++:         printf("EGLBridge: Error couldn't get an EGL visual config: %s\n", eglGetError_p());
+C/C++:                                                                     ~~     ^~~~~~~~~~~~~~~
+C/C++:                                                                     %d
+C/C++: /home/runner/work/-/-/android/runtime/src/main/jni/ctxbridges/virgl_bridge.c:114:70: warning: format specifies type 'char *' but the argument has type 'EGLint' (aka 'int') [-Wformat]
+C/C++:         printf("EGLBridge: Error eglGetConfigAttrib() failed: %s\n", eglGetError_p());
+C/C++:                                                               ~~     ^~~~~~~~~~~~~~~
+C/C++:                                                               %d
+C/C++: /home/runner/work/-/-/android/runtime/src/main/jni/ctxbridges/virgl_bridge.c:126:72: warning: format specifies type 'void *' but the argument has type 'EGLint' (aka 'int') [-Wformat]
+C/C++:         printf("EGLBridge: Error eglCreateWindowSurface failed: %p\n", eglGetError_p());
+C/C++:                                                                 ~~     ^~~~~~~~~~~~~~~
+C/C++:                                                                 %d
+C/C++: 8 warnings generated.
+C/C++: /home/runner/work/-/-/android/runtime/src/main/jni/jre_launcher.c:118:69: warning: format specifies type 'int' but the argument has type 'size_t' (aka 'unsigned long') [-Wformat]
+C/C++:             printf("Failed to set signal hander for signal %i: %s", i, strerror(errno));
+C/C++:                                                            ~~       ^
+C/C++:                                                            %zu
+C/C++: /home/runner/work/-/-/android/runtime/src/main/jni/jre_launcher.c:190:37: warning: passing 'char **' to parameter of type 'const char **' discards qualifiers in nested pointer types [-Wincompatible-pointer-types-discards-qualifiers]
+C/C++:     free_char_array(env, argsArray, argv);
+C/C++:                                     ^~~~
+C/C++: /home/runner/work/-/-/android/runtime/src/main/jni/utils.h:41:75: note: passing argument to parameter 'charArray' here
+C/C++: void free_char_array(JNIEnv *env, jobjectArray jstringArray, const char **charArray);
+C/C++:                                                                           ^
+C/C++: 2 warnings generated.
+C/C++: /home/runner/work/-/-/android/runtime/src/main/jni/utils.c:99:33: warning: passing 'const char *' to parameter of type 'char *' discards qualifiers [-Wincompatible-pointer-types-discards-qualifiers]
+C/C++:         android_update_LD_LIBRARY_PATH(ldLibPathUtf);
+C/C++:                                        ^~~~~~~~~~~~
+C/C++: /home/runner/work/-/-/android/runtime/src/main/jni/utils.c:144:46: warning: incompatible pointer types passing 'void **' to parameter of type 'JNIEnv **' (aka 'const struct JNINativeInterface ***') [-Wincompatible-pointer-types]
+C/C++:         if ((*jvm)->AttachCurrentThread(jvm, (void**)&env, NULL) == JNI_OK) {
+C/C++:                                              ^~~~~~~~~~~~
+C/C++: 2 warnings generated.
+C/C++: /home/runner/work/-/-/android/runtime/src/main/jni/awt_bridge.c:120:109: warning: incompatible pointer to integer conversion passing 'void *' to parameter of type 'jint' (aka 'int') [-Wint-conversion]
+C/C++:     (*runtimeJNIEnvPtr_GRAPHICS)->ReleaseIntArrayElements(runtimeJNIEnvPtr_GRAPHICS, jreRgbArray, rgbArray, NULL);
+C/C++:                                                                                                             ^~~~
+C/C++: /usr/local/lib/android/sdk/ndk/25.2.9519653/toolchains/llvm/prebuilt/linux-x86_64/lib64/clang/14.0.7/include/stddef.h:89:16: note: expanded from macro 'NULL'
+C/C++: #  define NULL ((void*)0)
+C/C++:                ^~~~~~~~~~
+C/C++: 1 warning generated.
+
+> Task :runtime:mergeReleaseJniLibFolders
+> Task :runtime:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :runtime:generateReleaseResValues
+> Task :runtime:generateReleaseResources
+> Task :runtime:packageReleaseResources
+> Task :runtime:mergeReleaseNativeLibs
+> Task :runtime:javaPreCompileRelease
+> Task :app:buildKotlinToolingMetadata
+> Task :runtime:copyReleaseJniLibsProjectOnly
+> Task :runtime:parseReleaseLocalResources
+> Task :app:checkReleaseDuplicateClasses
+> Task :app:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :app:generateReleaseBuildConfig
+> Task :runtime:generateReleaseRFile
+> Task :runtime:writeReleaseAarMetadata
+> Task :app:mergeReleaseNativeLibs
+> Task :app:generateReleaseResValues
+> Task :app:checkReleaseAarMetadata
+
+> Task :app:stripReleaseDebugSymbols
+Unable to strip the following libraries, packaging them as they are: libEGL_angle.so, libEGL_mesa.so, libGLESv2_angle.so, libOSMesa_2121.so, libOSMesa_2300d.so, libOSMesa_8.so, libSDL2.so, libSDL3.so, libVkLayer_khronos_timeline_semaphore.so, libawt_headless.so, libawt_xawt.so, libbytehook.so, libc++_shared.so, libcutils.so, libdriver_helper.so, liberirilily_core.so, libexithook.so, libflite.so, libfliteWrapper.so, libflite_cmu_us_kal16.so, libgl4es_114.so, libglapi.so, libglxshim.so, libjnidispatch.so, liblinkerhook.so, libng_gl4es.so, libopenal.so, libpojavexec.so, libpojavexec_awt.so, libshaderconv.so, libspirv-cross-c-shared.so, libunpack200.so, libvirgl_test_server.so, libvulkan_check.so, libvulkan_freedreno.so, libzink_dri.so.
+
+> Task :app:mapReleaseSourceSetPaths
+> Task :app:generateReleaseResources
+> Task :app:extractReleaseNativeSymbolTables
+> Task :app:mergeReleaseNativeDebugMetadata NO-SOURCE
+> Task :app:mergeReleaseResources
+> Task :app:packageReleaseResources
+> Task :app:createReleaseCompatibleScreenManifests
+> Task :app:parseReleaseLocalResources
+> Task :app:extractDeepLinksRelease
+> Task :runtime:extractDeepLinksRelease
+> Task :app:javaPreCompileRelease
+> Task :runtime:prepareReleaseArtProfile
+> Task :app:mergeReleaseArtProfile
+> Task :app:extractProguardFiles
+> Task :app:mergeReleaseStartupProfile
+> Task :app:mergeReleaseShaders
+> Task :app:compileReleaseShaders NO-SOURCE
+> Task :app:generateReleaseAssets UP-TO-DATE
+> Task :runtime:mergeReleaseShaders
+> Task :runtime:compileReleaseShaders NO-SOURCE
+> Task :runtime:generateReleaseAssets UP-TO-DATE
+> Task :runtime:processReleaseManifest
+> Task :runtime:mergeReleaseAssets
+
+> Task :app:processReleaseMainManifest
+[lwjgl-3.4.1-natives-release.aar] /home/runner/.gradle/caches/8.14.3/transforms/4bcfa0ee4482f507796a58f28e848cc4/transformed/lwjgl-3.4.1-natives-release/AndroidManifest.xml Warning:
+	Namespace 'org.angelauramc.lwjgl3x' is used in multiple modules and/or libraries: lwjgl-3.4.1-natives-release.aar, lwjgl-3.3.3-natives-release.aar. Please ensure that all modules and libraries have a unique namespace. For more information, See https://developer.android.com/studio/build/configure-app-module#set-namespace
+
+> Task :app:processReleaseManifest
+> Task :app:mergeReleaseAssets
+> Task :app:processReleaseManifestForPackage
+> Task :app:extractReleaseVersionControlInfo
+> Task :runtime:extractProguardFiles
+> Task :runtime:prepareLintJarForPublish
+> Task :app:processReleaseResources
+> Task :runtime:extractDeepLinksForAarRelease
+> Task :runtime:writeReleaseLintModelMetadata
+> Task :app:collectReleaseDependencies
+> Task :runtime:stripReleaseDebugSymbols
+> Task :app:sdkReleaseDependencyData
+> Task :app:validateSigningRelease
+> Task :app:writeReleaseAppMetadata
+> Task :app:writeReleaseSigningConfigVersions
+> Task :runtime:mapReleaseSourceSetPaths
+> Task :runtime:mergeReleaseResources
+> Task :app:compressReleaseAssets
+> Task :runtime:copyReleaseJniLibsProjectAndLocalJars
+> Task :runtime:verifyReleaseResources
+> Task :runtime:compileReleaseKotlin
+
+> Task :runtime:compileReleaseJavaWithJavac
+Note: Some input files use or override a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+
+> Task :runtime:mergeReleaseGeneratedProguardFiles
+> Task :runtime:exportReleaseConsumerProguardFiles
+> Task :runtime:bundleLibCompileToJarRelease
+> Task :runtime:bundleLibRuntimeToJarRelease
+> Task :runtime:processReleaseJavaRes
+> Task :runtime:createFullJarRelease
+> Task :runtime:generateReleaseLintModel
+> Task :runtime:extractReleaseAnnotations
+> Task :runtime:mergeReleaseConsumerProguardFiles
+> Task :runtime:mergeReleaseJavaResource
+
+> Task :app:compileReleaseKotlin FAILED
+e: file:///home/runner/work/-/-/android/app/src/main/java/cn/eririlily/launcher/game/Ui.kt:174:32 Unresolved reference 'ON_ACCENT'.
+e: file:///home/runner/work/-/-/android/app/src/main/java/cn/eririlily/launcher/game/Ui.kt:174:47 Unresolved reference 'LABEL'.
+e: file:///home/runner/work/-/-/android/app/src/main/java/cn/eririlily/launcher/game/Ui.kt:177:33 Unresolved reference 'ON_ACCENT'.
+e: file:///home/runner/work/-/-/android/app/src/main/java/cn/eririlily/launcher/game/Ui.kt:177:48 Unresolved reference 'LABEL'.
+
+> Task :runtime:lintVitalAnalyzeRelease
+
+[Incubating] Problems report is available at: file:///home/runner/work/-/-/android/build/reports/problems/problems-report.html
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':app:compileReleaseKotlin'.
+> A failure occurred while executing org.jetbrains.kotlin.compilerRunner.GradleCompilerRunnerWithWorkers$GradleKotlinCompilerWorkAction
+   > Compilation error. See log for more details
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/8.14.3/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD FAILED in 1m 53s
+73 actionable tasks: 73 executed
