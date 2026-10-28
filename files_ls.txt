@@ -1,0 +1,20 @@
+/data/data/cn.eririlily.launcher/files:
+total 32
+drwxrwx--x 4 u0_a192 u0_a192 4096 2026-10-28 16:40 .
+drwx------ 8 u0_a192 u0_a192 4096 2026-10-28 16:23 ..
+drwx------ 5 u0_a192 u0_a192 4096 2026-10-28 16:40 EririLily
+drwx------ 5 u0_a192 u0_a192 4096 2026-10-28 16:40 runtime
+
+/data/data/cn.eririlily.launcher/files/runtime:
+total 40
+drwx------ 5 u0_a192 u0_a192 4096 2026-10-28 16:40 .
+drwxrwx--x 4 u0_a192 u0_a192 4096 2026-10-28 16:40 ..
+drwx------ 7 u0_a192 u0_a192 4096 2026-10-28 16:40 components
+drwx------ 3 u0_a192 u0_a192 4096 2026-10-28 16:40 java
+drwx------ 2 u0_a192 u0_a192 4096 2026-10-28 16:40 jna
+
+/data/data/cn.eririlily.launcher/files/runtime/java:
+total 24
+drwx------ 3 u0_a192 u0_a192 4096 2026-10-28 16:40 .
+drwx------ 5 u0_a192 u0_a192 4096 2026-10-28 16:40 ..
+drwx------ 6 u0_a192 u0_a192 4096 2026-10-28 16:40 jre-17
