@@ -11,4 +11,9 @@
     <string name="el_device_hud">Phone status (battery · temperature · time · play time)</string>
     <string name="el_hud_hint">Drag to move</string>
     <string name="el_settings_note">Unofficial build\nBased on Zalith Launcher 2</string>
+    <string name="el_theme_title">Theme</string>
+    <string name="el_theme_summary">Sakura · Pure white · Pure black — one tap</string>
+    <string name="el_theme_sakura">Sakura</string>
+    <string name="el_theme_white">Pure white</string>
+    <string name="el_theme_black">Pure black</string>
 </resources>

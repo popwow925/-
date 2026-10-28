@@ -825,6 +825,8 @@ fun GameScreen(
                     scale = AllSettings.keystrokesScale.state / 100f,
                     alpha = AllSettings.keystrokesOpacity.state / 100f,
                     showCps = AllSettings.keystrokesCps.state,
+                    collapsed = AllSettings.keystrokesCollapsed.state,
+                    onToggleCollapsed = { AllSettings.keystrokesCollapsed.save(!AllSettings.keystrokesCollapsed.state) },
                 )
             }
             if (AllSettings.showDeviceHud.state) {
@@ -839,6 +841,8 @@ fun GameScreen(
                     onSavePos = { AllSettings.deviceHudPos.save() },
                     alpha = AllSettings.menuBallOpacity.state / 100f,
                     fps = { viewModel.gameFps },
+                    collapsed = AllSettings.deviceHudCollapsed.state,
+                    onToggleCollapsed = { AllSettings.deviceHudCollapsed.save(!AllSettings.deviceHudCollapsed.state) },
                 )
             }
             if (AllSettings.showMenuBall.state) {

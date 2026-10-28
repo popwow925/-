@@ -521,6 +521,10 @@ object AllSettings : SettingsRegistry() {
 
     /** EririLily：主界面「非官方修改版」说明卡片（可关闭，设置页底部始终保留小字说明） */
     val showUnofficialCard = boolSetting("elShowUnofficialCard", true)
+
+    /** EririLily：按键显示 / 手机状态被点成小标签（收起） */
+    val keystrokesCollapsed = boolSetting("elKeystrokesCollapsed", false)
+    val deviceHudCollapsed = boolSetting("elDeviceHudCollapsed", false)
     /** 手机状态条位置 */
     val deviceHudPos = offsetSetting("elDeviceHudPos", Offset(24f, 24f))
 

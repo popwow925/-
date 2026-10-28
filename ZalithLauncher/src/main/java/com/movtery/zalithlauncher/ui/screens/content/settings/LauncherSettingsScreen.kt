@@ -153,6 +153,15 @@ fun LauncherSettingsScreen(
             isVisible = isVisible
         ) { scope ->
             AnimatedItem(scope) { yOffset ->
+                // EririLily: one-tap themes
+                ElThemePicker(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .offset { IntOffset(x = 0, y = yOffset.roundToPx()) }
+                )
+            }
+
+            AnimatedItem(scope) { yOffset ->
                 SettingsCardColumn(
                     modifier = Modifier
                         .fillMaxWidth()

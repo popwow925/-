@@ -11,4 +11,9 @@
     <string name="el_device_hud">手机状态（电量 · 温度 · 时间 · 本次游玩）</string>
     <string name="el_hud_hint">拖动可移动位置</string>
     <string name="el_settings_note">非官方修改版\n基於 Zalith Launcher 2</string>
+    <string name="el_theme_title">主題</string>
+    <string name="el_theme_summary">櫻花 · 純白 · 純黑，一鍵切換</string>
+    <string name="el_theme_sakura">櫻花</string>
+    <string name="el_theme_white">純白</string>
+    <string name="el_theme_black">純黑</string>
 </resources>
