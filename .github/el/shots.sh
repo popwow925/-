@@ -1,5 +1,5 @@
 #!/bin/bash
-# rerun after lazy java layout
+# rerun: liveness heartbeat check 2045
 # add an offline account, install vanilla, launch it on the runtime module. Screens + logs.
 set -x
 PKG=cn.eririlily.launcher
