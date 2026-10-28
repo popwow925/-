@@ -1,5 +1,5 @@
 #!/bin/bash
-# rerun 3: glass UI in three themes + game overlays
+# rerun 4: glass UI themes + overlays, new APK
 # add an offline account, install vanilla, launch it on the runtime module. Screens + logs.
 set -x
 PKG=cn.eririlily.launcher
