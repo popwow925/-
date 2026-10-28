@@ -37,6 +37,7 @@ jobs:
         run: |
           mkdir -p ../out
           GOOS=android GOARCH=arm64 go build -trimpath -ldflags "-s -w" -o ../out/liberirilily_core.so .
+          GOOS=android GOARCH=amd64 go build -trimpath -ldflags "-s -w" -o ../out/liberirilily_core_x86_64.so .
           GOOS=windows GOARCH=amd64 go build -trimpath -ldflags "-H windowsgui -s -w" -o ../out/EririLily.exe .
       - name: Push core log (failures)
         if: failure()
@@ -91,11 +92,32 @@ jobs:
       - name: Push build log (failures)
         if: failure()
         run: |
-          mkdir -p logs && cp build.log logs/ 2>/dev/null || true
+          mkdir -p logs && cp build.log build-x86.log logs/ 2>/dev/null || true
           grep -nE "error:|e: |FAILURE|What went wrong|Exception|undefined reference|fatal error" build.log | head -300 > logs/errors.txt || true
           cd logs && git init -q -b ci-logs && git add -A
           git -c user.name=ci -c user.email=ci@noreply commit -qm "apk build log ${GITHUB_SHA:0:7}"
           git push -f "https://x-access-token:${{ github.token }}@github.com/$GITHUB_REPOSITORY" ci-logs
+      - name: x86_64 test build (emulator only)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/eririlily-v2'
+        run: |
+          # Zalith's x86_64 renderer libraries and JRE parts, from the same upstream commit
+          git clone -q --filter=blob:none --no-checkout https://github.com/ZalithLauncher/ZalithLauncher2 zl
+          cd zl
+          git sparse-checkout set --no-cone 'ZalithLauncher/src/main/jniLibs/x86_64/' '/ZalithLauncher/src/main/assets/runtimes/*/bin-x86_64.tar.xz'
+          git checkout -q bf1e2e9
+          cd ..
+          cp -r zl/ZalithLauncher/src/main/jniLibs/x86_64 android/runtime/src/main/jniLibs/
+          for d in zl/ZalithLauncher/src/main/assets/runtimes/*/; do
+            n=$(basename $d); [ -f $d/bin-x86_64.tar.xz ] && cp $d/bin-x86_64.tar.xz android/runtime/src/main/assets/runtimes/$n/
+          done
+          mkdir -p android/app/src/main/jniLibs/x86_64
+          cp out/liberirilily_core_x86_64.so android/app/src/main/jniLibs/x86_64/liberirilily_core.so
+          chmod +x android/app/src/main/jniLibs/x86_64/liberirilily_core.so
+          cd android
+          set -o pipefail
+          ./gradlew --no-daemon assembleRelease -PelAbi=x86_64 2>&1 | tee ../build-x86.log
+          cp app/build/outputs/apk/release/*.apk ../dist/EririLily-android-x86_64-emulator-test.apk
+          ls -la ../dist
       - uses: actions/upload-artifact@v4
         with:
           name: EririLily-android

@@ -5,6 +5,9 @@ plugins {
     id("org.jetbrains.kotlin.android")
 }
 
+// arm64-v8a for phones; x86_64 only for emulator test builds (-PelAbi=x86_64)
+val elAbi = (findProperty("elAbi") as String?) ?: "arm64-v8a"
+
 android {
     namespace = "cn.eririlily.runtime"
     compileSdk = 35
@@ -12,9 +15,9 @@ android {
 
     defaultConfig {
         minSdk = 26
-        ndk { abiFilters += listOf("arm64-v8a") }
+        ndk { abiFilters += listOf(elAbi) }
         externalNativeBuild {
-            ndkBuild { abiFilters += listOf("arm64-v8a") }
+            ndkBuild { abiFilters += listOf(elAbi) }
         }
         consumerProguardFiles("consumer-rules.pro")
     }

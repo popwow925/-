@@ -21,9 +21,12 @@ class RuntimePaths(context: Context) {
     val cache: File = File(context.cacheDir, "game").apply { mkdirs() }
     val nativeLibDir: String = context.applicationInfo.nativeLibraryDir
 
+    /** The ABI this APK was installed with (arm64-v8a on phones; x86_64 for emulator test builds). */
+    val abi: String = if (nativeLibDir.endsWith("x86_64")) "x86_64" else "arm64-v8a"
+
     fun jre(major: Int) = File(jres, "jre-$major")
     fun lwjgl(version: String) = File(components, "lwjgl/$version")
-    fun lwjglNatives(version: String) = File(lwjgl(version), "natives/arm64-v8a")
+    fun lwjglNatives(version: String) = File(lwjgl(version), "natives/$abi")
     val cacio8 get() = File(components, "caciocavallo")
     val cacio17 get() = File(components, "caciocavallo17")
     val launcher get() = File(components, "launcher")
@@ -47,7 +50,7 @@ object RuntimeInstaller {
         ensureDir(context, "components/caciocavallo17", p.cacio17, progress)
         ensureDir(context, "components/launcher", p.launcher, progress)
         ensureDir(context, "components/auth_libs", p.authlib, progress)
-        ensureJna(context, p, progress)
+        runCatching { ensureJna(context, p, progress) } // only a few mods need JNA; not every ABI ships it
     }
 
     private fun assetVersion(context: Context, path: String): String? =
@@ -69,7 +72,7 @@ object RuntimeInstaller {
         dest.deleteRecursively()
         dest.mkdirs()
         context.assets.open("$asset/universal.tar.xz").use { untarXz(it, dest) }
-        context.assets.open("$asset/bin-arm64.tar.xz").use { untarXz(it, dest) }
+        context.assets.open("$asset/bin-${if (p.abi == "x86_64") "x86_64" else "arm64"}.tar.xz").use { untarXz(it, dest) }
         unpack200(p.nativeLibDir, dest)
         postPrepare(p, dest)
         markInstalled(dest, v)
@@ -102,7 +105,7 @@ object RuntimeInstaller {
         progress("JNA")
         p.jna.deleteRecursively()
         p.jna.mkdirs()
-        context.assets.open("runtimes/jna/jna-arm64.zip").use { input ->
+        context.assets.open("runtimes/jna/jna-${if (p.abi == "x86_64") "x86_64" else "arm64"}.zip").use { input ->
             ZipInputStream(input).use { zip ->
                 generateSequence { zip.nextEntry }.forEach { e ->
                     val f = File(p.jna, e.name)
@@ -163,7 +166,7 @@ class JavaLayout(val home: File) {
     val javaHome: File = if (isJdk8) File(home, "jre") else home
     val libDir: File = run {
         val base = File(javaHome, "lib")
-        listOf("aarch64", "arm64").map { File(base, it) }.firstOrNull { it.isDirectory } ?: base
+        listOf("aarch64", "arm64", "amd64", "x86_64").map { File(base, it) }.firstOrNull { it.isDirectory } ?: base
     }
     val jliDir: File = File(libDir, "jli").takeIf { File(it, "libjli.so").exists() } ?: libDir
     val jvmDir: File = File(libDir, "server").takeIf { File(it, "libjvm.so").exists() } ?: File(libDir, "client")

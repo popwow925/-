@@ -22,7 +22,7 @@ jobs:
         run: |
           tag=$(gh api repos/$GITHUB_REPOSITORY/releases --jq '[.[]|select(.tag_name|startswith("v2-android-"))]|sort_by(.published_at)|last|.tag_name')
           echo "using $tag"
-          gh release download "$tag" -R $GITHUB_REPOSITORY -p '*.apk' -D apk
+          gh release download "$tag" -R $GITHUB_REPOSITORY -p '*x86_64*.apk' -D apk
       - name: Emulator (x86_64 with ARM translation)
         uses: reactivecircus/android-emulator-runner@v2
         with:

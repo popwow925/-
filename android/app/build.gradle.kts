@@ -3,6 +3,9 @@ plugins {
     id("org.jetbrains.kotlin.android")
 }
 
+// arm64-v8a for phones; x86_64 only for emulator test builds (-PelAbi=x86_64)
+val elAbi = (findProperty("elAbi") as String?) ?: "arm64-v8a"
+
 android {
     namespace = "cn.eririlily.launcher"
     compileSdk = 35
@@ -16,7 +19,7 @@ android {
         versionName = "0.8.0-android"
         ndk {
             // The game runtime (JRE, LWJGL natives, renderers) is built for 64-bit ARM.
-            abiFilters += listOf("arm64-v8a")
+            abiFilters += listOf(elAbi)
         }
     }
 

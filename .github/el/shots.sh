@@ -14,7 +14,7 @@ adb install -r -g apk/*.apk > $OUT/install.txt 2>&1
 adb logcat -c
 adb shell monkey -p $PKG -c android.intent.category.LAUNCHER 1
 sleep 20; shot start
-sleep 25; shot later
+sleep 40; shot later
 adb shell ps -A | grep -i eririlily > $OUT/ps.txt
 adb logcat -d > $OUT/logcat_full.txt
 grep -iE "eririlily|AndroidRuntime|FATAL|DEBUG|libc|crash" $OUT/logcat_full.txt | tail -400 > $OUT/logcat.txt
