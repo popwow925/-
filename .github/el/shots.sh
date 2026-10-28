@@ -1,5 +1,5 @@
 #!/bin/bash
-# rerun: liveness heartbeat check 2045
+# rerun 2: liveness heartbeat check (emulator flake)
 # add an offline account, install vanilla, launch it on the runtime module. Screens + logs.
 set -x
 PKG=cn.eririlily.launcher
