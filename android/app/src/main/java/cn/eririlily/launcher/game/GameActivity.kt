@@ -157,6 +157,8 @@ class GameActivity : Activity(), SurfaceHolder.Callback, ControlsView.Host, Cont
         val launchSpec = LaunchSpec.parse(spec.file.readText())
         Thread({
             runCatching { File(spec.pidFile).writeText(Process.myPid().toString()) }
+            // the native logger opens the file without creating it
+            runCatching { File(spec.logFile).apply { parentFile?.mkdirs(); if (!exists()) createNewFile() } }
             LoggerBridge.start(spec.logFile)
             val code = runCatching {
                 val launcher = GameLauncher(applicationContext, launchSpec)
