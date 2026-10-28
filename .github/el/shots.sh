@@ -1,5 +1,5 @@
 #!/bin/bash
-# v2 smoke test on the emulator: install, open, capture screens + logcat. Edit to change what runs.
+# smoke test after x86_64 build (3)
 set -x
 PKG=cn.eririlily.launcher
 OUT=shots; mkdir -p $OUT
