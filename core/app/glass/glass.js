@@ -50,6 +50,10 @@ const P = {
   link: '<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>', copy: '<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/>',
   share: '<path d="M12 3v12M8 7l4-4 4 4M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/>', pencil: '<path d="M4 20h4L19 9l-4-4L4 16zM14 6l4 4"/>',
   shield: '<path d="M12 3 5 6v6c0 4.500 3 8 7 9 4-1 7-4.500 7-9V6z"/><path d="m9 12 2 2 4-4"/>', globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.500 3 2.500 15 0 18M12 3c-2.500 3-2.500 15 0 18"/>',
+  server: '<rect x="3" y="4" width="18" height="7" rx="2"/><rect x="3" y="13" width="18" height="7" rx="2"/><path d="M7 7.5h.01M7 16.5h.01"/>',
+  photo: '<rect x="3" y="5" width="18" height="14" rx="3"/><circle cx="9" cy="10" r="1.6"/><path d="m21 16-5-5-9 8"/>',
+  sliders: '<path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/>',
+  refresh: '<path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/>',
   phone: '<rect x="6" y="2" width="12" height="20" rx="3"/><path d="M11 18h2"/>', drop: '<path d="M12 3c4 5 6 8 6 11a6 6 0 0 1-12 0c0-3 2-6 6-11z"/>', stop: '<rect x="6.500" y="6.500" width="11" height="11" rx="2.500" fill="currentColor" stroke="none"/>',
 };
 const ic = (n, c = "") => `<svg viewBox="0 0 24 24" class="${c}">${P[n] || ""}</svg>`;
@@ -274,22 +278,15 @@ const ART = [["#ff9ab8", "#ffc59a"], ["#9cc2ff", "#c9a8ff"], ["#8fe0c4", "#9fcff
 function artStyle(i) {
   let h = 7; for (const ch of (i?.id || "x")) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
   const [a, b] = ART[h % ART.length];
-  return `background:radial-gradient(circle at ${20 + h % 60}% ${10 + (h >> 4) % 40}%,rgba(255,255,255,.38),transparent 52%),linear-gradient(${(h >> 3) % 360}deg,${a},${b})`;
+  return `background-color:${a}`;
 }
 function thumbURL(i) { if (i?.cover) return coverURL("inst", i.id, "", i.cover); if (i?.icon) return proxied(i.icon); return ""; }
 /** an instance picture: its own cover when it has one, otherwise generated art */
 function pic(i, cls) { const u = thumbURL(i); return u ? `<img class="${cls}" src="${esc(u)}" alt="" loading="lazy">` : `<span class="${cls} art" style="${artStyle(i)}"></span>`; }
-const skinCache = {};
 async function paintHeads(root = document) {
   for (const n of $$("[data-head]", root)) {
-    const id = n.dataset.head;
     try {
-      if (!skinCache[id]) {
-        const r = await fetch(`/api/skin?t=${TOKEN}&id=${encodeURIComponent(id)}`);
-        const url = URL.createObjectURL(await r.blob());
-        skinCache[id] = await new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = url; });
-      }
-      const img = skinCache[id], k = img.width / 64, cv = document.createElement("canvas"); cv.width = cv.height = 64;
+      const info = await fetchSkin(n.dataset.head), img = info.img, k = img.width / 64, cv = document.createElement("canvas"); cv.width = cv.height = 64;
       const c = cv.getContext("2d"); c.imageSmoothingEnabled = false;
       c.drawImage(img, 8 * k, 8 * k, 8 * k, 8 * k, 4, 4, 56, 56); c.drawImage(img, 40 * k, 8 * k, 8 * k, 8 * k, 0, 0, 64, 64);
       n.replaceChildren(cv);
@@ -533,6 +530,14 @@ function instancePage(id) {
         row({ icon: "puzzle", color: "indigo", title: "模组", val: x.mods ? String(x.mods) : "", chev: true, onClick: () => push(contentPage(id, "mod")) }),
         row({ icon: "paint", color: "orange", title: "资源包", chev: true, onClick: () => push(contentPage(id, "resourcepack")) }),
         row({ icon: "sun", color: "teal", title: "光影", chev: true, onClick: () => push(contentPage(id, "shader")) }),
+      ]), h2("世界"), grp([
+        row({ icon: "globe", color: "green", title: "存档", chev: true, onClick: () => push(worldsPage(id)) }),
+        row({ icon: "server", color: "blue", title: "服务器", chev: true, onClick: () => push(serversPage(id)) }),
+        row({ icon: "photo", color: "pink", title: "截图与封面", chev: true, onClick: () => push(shotsPage(id)) }),
+      ]), h2("设置"), grp([
+        row({ icon: "sliders", color: "gray", title: "游戏选项", sub: "视距、帧率、界面大小…", chev: true, onClick: () => push(optionsPage(id)) }),
+        row({ icon: "refresh", color: "teal", title: "校验并补全文件", chev: true, onClick: () => call("fix", { action: "verify", arg: "", instance: id }) }),
+        row({ icon: "java", color: "orange", title: "Java 版本", val: x.java ? "Java " + x.java : "自动", chev: true, onClick: async () => { const n = await menu("为这个实例指定 Java", [8, 17, 21].map(n => ({ text: "Java " + n, icon: "java", color: "orange", value: n }))); if (n) call("fix", { action: "java", arg: String(n), instance: id }); } }),
       ]), h2("管理"), grp([
         row({ icon: "pencil", color: "blue", title: "重命名", chev: true, onClick: async () => { const n = await promptBox("重命名", "", x.name); if (n) { await call("renameInstance", { id, name: n }); await refresh(); } } }),
         row({ icon: "folder", color: "gray", title: "打开实例文件夹", chev: true, onClick: () => call("open", { what: "instance", id }) }),
@@ -666,15 +671,15 @@ function mePage() {
       const acc = (S.accounts || []).find(a => a.id === S.config.account), b = document.createDocumentFragment();
       b.append(grp([row({ head: acc?.id, icon: acc ? "" : "user", title: acc ? acc.name : "添加账户", sub: acc ? (acc.type === "msa" ? "微软正版账户" : "离线账户") : "离线或微软正版登录", chev: true, onClick: () => accountsSheet() })]));
 
+      b.append(el(`<div style="height:12px"></div>`), grp([row({ icon: "user", color: "pink", title: "皮肤", sub: "3D 预览、上传、导入", chev: true, onClick: () => push(skinPage()) })]));
       // appearance
-      const mk = (id, name, a, bb, g) => { const c = el(`<button class="th-card glass ${(S.config.theme || "sakura") === id ? "on" : ""}" data-t="${id}"><div class="sw-prev" style="background:${g};--a:${a};--b:${bb}"><u style="--g:${id === "black" ? "rgba(255,255,255,.14)" : "rgba(255,255,255,.7)"}"></u></div>${name}</button>`); c.onclick = async () => { applyTheme(id); haptic("select"); $$(".th-card", b2).forEach(n => n.classList.toggle("on", n === c)); await setConfig({ theme: id }); }; return c; };
+      const mk = (id, name, bg, card) => { const c = el(`<button class="th-card glass ${(S.config.theme || "sakura") === id ? "on" : ""}" data-t="${id}"><div class="sw-prev" style="background:${bg}"><u style="--g:${card}"></u></div>${name}</button>`); c.onclick = async () => { applyTheme(id); haptic("select"); $$(".th-card", b2).forEach(n => n.classList.toggle("on", n === c)); await setConfig({ theme: id }); }; return c; };
       const b2 = el(`<div class="themes"></div>`);
-      b2.append(mk("sakura", "樱花", "#ff9fbd", "#ffd3a8", "linear-gradient(160deg,#fdeaf0,#f7e6dd)"), mk("white", "纯白", "#cfe0ff", "#e4d6ff", "linear-gradient(160deg,#f6f8fc,#eef1f8)"), mk("black", "纯黑", "#7a2a52", "#23336f", "#050407"));
+      b2.append(mk("sakura", "樱花", "#fff1f5", "#ffffff"), mk("white", "纯白", "#ffffff", "#f1f2f5"), mk("black", "纯黑", "#000000", "#1b1b1e"));
       b.append(h2("外观"), b2, el(`<div style="height:12px"></div>`), grp([
         row({ icon: "sun", color: "gray", title: "跟随系统深浅色", right: sw(S.config.theme === "auto", async v => { const t = v ? "auto" : (document.documentElement.dataset.theme || "sakura"); applyTheme(t); await setConfig({ theme: t }); refresh(); }) }),
         slider({ name: "玻璃模糊", min: 8, max: 48, step: 2, value: stored("blur", 26), fmt: v => v + "px", onChange: v => { store("blur", v); applyLook(); } }),
-        toggleRow({ icon: "drop", color: "teal", title: "背景流动动画", sub: "关闭可省电" }, !stored("quiet", false), v => { store("quiet", !v); applyLook(); }),
-        toggleRow({ icon: "layers", color: "gray", title: "低性能模式", sub: "关闭毛玻璃模糊，旧手机更流畅" }, stored("flat", false), v => { store("flat", v); applyLook(); }),
+        toggleRow({ icon: "layers", color: "gray", title: "低性能模式", sub: "关闭顶栏、底栏和弹窗的模糊，旧手机更流畅" }, stored("flat", false), v => { store("flat", v); applyLook(); }),
       ]));
       b.append(h2("性能与操控"), grp([
         row({ icon: "wand", color: "pink", title: "一键优化", chev: true, onClick: () => optimizeSheet(S.config.selected) }),
@@ -830,6 +835,140 @@ function aboutPage() {
         h2("游戏运行层"), grp([row({ title: "Zalith Launcher 2 运行层", sub: "GPLv3 · 提供 Java 运行与渲染器（Krypton Wrapper、GL4ES、Kopper Zink、VirGL 等），其余部分为樱梨自研", wrap: true })]),
         h2("开源组件"), grp([row({ title: "OpenJDK", sub: "GPLv2 + Classpath Exception" }), row({ title: "LWJGL 3", sub: "BSD-3-Clause" }), row({ title: "OpenAL Soft", sub: "LGPL-2.0" }), row({ title: "GL4ES", sub: "MIT" })]),
         foot("非 Mojang 或 Microsoft 官方产品。Minecraft 是 Mojang Studios 的商标。"));
+    },
+  };
+}
+
+
+/* ================================================================ 存档 · 服务器 · 截图 · 游戏选项 · 皮肤 */
+function worldsPage(id) {
+  return {
+    title: "存档",
+    async render(p) {
+      const ws = await api("worlds", { instance: id }).catch(() => []);
+      if (!ws?.length) { p.body.replaceChildren(empty("globe", "还没有存档", "进入游戏创建一个世界吧")); return; }
+      p.body.replaceChildren(h2(`${ws.length} 个世界`), grp(ws.map(w => row({
+        img: w.hasIcon ? `/api/worldicon?t=${TOKEN}&inst=${encodeURIComponent(id)}&world=${encodeURIComponent(w.folder)}` : "", icon: w.hasIcon ? "" : "globe", color: "green",
+        title: w.name, sub: [w.mode + (w.hardcore ? "·极限" : ""), w.version, "第 " + w.day + " 天", ago(w.lastPlayed), fmtBytes(w.size)].filter(Boolean).join(" · "), chev: true,
+        onClick: async () => {
+          const v = await menu(w.name, [{ text: "备份存档", icon: "down", color: "blue", value: "bak" }, { text: "打开文件夹", icon: "folder", color: "gray", value: "open" }, { text: "删除存档", icon: "trash", color: "red", red: true, value: "del" }]);
+          if (v === "bak") call("backupWorld", { instance: id, folder: w.folder, name: w.name });
+          if (v === "open") call("openWorld", { instance: id, folder: w.folder });
+          if (v === "del" && await confirmBox(`删除「${w.name}」？`, "存档会被永久删除，建议先备份。", "删除", true)) { await call("deleteWorld", { instance: id, folder: w.folder }, "存档已删除"); p.refresh(); }
+        },
+      }))));
+    },
+  };
+}
+function motdHTML(s) {
+  const C = { 0: "#000", 1: "#00a", 2: "#0a0", 3: "#0aa", 4: "#a00", 5: "#a0a", 6: "#fa0", 7: "#aaa", 8: "#555", 9: "#55f", a: "#5f5", b: "#5ff", c: "#f55", d: "#f5f", e: "#ff5", f: "inherit" };
+  let out = "", open = 0; const parts = String(s || "").split("§"); out += esc(parts[0]);
+  for (const part of parts.slice(1)) {
+    const k = part[0]?.toLowerCase(), rest = esc(part.slice(1));
+    if (C[k]) { out += "</span>".repeat(open); open = 1; out += `<span style="color:${C[k]}">${rest}`; } else if (k === "r") { out += "</span>".repeat(open); open = 0; out += rest; } else out += rest;
+  }
+  return out + "</span>".repeat(open);
+}
+function serversPage(id) {
+  return {
+    title: "服务器",
+    async render(p) {
+      const add = el(`<button class="iconbtn glass">${ic("plus")}</button>`);
+      add.onclick = async () => {
+        const ip = await promptBox("添加服务器", "地址，例如 mc.example.com", "", "服务器地址"); if (!ip) return;
+        const name = await promptBox("服务器名称", "", ip.split(":")[0]);
+        try { await api("addServer", { instance: id, name: name || ip, ip: ip.trim() }); p.refresh(); } catch (e) { toast(e.message, true); }
+      };
+      p.act.replaceChildren(add);
+      const list = await api("servers", { instance: id }).catch(e => { toast(e.message, true); return []; });
+      if (!list.length) { p.body.replaceChildren(empty("server", "没有服务器", "点右上角 + 添加")); return; }
+      const rows = list.map(sv => {
+        const r = row({
+          img: sv.icon ? "data:image/png;base64," + sv.icon : "", icon: sv.icon ? "" : "server", color: "blue", title: sv.name || sv.ip, sub: sv.ip, val: "…",
+          onClick: async () => {
+            const v = await menu(sv.name || sv.ip, [{ text: "加入服务器", icon: "play", color: "green", value: "join" }, { text: "复制地址", icon: "copy", color: "blue", value: "copy" }, { text: "删除", icon: "trash", color: "red", red: true, value: "del" }]);
+            if (v === "join") { await call("select", { id }); launch(id, sv.ip); }
+            if (v === "copy") { try { N.copy(sv.ip); toast("已复制"); } catch { navigator.clipboard?.writeText(sv.ip); } }
+            if (v === "del") { await call("removeServer", { instance: id, ip: sv.ip }); p.refresh(); }
+          },
+        });
+        api("pingServer", { addr: sv.ip }).then(st => {
+          $(".v", r).innerHTML = st.online ? `<span class="pill ${st.ping < 120 ? "green" : st.ping < 260 ? "orange" : "red"}">${st.ping} ms</span>` : `<span class="pill red">离线</span>`;
+          if (st.online) $("small", r).innerHTML = `${st.players}/${st.max} 人 · <span class="motd">${motdHTML(st.motd.split("\n")[0])}</span>`;
+          if (st.favicon && !sv.icon) { const im = $("img.th", r); if (im) im.src = st.favicon; }
+        }).catch(() => { });
+        return r;
+      });
+      p.body.replaceChildren(h2(`${list.length} 个服务器`), grp(rows), foot("点按加入，游戏会直接连接服务器。"));
+    },
+  };
+}
+function shotsPage(id) {
+  return {
+    title: "截图与封面",
+    async render(p) {
+      const shots = await api("screenshots", { instance: id }).catch(() => []), x = instById(id), b = document.createDocumentFragment();
+      b.append(grp([row({ inst: x, title: x?.cover ? "自定义封面" : "默认封面", sub: "点按下方截图设为实例封面" }),
+        ...(x?.cover ? [row({ title: "恢复默认封面", center: true, onClick: async () => { await call("coverReset", { kind: "inst", instance: id, world: "" }); await refresh(); p.refresh(); } })] : [])]));
+      if (!shots?.length) b.append(empty("photo", "没有截图", "游戏中按「截图」（F2）即可保存"));
+      else {
+        const g = el(`<div class="grid3"></div>`);
+        for (const s of shots) {
+          const im = el(`<img loading="lazy" src="/api/shot?t=${TOKEN}&inst=${encodeURIComponent(id)}&file=${encodeURIComponent(s.file)}" alt="">`);
+          im.onclick = async () => { if (await confirmBox("设为封面？", s.file)) { await call("coverFromShot", { kind: "inst", instance: id, world: "", file: s.file }, "封面已更新"); await refresh(); p.refresh(); } };
+          g.append(im);
+        }
+        b.append(h2(`${shots.length} 张截图`), g);
+      }
+      p.body.replaceChildren(b);
+    },
+  };
+}
+function optionsPage(id) {
+  return {
+    title: "游戏选项",
+    async render(p) {
+      const o = await api("gameOptions", { instance: id }).catch(() => ({})), patch = {};
+      p.def.onClose = async () => { if (!Object.keys(patch).length) return; try { await api("setGameOptions", { instance: id, options: patch }); toast("已保存"); } catch (e) { toast(e.message, true); } };
+      const num = (k, d) => o[k] != null ? +o[k] : d;
+      const sl = (name, k, min, max, step, d, fmt) => slider({ name, min, max, step, value: num(k, d), fmt, onChange: v => { patch[k] = String(v); } });
+      const bool = (title, k, d) => toggleRow({ title }, o[k] != null ? o[k] === "true" : d, v => patch[k] = String(v));
+      p.body.replaceChildren(h2("画面"), grp([
+        sl("视距", "renderDistance", 2, 32, 1, 8, v => v + " 区块"), sl("模拟距离", "simulationDistance", 5, 32, 1, 8, v => v + " 区块"),
+        sl("最大帧率", "maxFps", 10, 260, 10, 120, v => v >= 260 ? "无限" : v), sl("界面大小", "guiScale", 0, 6, 1, 0, v => v ? v + "×" : "自动"),
+        sl("视场角", "fov", -1, 1, .05, 0, v => Math.round(70 + v * 40) + "°")]),
+        el(`<div style="height:12px"></div>`), grp([
+          toggleRow({ title: "精美画质" }, o.graphicsMode ? o.graphicsMode !== "0" : o.fancyGraphics === "true", v => { patch.graphicsMode = v ? "1" : "0"; patch.fancyGraphics = String(v); }),
+          bool("实体阴影", "entityShadows", true), bool("平滑光照", "ao", true), bool("视角摇晃", "bobView", true), bool("垂直同步", "enableVsync", false)]),
+        h2("操作"), grp([bool("自动跳跃", "autoJump", false), bool("潜行切换", "toggleCrouch", false), bool("疾跑切换", "toggleSprint", false)]),
+        foot("修改会在退出本页时写入 options.txt，下次进入游戏生效。"));
+    },
+  };
+}
+function skinPage() {
+  let viewer = null;
+  return {
+    title: "皮肤", onClose: () => viewer?.setActive(false),
+    async render(p) {
+      const acc = (S.accounts || []).find(a => a.id === S.config.account), b = document.createDocumentFragment(), st = el(`<div class="stage3d"></div>`);
+      b.append(st, seg([["idle", "站立"], ["walk", "行走"], ["run", "奔跑"]], "idle", v => viewer?.setAnim(v)));
+      if (!acc) { b.append(empty("user", "还没有账户", "先添加一个账户")); p.body.replaceChildren(b); return; }
+      const info = await fetchSkin(acc.id, true);
+      const up = el(`<label class="cell tap"><span class="ic" style="--c1:${COL.pink[0]};--c2:${COL.pink[1]}">${ic("down")}</span><span class="m"><b>上传皮肤图片</b><small>64×64 PNG${acc.type === "msa" ? " · 将同步到正版" : ""}</small></span><input type="file" accept="image/png" hidden></label>`);
+      $("input", up).onchange = async e => {
+        const f = e.target.files[0]; if (!f) return; e.target.value = "";
+        const r = await fetch(`/api/skinupload?id=${encodeURIComponent(acc.id)}&model=${info.slim ? "slim" : "classic"}&official=${acc.type === "msa" ? 1 : 0}&name=${encodeURIComponent(f.name)}`, { method: "POST", headers: { "X-Token": TOKEN }, body: f });
+        const j = await r.json().catch(() => ({ error: "上传失败" }));
+        if (j.error) toast(j.error, true); else { toast("皮肤已更换"); haptic("success"); p.refresh(); }
+      };
+      b.append(h2(`${acc.name} · ${{ custom: "自定义皮肤", official: "正版皮肤", default: "默认皮肤" }[info.source] || ""}`),
+        seg([["classic", "经典（Steve）"], ["slim", "纤细（Alex）"]], info.slim ? "slim" : "classic", async v => { await call("skinModel", { id: acc.id, model: v }); p.refresh(); }),
+        el(`<div style="height:12px"></div>`), grp([up,
+          row({ icon: "search", color: "blue", title: "导入正版玩家的皮肤", chev: true, onClick: async () => { const n = await promptBox("导入皮肤", "输入正版玩家名", "", "玩家名"); if (n) { await call("skinImport", { id: acc.id, player: n }, `已导入 ${n} 的皮肤`); p.refresh(); } } }),
+          row({ icon: "refresh", color: "gray", title: "恢复默认", chev: true, onClick: async () => { await call("skinReset", { id: acc.id }, "已恢复"); p.refresh(); } })]),
+        foot(acc.type === "msa" ? "上传会直接修改你的正版皮肤，所有服务器都能看到。" : "离线账户的皮肤会写入游戏资源；装有 CustomSkinLoader 时游戏内可见。"));
+      p.body.replaceChildren(b);
+      viewer = new SkinViewer(st); viewer.s = 8; viewer.load(info.url, info.legacy, info.slim, info.img); viewer.setActive(true);
     },
   };
 }
