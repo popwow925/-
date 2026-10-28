@@ -1,5 +1,5 @@
 #!/bin/bash
-# rerun 2: liveness heartbeat check (emulator flake)
+# rerun 3: glass UI in three themes + game overlays
 # add an offline account, install vanilla, launch it on the runtime module. Screens + logs.
 set -x
 PKG=cn.eririlily.launcher
@@ -42,6 +42,28 @@ P
   sleep 10
 done
 shot installed
+# the launcher's own screens, in each theme: tap the dock tabs
+SZ=$(adb shell wm size | grep -o '[0-9]*x[0-9]*' | tail -1); W=${SZ%x*}; H=${SZ#*x}
+DEN=$(adb shell wm density | grep -o '[0-9]*' | tail -1)
+python3 - "$W" "$H" "$DEN" > $OUT/tabs.txt <<'P'
+import sys
+W,H,D=int(sys.argv[1]),int(sys.argv[2]),int(sys.argv[3])/160
+dw=min(380*D,W-40*D); x0=W/2-dw/2; y=H-24*D-14*D-33*D
+print(" ".join(f"{int(x0+dw*(i+.5)/4)},{int(y)}" for i in range(4)))
+P
+TABS=($(cat $OUT/tabs.txt))
+ID0=$(python3 -c "import json;s=json.load(open('$OUT/state.json'));print(s['config']['selected'])")
+for theme in sakura white black; do
+  rpc setConfig "{\"theme\":\"$theme\"}" >> $OUT/rpc.txt
+  rpc setConfig '{"perfHud":"fps"}' >> $OUT/rpc.txt
+  sleep 3
+  i=0
+  for t in home library discover me; do
+    adb shell input tap $(echo ${TABS[$i]} | tr ',' ' '); sleep 3; shot "ui_${theme}_$t"; i=$((i+1))
+  done
+done
+rpc setConfig '{"theme":"sakura"}' >> $OUT/rpc.txt
+adb shell input tap $(echo ${TABS[0]} | tr ',' ' '); sleep 2
 ID=$(python3 -c "import json;s=json.load(open('$OUT/state.json'));print(s['config']['selected'])")
 # launch; if the file check hits a rate limit (CI network), wait and try again
 for attempt in 1 2 3 4; do

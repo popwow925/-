@@ -171,10 +171,10 @@ class IosSlider(
         c.restore()
         t.textSize = 14 * d
         t.textAlign = Paint.Align.LEFT
-        t.color = if (f > .3f) ON_ACCENT else LABEL
+        t.color = if (f > .3f) Ui.ON_ACCENT else Ui.LABEL
         c.drawText(title, 14 * d, h / 2 - (t.descent() + t.ascent()) / 2, t)
         t.textAlign = Paint.Align.RIGHT
-        t.color = if (f > .95f) ON_ACCENT else LABEL
+        t.color = if (f > .95f) Ui.ON_ACCENT else Ui.LABEL
         c.drawText(label(value), width - 14 * d, h / 2 - (t.descent() + t.ascent()) / 2, t)
     }
 
