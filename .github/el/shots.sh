@@ -27,6 +27,7 @@ rpc state > $OUT/state0.json
 # record the core's events (stages, errors, game log lines)
 curl -s -N "http://127.0.0.1:$PORT/api/events?t=$TOKEN" > $OUT/events.txt 2>&1 &
 EVPID=$!
+rpc setConfig '{"source":"official","threads":8}' >> $OUT/rpc.txt
 rpc addOffline '{"name":"Steve"}' >> $OUT/rpc.txt
 rpc createInstance "{\"game\":\"$GAME\"}" >> $OUT/rpc.txt
 # wait for the install (busy goes false and the instance shows up)
@@ -42,8 +43,21 @@ P
 done
 shot installed
 ID=$(python3 -c "import json;s=json.load(open('$OUT/state.json'));print(s['config']['selected'])")
-rpc launch "{\"id\":\"$ID\"}" >> $OUT/rpc.txt
-for i in 1 2 3 4 5 6 7 8 9; do sleep 20; shot "game_$i"; done
+# launch; if the file check hits a rate limit (CI network), wait and try again
+for attempt in 1 2 3 4; do
+  before=$(grep -c '"state":"error"' $OUT/events.txt)
+  rpc launch "{\"id\":\"$ID\"}" >> $OUT/rpc.txt
+  ok=1
+  for i in $(seq 1 30); do
+    sleep 5
+    if [ "$(grep -c '"state":"error"' $OUT/events.txt)" -gt "$before" ]; then ok=0; break; fi
+    adb shell dumpsys activity activities | grep -q "GameActivity" && break
+  done
+  [ $ok = 1 ] && break
+  echo "launch attempt $attempt failed, retrying" >> $OUT/rpc.txt
+  sleep 45
+done
+for i in 1 2 3 4 5 6 7 8 9 10 11 12; do sleep 20; shot "game_$i"; done
 rpc logs > $OUT/core_logs.json
 rpc state > $OUT/state_end.json
 kill $EVPID 2>/dev/null
