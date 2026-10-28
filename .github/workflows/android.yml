@@ -4,6 +4,7 @@ on:
   push:
     branches: ["**"]
     tags: ["v*"]
+    paths-ignore: [".github/el/**", ".github/workflows/el_screens.yml"]
   pull_request:
   workflow_dispatch:
 
