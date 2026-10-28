@@ -26,9 +26,8 @@ jobs:
         env:
           GOFLAGS: -mod=mod
         run: |
-          go vet ./...
-          GOOS=android GOARCH=arm64 go vet ./...
-          go test ./mc ./app
+          set -o pipefail
+          { go vet ./... && GOOS=android GOARCH=arm64 go vet ./... && go test ./mc ./app; } 2>&1 | tee ../core.log
       - name: Build
         working-directory: core
         env:
@@ -38,6 +37,13 @@ jobs:
           mkdir -p ../out
           GOOS=android GOARCH=arm64 go build -trimpath -ldflags "-s -w" -o ../out/liberirilily_core.so .
           GOOS=windows GOARCH=amd64 go build -trimpath -ldflags "-H windowsgui -s -w" -o ../out/EririLily.exe .
+      - name: Push core log (failures)
+        if: failure()
+        run: |
+          mkdir -p logs && cp core.log logs/ 2>/dev/null || true
+          cd logs && git init -q -b ci-logs && git add -A
+          git -c user.name=ci -c user.email=ci@noreply commit -qm "core log ${GITHUB_SHA:0:7}"
+          git push -f "https://x-access-token:${{ github.token }}@github.com/$GITHUB_REPOSITORY" ci-logs
       - uses: actions/upload-artifact@v4
         with:
           name: core
@@ -76,10 +82,19 @@ jobs:
         run: |
           if [ -n "${{ secrets.EL_KEYSTORE_B64 }}" ]; then echo "${{ secrets.EL_KEYSTORE_B64 }}" | base64 -d > app/release.jks; fi
           chmod +x gradlew
-          ./gradlew --no-daemon assembleRelease
+          set -o pipefail
+          ./gradlew --no-daemon assembleRelease 2>&1 | tee ../build.log
           mkdir -p ../dist
           cp app/build/outputs/apk/release/*.apk ../dist/EririLily-android-arm64.apk
           ls -la ../dist
+      - name: Push build log (failures)
+        if: failure()
+        run: |
+          mkdir -p logs && cp build.log logs/ 2>/dev/null || true
+          grep -nE "error:|e: |FAILURE|What went wrong|Exception|undefined reference|fatal error" build.log | head -300 > logs/errors.txt || true
+          cd logs && git init -q -b ci-logs && git add -A
+          git -c user.name=ci -c user.email=ci@noreply commit -qm "apk build log ${GITHUB_SHA:0:7}"
+          git push -f "https://x-access-token:${{ github.token }}@github.com/$GITHUB_REPOSITORY" ci-logs
       - uses: actions/upload-artifact@v4
         with:
           name: EririLily-android
