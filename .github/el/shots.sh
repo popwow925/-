@@ -1,5 +1,5 @@
 #!/bin/bash
-# rerun 6: cdp suppress_origin
+# rerun 7: fix instance id + new slider build
 # add an offline account, install vanilla, launch it on the runtime module. Screens + logs.
 set -x
 PKG=cn.eririlily.launcher
@@ -52,7 +52,7 @@ dw=min(380*D,W-40*D); x0=W/2-dw/2; y=H-24*D-14*D-33*D
 print(" ".join(f"{int(x0+dw*(i+.5)/4)},{int(y)}" for i in range(4)))
 P
 TABS=($(cat $OUT/tabs.txt))
-ID0=$(python3 -c "import json;s=json.load(open('$OUT/state.json'));print(s['config']['selected'])")
+ID0=$(python3 -c "import json;s=json.load(open('$OUT/state.json'));s=s.get('result',s);print(s['config']['selected'])")
 for theme in sakura white black; do
   rpc setConfig "{\"theme\":\"$theme\"}" >> $OUT/rpc.txt
   rpc setConfig '{"perfHud":"fps"}' >> $OUT/rpc.txt
