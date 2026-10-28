@@ -1,5 +1,5 @@
 #!/bin/bash
-# rerun 4: glass UI themes + overlays, new APK
+# rerun 5: CDP states + world, TEST_BUILD apk
 # add an offline account, install vanilla, launch it on the runtime module. Screens + logs.
 set -x
 PKG=cn.eririlily.launcher
