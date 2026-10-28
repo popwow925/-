@@ -24,6 +24,9 @@ PORT=$(echo "$URL" | sed -E 's#.*:([0-9]+)/.*#\1#'); TOKEN=${URL##*#}
 adb forward tcp:$PORT tcp:$PORT
 rpc(){ curl -s -m 60 -X POST -H "X-Token: $TOKEN" -H 'Content-Type: application/json' -d "${2:-{\}}" "http://127.0.0.1:$PORT/api/$1"; echo; }
 rpc state > $OUT/state0.json
+# record the core's events (stages, errors, game log lines)
+curl -s -N "http://127.0.0.1:$PORT/api/events?t=$TOKEN" > $OUT/events.txt 2>&1 &
+EVPID=$!
 rpc addOffline '{"name":"Steve"}' >> $OUT/rpc.txt
 rpc createInstance "{\"game\":\"$GAME\"}" >> $OUT/rpc.txt
 # wait for the install (busy goes false and the instance shows up)
@@ -42,7 +45,10 @@ ID=$(python3 -c "import json;s=json.load(open('$OUT/state.json'));print(s['confi
 rpc launch "{\"id\":\"$ID\"}" >> $OUT/rpc.txt
 for i in 1 2 3 4 5 6 7 8 9; do sleep 20; shot "game_$i"; done
 rpc logs > $OUT/core_logs.json
-adb pull /data/data/$PKG/files/EririLily/launch $OUT/launch > /dev/null 2>&1
+rpc state > $OUT/state_end.json
+kill $EVPID 2>/dev/null
+adb shell "cd /data/data/$PKG/files/EririLily && tar cf /data/local/tmp/el.tar --exclude=.minecraft --exclude=runtime ." && adb pull /data/local/tmp/el.tar $OUT/el_data.tar > /dev/null 2>&1
+adb shell "ls -la /data/data/$PKG/files /data/data/$PKG/files/runtime /data/data/$PKG/files/runtime/java" > $OUT/files_ls.txt 2>&1
 adb shell ps -A > $OUT/ps.txt
 adb logcat -d > $OUT/logcat_full.txt
 grep -iE "eririlily|AndroidRuntime|FATAL|F DEBUG|pojav|ZLBridge|EGLBridge|LWJGL|jvm" $OUT/logcat_full.txt | tail -500 > $OUT/logcat.txt
