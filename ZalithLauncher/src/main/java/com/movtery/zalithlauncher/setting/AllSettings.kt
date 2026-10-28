@@ -631,20 +631,20 @@ object AllSettings : SettingsRegistry() {
     /**
      * 搜索模组的初始搜索平台
      */
-    val searchModPlatform = enumSetting("searchModPlatform", Platform.CURSEFORGE)
+    val searchModPlatform = enumSetting("searchModPlatform", Platform.MODRINTH) // EririLily: no CurseForge key in public builds
 
     /**
      * 搜索整合包的初始搜索平台
      */
-    val searchModpackPlatform = enumSetting("searchModpackPlatform", Platform.CURSEFORGE)
+    val searchModpackPlatform = enumSetting("searchModpackPlatform", Platform.MODRINTH) // EririLily: no CurseForge key in public builds
 
     /**
      * 搜索资源包的初始搜索平台
      */
-    val searchResourcePackPlatform = enumSetting("searchResourcePackPlatform", Platform.CURSEFORGE)
+    val searchResourcePackPlatform = enumSetting("searchResourcePackPlatform", Platform.MODRINTH) // EririLily: no CurseForge key in public builds
 
     /**
      * 搜索光影的初始搜索平台
      */
-    val searchShadersPlatform = enumSetting("searchShadersPlatform", Platform.CURSEFORGE)
+    val searchShadersPlatform = enumSetting("searchShadersPlatform", Platform.MODRINTH) // EririLily: no CurseForge key in public builds
 }
