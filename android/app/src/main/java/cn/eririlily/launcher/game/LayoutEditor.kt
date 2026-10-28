@@ -149,9 +149,9 @@ class LayoutEditor(
             seg.removeAllViews()
             for ((v, t) in modes) {
                 val on = b.show == v
-                val item = Ui.text(ctx, t, 13f, if (on) 0xFF1C1C1E.toInt() else Color.WHITE, bold = on).apply {
+                val item = Ui.text(ctx, t, 13f, if (on) Ui.ON_ACCENT else Ui.LABEL, bold = on).apply {
                     gravity = Gravity.CENTER; setPadding(0, ctx.dpi(7f), 0, ctx.dpi(7f))
-                    background = if (on) Ui.rounded(Color.WHITE, ctx.dp(8f)) else null
+                    background = if (on) Ui.rounded(Ui.BLUE, ctx.dp(8f)) else null
                 }
                 Ui.pressable(item) { b.show = v; renderSeg() }
                 seg.addView(item, Ui.lp(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))

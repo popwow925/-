@@ -139,9 +139,9 @@ class ControlCenter(ctx: Context, private val a: Actions) : FrameLayout(ctx) {
         box.addView(st)
         val refresh = {
             val active = on()
-            box.background = Ui.rounded(if (danger) 0x40FF453A else if (active) Color.WHITE else Ui.TILE, ctx.dp(18f))
-            t.setTextColor(if (danger) Ui.RED else if (active) 0xFF1C1C1E.toInt() else Color.WHITE)
-            st.setTextColor(if (active && !danger) 0x991C1C1E.toInt() else Ui.SECONDARY)
+            box.background = Ui.rounded(if (danger) 0x40FF453A else if (active) Ui.BLUE else Ui.TILE, ctx.dp(18f))
+            t.setTextColor(if (danger) Ui.RED else if (active) Ui.ON_ACCENT else Ui.LABEL)
+            st.setTextColor(if (active && !danger) (Ui.ON_ACCENT and 0x00FFFFFF) or 0xB3000000.toInt() else Ui.SECONDARY)
             st.text = sub()
         }
         refresh()

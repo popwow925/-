@@ -81,6 +81,7 @@ class GameActivity : Activity(), SurfaceHolder.Callback, ControlsView.Host, Cont
         }
         dataDir = File(filesDir, "EririLily")
         settings = GameSettings(dataDir, spec.settings)
+        Ui.apply(settings.theme)
         dynScale = settings.renderScale
 
         setupWindow()

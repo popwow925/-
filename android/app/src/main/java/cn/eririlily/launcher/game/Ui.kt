@@ -22,15 +22,29 @@ import kotlin.math.roundToInt
 /** Small iOS-style widgets drawn by hand for the in-game panels. */
 object Ui {
     val spring = PathInterpolator(.2f, .9f, .25f, 1.05f)
-    const val BLUE = 0xFF0A84FF.toInt()
     const val GREEN = 0xFF30D158.toInt()
     const val PINK = 0xFFFF6F91.toInt()
     const val RED = 0xFFFF453A.toInt()
-    const val LABEL = Color.WHITE
-    const val SECONDARY = 0x99EBEBF5.toInt()
-    const val FILL = 0x3D787880
-    const val PANEL = 0xE61C1C1E.toInt()
-    const val TILE = 0xFF2C2C2E.toInt()
+
+    // the palette follows the launcher theme (sakura / white / black); see apply()
+    @JvmField var BLUE = 0xFFE0527A.toInt()      // accent
+    @JvmField var ON_ACCENT = Color.WHITE        // text on the accent
+    @JvmField var LABEL = 0xFF3A2830.toInt()
+    @JvmField var SECONDARY = 0x993A2830.toInt()
+    @JvmField var FILL = 0x26E0527A
+    @JvmField var PANEL = 0xF5FFF1F5.toInt()
+    @JvmField var TILE = 0xFFFFFFFF.toInt()
+
+    fun apply(theme: String) {
+        when (theme) {
+            "white" -> { BLUE = 0xFF3D5AFE.toInt(); ON_ACCENT = Color.WHITE; LABEL = 0xFF14171F.toInt(); SECONDARY = 0x9914171F.toInt()
+                FILL = 0x1F14171F; PANEL = 0xF5FFFFFF.toInt(); TILE = 0xFFF1F2F5.toInt() }
+            "black" -> { BLUE = 0xFFFF7AA2.toInt(); ON_ACCENT = 0xFF2A0D18.toInt(); LABEL = 0xFFF4F1F3.toInt(); SECONDARY = 0x99F4F1F3.toInt()
+                FILL = 0x33FFFFFF; PANEL = 0xF5101012.toInt(); TILE = 0xFF1C1C1F.toInt() }
+            else -> { BLUE = 0xFFE0527A.toInt(); ON_ACCENT = Color.WHITE; LABEL = 0xFF3A2830.toInt(); SECONDARY = 0x993A2830.toInt()
+                FILL = 0x26E0527A; PANEL = 0xF5FFF1F5.toInt(); TILE = 0xFFFFFFFF.toInt() }
+        }
+    }
 
     fun Context.dp(v: Float) = v * resources.displayMetrics.density
     fun Context.dpi(v: Float) = (v * resources.displayMetrics.density).roundToInt()
@@ -157,10 +171,10 @@ class IosSlider(
         c.restore()
         t.textSize = 14 * d
         t.textAlign = Paint.Align.LEFT
-        t.color = if (f > .3f) 0xFF1C1C1E.toInt() else Color.WHITE
+        t.color = if (f > .3f) ON_ACCENT else LABEL
         c.drawText(title, 14 * d, h / 2 - (t.descent() + t.ascent()) / 2, t)
         t.textAlign = Paint.Align.RIGHT
-        t.color = if (f > .95f) 0xFF1C1C1E.toInt() else Color.WHITE
+        t.color = if (f > .95f) ON_ACCENT else LABEL
         c.drawText(label(value), width - 14 * d, h / 2 - (t.descent() + t.ascent()) / 2, t)
     }
 
