@@ -20,6 +20,7 @@ object SystemBars {
 
     /** Immersive: bars hidden, a swipe shows them briefly. */
     fun hide(w: Window) {
+        w.decorView // make sure the window has its view before asking for the insets controller
         if (Build.VERSION.SDK_INT >= 30) {
             w.setDecorFitsSystemWindows(false)
             w.insetsController?.apply {
@@ -36,6 +37,7 @@ object SystemBars {
 
     /** Dark icons on light content (iOS light mode) or the reverse. */
     fun darkIcons(w: Window, dark: Boolean) {
+        w.decorView
         if (Build.VERSION.SDK_INT >= 30) {
             val mask = WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS or WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS
             w.insetsController?.setSystemBarsAppearance(if (dark) mask else 0, mask)

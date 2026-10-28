@@ -1,5 +1,5 @@
 #!/bin/bash
-# v2 end-to-end on the emulator (x86_64 test APK): open the app, then through the core's RPC
+# rerun after GameActivity window fix
 # add an offline account, install vanilla, launch it on the runtime module. Screens + logs.
 set -x
 PKG=cn.eririlily.launcher
