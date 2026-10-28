@@ -41,4 +41,10 @@ adb shell input swipe 1400 900 1400 300 400; sleep 2; shot set_about2
 adb shell input keyevent BACK; sleep 3
 tap "多人联机" 4; shot online; adb shell input keyevent BACK; sleep 3
 shot home_again
+# three themes: launcher settings -> pick theme -> settings page + home in that theme
+for th in "纯白:white" "纯黑:black" "樱花:sakura"; do
+  name=${th%%:*}; key=${th##*:}
+  tap "设置" 4; tap "启动器设置" 4; tap "$name" 4; shot "theme_set_$key"
+  adb shell input keyevent BACK; sleep 3; shot "theme_home_$key"
+done
 adb logcat -d | grep -iE "AndroidRuntime|FATAL" | tail -100 > $OUT/logcat.txt
