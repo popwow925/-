@@ -18,6 +18,7 @@
 
 package com.movtery.zalithlauncher.ui.activities
 
+import com.movtery.zalithlauncher.BuildKeys
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
@@ -205,6 +206,9 @@ class MainActivity : BaseAppCompatActivity() {
 
         //加载渲染器
         Renderers.init()
+
+        // EririLily: bundled wallpaper so the frosted-glass cards have something to blur
+        backgroundViewModel.ensureBuiltin(this)
         //加载插件
         PluginLoader.loadAllPlugins(this, false)
         refreshData()
@@ -572,6 +576,12 @@ class MainActivity : BaseAppCompatActivity() {
      * 检查启动器更新
      */
     private fun checkUpdate() {
+        // EririLily: no update server — open the GitHub Releases page instead.
+        openLink("${BuildKeys.URL_HOME}/releases")
+    }
+
+    @Suppress("unused")
+    private fun checkUpdateZalith() {
         lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val success = launcherUpgradeViewModel.checkManually(

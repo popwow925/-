@@ -18,6 +18,7 @@
 
 package com.movtery.zalithlauncher.ui.screens.main
 
+import androidx.compose.foundation.Image
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
@@ -343,12 +344,23 @@ private fun <E: TitledNavKey> TopBar(
 
                 if (parent == null) {
                     if (festivals.isEmpty()) {
-                        Text(
-                            text = BuildKeys.LAUNCHER_IDENTIFIER,
-                            style = style,
-                            softWrap = softWarp,
-                            maxLines = maxLines
-                        )
+                        // EririLily: logo + name
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Image(
+                                modifier = Modifier.size(28.dp),
+                                painter = painterResource(R.drawable.el_logo),
+                                contentDescription = null
+                            )
+                            Text(
+                                text = stringResource(R.string.el_brand_title),
+                                style = style,
+                                softWrap = softWarp,
+                                maxLines = maxLines
+                            )
+                        }
                     } else {
                         FestivalTitleText(
                             festivals = festivals,

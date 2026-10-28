@@ -18,6 +18,9 @@
 
 package com.movtery.zalithlauncher.ui.components
 
+import com.movtery.zalithlauncher.setting.enums.isLauncherInDarkTheme
+import com.movtery.zalithlauncher.viewmodel.backgroundVisible
+import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -54,7 +57,7 @@ fun BackgroundCard(
     ),
     elevation: CardElevation = CardDefaults.cardElevation(),
     blur: Int = AllSettings.backgroundBlur.state,
-    border: BorderStroke? = null,
+    border: BorderStroke? = glassEdge(influencedByBackground),
     content: @Composable ColumnScope.() -> Unit
 ) {
     Card(
@@ -87,7 +90,7 @@ fun BackgroundCard(
     ),
     elevation: CardElevation = CardDefaults.cardElevation(),
     blur: Int = AllSettings.backgroundBlur.state,
-    border: BorderStroke? = null,
+    border: BorderStroke? = glassEdge(influencedByBackground),
     onClick: () -> Unit,
     enabled: Boolean = true,
     content: @Composable @UiComposable ColumnScope.() -> Unit
@@ -140,4 +143,15 @@ fun CardTitleLayout(
         }
         HorizontalDivider(modifier = Modifier.fillMaxWidth())
     }
+}
+
+/**
+ * EririLily: hairline highlight that makes a translucent card read as glass.
+ * Only drawn while a wallpaper is showing behind the cards.
+ */
+@Composable
+fun glassEdge(enabled: Boolean = true): BorderStroke? {
+    if (!enabled || !backgroundVisible()) return null
+    val dark = isLauncherInDarkTheme()
+    return BorderStroke(1.dp, Color.White.copy(alpha = if (dark) 0.10f else 0.55f))
 }

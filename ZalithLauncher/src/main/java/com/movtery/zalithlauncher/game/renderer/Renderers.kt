@@ -51,10 +51,11 @@ object Renderers {
             NGGL4ESRenderer,
             GL4ESRenderer,
             KopperZinkRenderer,
-            VirGLRenderer,
-            FreedrenoRenderer,
-            PanfrostRenderer
+            VirGLRenderer
         )
+        // EririLily: only offer GPU-specific Mesa drivers on the GPU they were built for
+        if (GpuInfo.allows(GpuInfo.Family.ADRENO)) addRenderers(FreedrenoRenderer)
+        if (GpuInfo.allows(GpuInfo.Family.MALI)) addRenderers(PanfrostRenderer)
     }
 
     /**

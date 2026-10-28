@@ -16,4 +16,15 @@
     <string name="el_theme_sakura">樱花</string>
     <string name="el_theme_white">纯白</string>
     <string name="el_theme_black">纯黑</string>
+    <string name="el_brand_title">樱梨 EririLily</string>
+    <string name="el_perf_title">性能预设</string>
+    <string name="el_perf_summary">一键切换，只调整渲染分辨率和持续性能模式。显卡：%1$s</string>
+    <string name="el_perf_smooth">流畅</string>
+    <string name="el_perf_smooth_desc" formatted="false">70% · 稳帧</string>
+    <string name="el_perf_balanced">均衡</string>
+    <string name="el_perf_balanced_desc" formatted="false">85% · 稳帧</string>
+    <string name="el_perf_quality">画质</string>
+    <string name="el_perf_quality_desc" formatted="false">100%</string>
+    <string name="el_gpu_other">其他</string>
+    <string name="el_gpu_unknown">未识别</string>
 </resources>

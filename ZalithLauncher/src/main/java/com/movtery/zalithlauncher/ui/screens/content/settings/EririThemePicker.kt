@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.materialkolor.PaletteStyle
@@ -34,12 +35,13 @@ import com.movtery.zalithlauncher.setting.AllSettings
 import com.movtery.zalithlauncher.setting.enums.DarkMode
 import com.movtery.zalithlauncher.ui.components.BackgroundCard
 import com.movtery.zalithlauncher.ui.theme.ColorThemeType
+import com.movtery.zalithlauncher.viewmodel.LocalBackgroundViewModel
 
 /** EririLily's three looks, same as the Windows launcher: sakura, pure white, pure black. */
-enum class ElTheme(val nameRes: Int, val swatch: Color, val ring: Color, val color: Int, val style: PaletteStyle, val dark: DarkMode) {
-    SAKURA(R.string.el_theme_sakura, Color(0xFFF6D3DB), Color(0xFFE48AA0), 0xFFE48AA0.toInt(), PaletteStyle.TonalSpot, DarkMode.Disable),
-    WHITE(R.string.el_theme_white, Color(0xFFFFFFFF), Color(0xFFBDBDBD), 0xFF8A8A8A.toInt(), PaletteStyle.Monochrome, DarkMode.Disable),
-    BLACK(R.string.el_theme_black, Color(0xFF121212), Color(0xFF5A5A5A), 0xFF8A8A8A.toInt(), PaletteStyle.Monochrome, DarkMode.Enable);
+enum class ElTheme(val key: String, val nameRes: Int, val swatch: Color, val ring: Color, val color: Int, val style: PaletteStyle, val dark: DarkMode) {
+    SAKURA("sakura", R.string.el_theme_sakura, Color(0xFFF6D3DB), Color(0xFFE48AA0), 0xFFE48AA0.toInt(), PaletteStyle.TonalSpot, DarkMode.Disable),
+    WHITE("white", R.string.el_theme_white, Color(0xFFFFFFFF), Color(0xFFBDBDBD), 0xFF8A8A8A.toInt(), PaletteStyle.Monochrome, DarkMode.Disable),
+    BLACK("black", R.string.el_theme_black, Color(0xFF121212), Color(0xFF5A5A5A), 0xFF8A8A8A.toInt(), PaletteStyle.Monochrome, DarkMode.Enable);
 
     fun apply() {
         AllSettings.launcherColorTheme.save(ColorThemeType.CUSTOM)
@@ -63,6 +65,8 @@ enum class ElTheme(val nameRes: Int, val swatch: Color, val ring: Color, val col
 @Composable
 fun ElThemePicker(modifier: Modifier = Modifier) {
     val cur = ElTheme.current()
+    val context = LocalContext.current
+    val background = LocalBackgroundViewModel.current
     BackgroundCard(modifier = modifier, shape = MaterialTheme.shapes.extraLarge) {
         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Text(stringResource(R.string.el_theme_title), style = MaterialTheme.typography.titleSmall)
@@ -80,7 +84,10 @@ fun ElThemePicker(modifier: Modifier = Modifier) {
                             .weight(1f)
                             .clip(RoundedCornerShape(16.dp))
                             .border(2.dp, border, RoundedCornerShape(16.dp))
-                            .clickable { t.apply() }
+                            .clickable {
+                                t.apply()
+                                background?.followTheme(context, t.key)
+                            }
                             .padding(vertical = 10.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.spacedBy(6.dp)

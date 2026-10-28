@@ -423,7 +423,7 @@ object AllSettings : SettingsRegistry() {
     /**
      * 启动器背景元素不透明度
      */
-    val launcherBackgroundOpacity = intSetting("launcherBackgroundOpacity", 80, 20..100)
+    val launcherBackgroundOpacity = intSetting("launcherBackgroundOpacity", 58, 20..100) // EririLily: glass cards
 
     /**
      * 启动器视频背景音量
@@ -433,12 +433,12 @@ object AllSettings : SettingsRegistry() {
     /**
      * 启动器背景模糊效果
      */
-    val backgroundBlur = intSetting("backgroundBlur", 0, 0..40)
+    val backgroundBlur = intSetting("backgroundBlur", 24, 0..40) // EririLily: frosted glass on by default
 
     /**
      * 启动器背景模糊效果类型
      */
-    val backgroundBlurType = enumSetting("backgroundBlurType", BackgroundBlur.Background)
+    val backgroundBlurType = enumSetting("backgroundBlurType", BackgroundBlur.Foreground) // EririLily: blur behind cards
 
     /**
      * 启动器上次检查更新时，用户选择忽略的版本号
@@ -525,6 +525,9 @@ object AllSettings : SettingsRegistry() {
     /** EririLily：按键显示 / 手机状态被点成小标签（收起） */
     val keystrokesCollapsed = boolSetting("elKeystrokesCollapsed", false)
     val deviceHudCollapsed = boolSetting("elDeviceHudCollapsed", false)
+
+    /** EririLily：内置壁纸状态 auto / sakura / white / black / custom（用户自选）/ none（用户删除） */
+    val builtinBackground = stringSetting("elBuiltinBackground", "auto")
     /** 手机状态条位置 */
     val deviceHudPos = offsetSetting("elDeviceHudPos", Offset(24f, 24f))
 
@@ -626,7 +629,7 @@ object AllSettings : SettingsRegistry() {
     /**
      * 是否在打开启动器时，根据特定的运行游戏次数，显示赞助支持弹窗
      */
-    val showSponsorship = boolSetting("showSponsorship", true)
+    val showSponsorship = boolSetting("showSponsorship", false) // EririLily: no donation pop-up (Zalith links stay in About)
 
     /**
      * 搜索模组的初始搜索平台

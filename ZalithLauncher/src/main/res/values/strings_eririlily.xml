@@ -16,4 +16,15 @@
     <string name="el_theme_sakura">Sakura</string>
     <string name="el_theme_white">Pure white</string>
     <string name="el_theme_black">Pure black</string>
+    <string name="el_brand_title">EririLily</string>
+    <string name="el_perf_title">Performance</string>
+    <string name="el_perf_summary">One tap. Only changes render resolution and steady-performance mode. GPU: %1$s</string>
+    <string name="el_perf_smooth">Smooth</string>
+    <string name="el_perf_smooth_desc" formatted="false">70% · steady</string>
+    <string name="el_perf_balanced">Balanced</string>
+    <string name="el_perf_balanced_desc" formatted="false">85% · steady</string>
+    <string name="el_perf_quality">Quality</string>
+    <string name="el_perf_quality_desc" formatted="false">100%</string>
+    <string name="el_gpu_other">other</string>
+    <string name="el_gpu_unknown">unknown</string>
 </resources>

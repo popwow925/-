@@ -123,6 +123,10 @@ class LauncherUpgradeViewModel: ViewModel() {
     fun checkOnAppStart(
         onIsLatest: suspend () -> Unit = {}
     ) {
+        // EririLily: this checks the Zalith Launcher team's update feed, which would offer
+        // their official builds to EririLily users. EririLily has no update server; new
+        // versions are published on GitHub Releases (see MainActivity.checkUpdate).
+        if (true) return
         viewModelScope.launch {
             if (
                 isWithinRateLimit(

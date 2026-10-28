@@ -167,8 +167,47 @@ class BackgroundViewModel: ViewModel() {
     suspend fun delete() {
         withContext(Dispatchers.IO) {
             FileUtils.deleteQuietly(backgroundFile)
+            AllSettings.builtinBackground.save(BUILTIN_NONE) // the user removed it: don't put one back
             updateState()
         }
+    }
+
+    /**
+     * EririLily: copy one of the bundled wallpapers (assets/el/bg_<name>.webp) into place.
+     * They give the frosted-glass cards something to blur.
+     */
+    fun useBuiltin(context: Context, name: String) {
+        val app = context.applicationContext
+        viewModelScope.launch(Dispatchers.IO) {
+            runCatching {
+                backgroundFile.parentFile?.mkdirs()
+                app.assets.open("el/bg_$name.webp").use { input ->
+                    backgroundFile.outputStream().use { input.copyTo(it) }
+                }
+                AllSettings.builtinBackground.save(name)
+                updateState()
+            }
+        }
+    }
+
+    /** First run: put the Sakura wallpaper in place unless the user has their own (or removed it). */
+    fun ensureBuiltin(context: Context) {
+        val cur = AllSettings.builtinBackground.getValue()
+        if (cur == BUILTIN_NONE || cur == BUILTIN_CUSTOM) return
+        if (!backgroundFile.exists()) useBuiltin(context, if (cur in BUILTIN_NAMES) cur else "sakura")
+    }
+
+    /** Theme switch: follow it only while a bundled wallpaper is showing. */
+    fun followTheme(context: Context, name: String) {
+        val cur = AllSettings.builtinBackground.getValue()
+        if (cur in BUILTIN_NAMES || (cur == BUILTIN_AUTO && !backgroundFile.exists())) useBuiltin(context, name)
+    }
+
+    companion object {
+        const val BUILTIN_AUTO = "auto"
+        const val BUILTIN_NONE = "none"
+        const val BUILTIN_CUSTOM = "custom"
+        val BUILTIN_NAMES = setOf("sakura", "white", "black")
     }
 
     suspend fun import(context: Context, result: Uri) {
@@ -180,6 +219,7 @@ class BackgroundViewModel: ViewModel() {
                 FileUtils.deleteQuietly(backgroundFile)
                 error("The selected file is not an image or a video!")
             }
+            AllSettings.builtinBackground.save(BUILTIN_CUSTOM)
             updateState()
         }
     }
