@@ -1,5 +1,5 @@
 #!/bin/bash
-# rerun after Modrinth default
+# rerun for glass UI
 set -x
 PKG=cn.eririlily.launcher.android.debug
 OUT=shots; mkdir -p $OUT
