@@ -37,7 +37,9 @@ jobs:
         run: |
           mkdir -p ../out
           GOOS=android GOARCH=arm64 go build -trimpath -ldflags "-s -w" -o ../out/liberirilily_core.so .
-          GOOS=android GOARCH=amd64 go build -trimpath -ldflags "-s -w" -o ../out/liberirilily_core_x86_64.so .
+          # android/amd64 needs cgo: link with the NDK's clang (emulator test build only)
+          CC="$ANDROID_NDK_LATEST_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/x86_64-linux-android26-clang" \
+            CGO_ENABLED=1 GOOS=android GOARCH=amd64 go build -trimpath -ldflags "-s -w" -o ../out/liberirilily_core_x86_64.so .
           GOOS=windows GOARCH=amd64 go build -trimpath -ldflags "-H windowsgui -s -w" -o ../out/EririLily.exe .
       - name: Push core log (failures)
         if: failure()
