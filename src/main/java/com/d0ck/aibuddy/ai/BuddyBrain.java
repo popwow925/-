@@ -23,6 +23,7 @@ public class BuddyBrain {
     private final Deque<LlmClient.Msg> history = new ArrayDeque<>();
     private boolean busy = false;
     private String pending = null;
+    private boolean pendingPassive = true;
     private long lastEventTick = -100000;
 
     public BuddyBrain(AiBuddyEntity buddy) {
@@ -45,7 +46,7 @@ public class BuddyBrain {
             long now = buddy.getWorld().getTime();
             if (busy || now - lastEventTick < 20 * 45) return;
             lastEventTick = now;
-            request("【事件】" + event);
+            request("【事件】" + event + "（只简短说一句话；不要改变正在进行的任务）", true);
         });
     }
 
@@ -56,7 +57,7 @@ public class BuddyBrain {
             long now = buddy.getWorld().getTime();
             if (now - lastEventTick < 20 * 8) return;
             lastEventTick = now;
-            request("【任务回报】" + report + "（简短告诉主人结果，如无必要不要再安排新动作）");
+            request("【任务回报】" + report + "（简短告诉主人结果，不要安排新动作）", true);
         });
     }
 
@@ -67,12 +68,18 @@ public class BuddyBrain {
     }
 
     private void request(String userContent) {
+        request(userContent, false);
+    }
+
+    /** passive=true 表示这是事件/任务回报：只允许说话，不允许改动作（避免打断正在做的事） */
+    private void request(String userContent, boolean passive) {
         AiBuddyConfig cfg = AiBuddyConfig.get();
         if (!cfg.hasKey()) {
             buddy.say("（还没设置 API Key，按 K 或用 /aibuddy key 设置后我就能说话啦）");
             return;
         }
         if (busy) {
+            pendingPassive = pending == null ? passive : (pendingPassive && passive);
             pending = pending == null ? userContent : pending + "\n" + userContent;
             return;
         }
@@ -94,12 +101,13 @@ public class BuddyBrain {
             } else {
                 remember("user", userContent);
                 remember("assistant", reply);
-                apply(reply);
+                apply(reply, passive);
             }
             if (pending != null) {
                 String p = pending;
+                boolean pp = pendingPassive;
                 pending = null;
-                request(p);
+                request(p, pp);
             }
         }));
     }
@@ -110,7 +118,17 @@ public class BuddyBrain {
         while (history.size() > max) history.removeFirst();
     }
 
-    private void apply(String reply) {
+    private static boolean allowedWhenPassive(JsonObject o) {
+        for (String k : new String[]{"do", "action", "type"}) {
+            if (o.has(k) && o.get(k).isJsonPrimitive()) {
+                String a = o.get(k).getAsString().toLowerCase();
+                return a.equals("guard") || a.equals("eat") || a.equals("equip");
+            }
+        }
+        return false;
+    }
+
+    private void apply(String reply, boolean passive) {
         JsonObject obj = extractJson(reply);
         if (obj == null) {
             buddy.say(reply.trim());
@@ -124,6 +142,7 @@ public class BuddyBrain {
             JsonArray arr = obj.getAsJsonArray("actions");
             for (JsonElement e : arr) {
                 if (!e.isJsonObject()) continue;
+                if (passive && !allowedWhenPassive(e.getAsJsonObject())) continue;
                 try {
                     buddy.executeAction(e.getAsJsonObject());
                 } catch (Exception ex) {

@@ -66,6 +66,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -95,6 +96,12 @@ public class AiBuddyEntity extends PathAwareEntity {
     private boolean wasNight;
     private float lastOwnerHealth = 20;
     private float lastSelfHealth = 20;
+
+    // 战斗防卡死：打不到的目标（隔着墙/玻璃、远程怪一直拉开距离）一段时间后放弃，并暂时不再把它当威胁
+    private LivingEntity combatTarget;
+    private int combatFarTicks;
+    private int combatTotalTicks;
+    private final Map<UUID, Long> ignoredMobs = new HashMap<>();
 
     public AiBuddyEntity(EntityType<? extends PathAwareEntity> type, World world) {
         super(type, world);
@@ -210,6 +217,26 @@ public class AiBuddyEntity extends PathAwareEntity {
             setTarget(null);
             target = null;
         }
+        if (target != null) {
+            if (target != combatTarget) {
+                combatTarget = target;
+                combatFarTicks = 0;
+                combatTotalTicks = 0;
+            }
+            combatTotalTicks++;
+            if (squaredDistanceTo(target) < 3.5 * 3.5) combatFarTicks = 0;
+            else combatFarTicks++;
+            // 10 秒一直够不着，或同一个目标缠斗超过 40 秒：放弃，回去干正事
+            if (combatFarTicks > 20 * 10 || combatTotalTicks > 20 * 40) {
+                ignoredMobs.put(target.getUuid(), world.getTime() + 20 * 60);
+                setTarget(null);
+                getNavigation().stop();
+                target = null;
+                combatTarget = null;
+            }
+        } else {
+            combatTarget = null;
+        }
         if (guard && target == null && ownerHere && age % 10 == 0) {
             LivingEntity threat = findThreat(owner);
             if (threat != null) {
@@ -257,14 +284,24 @@ public class AiBuddyEntity extends PathAwareEntity {
     private LivingEntity findThreat(ServerPlayerEntity owner) {
         LivingEntity attacker = owner.getAttacker();
         if (attacker != null && attacker.isAlive() && !(attacker instanceof PlayerEntity)
-                && attacker != this && squaredDistanceTo(attacker) < 16 * 16) {
+                && attacker != this && squaredDistanceTo(attacker) < 16 * 16 && !isIgnoredMob(attacker)) {
             return attacker;
         }
         List<HostileEntity> list = getWorld().getEntitiesByClass(HostileEntity.class,
                 owner.getBoundingBox().expand(10, 4, 10).union(getBoundingBox().expand(8, 4, 8)),
-                e -> e.isAlive() && !(e instanceof AbstractPiglinEntity)
+                e -> e.isAlive() && !isIgnoredMob(e) && !(e instanceof AbstractPiglinEntity)
                         && !(e instanceof Angerable a && !a.hasAngerTime()));
         return list.stream().min(Comparator.comparingDouble(this::squaredDistanceTo)).orElse(null);
+    }
+
+    private boolean isIgnoredMob(LivingEntity e) {
+        Long until = ignoredMobs.get(e.getUuid());
+        if (until == null) return false;
+        if (getWorld().getTime() > until) {
+            ignoredMobs.remove(e.getUuid());
+            return false;
+        }
+        return true;
     }
 
     private void detectEvents(ServerPlayerEntity owner) {
@@ -302,7 +339,7 @@ public class AiBuddyEntity extends PathAwareEntity {
                 }
             }
             case "goto" -> {
-                mode = Mode.STAY;
+                // 不再切到待命：走完后默认继续跟随；想让它留在那里，模型要另外发 stay
                 tasks.addLast(new SimpleTasks.Goto(BlockPos.ofFloored(num(o, "x", getX()), num(o, "y", getY()), num(o, "z", getZ()))));
             }
             case "guard" -> {
