@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "id": "aibuddy",
+  "version": "${version}",
+  "name": "AI 陪玩伙伴 (AI Buddy)",
+  "description": "填入 API Key，召唤一个由大模型驱动的伙伴：会聊天、跟随、护卫、挖矿砍树、盖房子、管理背包。",
+  "authors": ["D0cK", "Claude"],
+  "license": "MIT",
+  "icon": "assets/aibuddy/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": ["com.d0ck.aibuddy.AiBuddyMod"],
+    "client": ["com.d0ck.aibuddy.client.AiBuddyClient"]
+  },
+  "depends": {
+    "fabricloader": ">=0.16.0",
+    "minecraft": "~1.21.1",
+    "java": ">=21",
+    "fabric-api": "*"
+  }
+}
