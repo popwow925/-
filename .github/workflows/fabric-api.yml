@@ -1,0 +1,25 @@
+name: fetch-fabric-api
+on:
+  push:
+    branches: [aibuddy-build]
+    paths: ['.github/workflows/fabric-api.yml']
+permissions:
+  contents: write
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download Fabric API 0.102.0+1.21.1
+        run: |
+          mkdir -p dist
+          curl -fL -o "dist/fabric-api-0.102.0+1.21.1.jar" \
+            "https://maven.fabricmc.net/net/fabricmc/fabric-api/fabric-api/0.102.0%2B1.21.1/fabric-api-0.102.0%2B1.21.1.jar"
+          unzip -p "dist/fabric-api-0.102.0+1.21.1.jar" fabric.mod.json | head -c 300
+      - name: Commit jar
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add dist
+          git commit -m "Add Fabric API jar" || true
+          git push
