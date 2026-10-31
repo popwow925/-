@@ -169,7 +169,7 @@ fun StoreScreen(graph: AppGraph, onToast: (String) -> Unit, modifier: Modifier =
             LazyVerticalGrid(
                 columns = GridCells.Fixed(3),
                 modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(start = ui.dp(110), end = ui.dp(110), top = ui.dp(20), bottom = ui.dp(200)),
+                contentPadding = PaddingValues(start = ui.dp(110), end = ui.dp(110), top = ui.dp(48), bottom = ui.dp(200)),
                 horizontalArrangement = Arrangement.spacedBy(ui.dp(40)),
                 verticalArrangement = Arrangement.spacedBy(ui.dp(24)),
             ) {

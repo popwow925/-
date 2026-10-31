@@ -24,8 +24,15 @@ adb connect 电视IP:5555
 adb install -r app/build/outputs/apk/release/app-release.apk
 ```
 
-仓库已配置阿里云 / 腾讯云镜像,国内网络可直接同步依赖。
+仓库已配置阿里云 / 腾讯云镜像,国内网络可直接同步依赖(在 CI 环境里会自动改用官方源)。
 release 默认用 debug 签名,方便侧载;正式分发请换成你自己的签名。
+
+### 用 GitHub Actions 编译
+
+不想装 Android Studio 的话,推送到 `aura-tv-launcher` 分支(或在 Actions 页手动运行
+`Build APK and capture screenshots`)即可:`.github/workflows/build.yml` 会编译 debug / release APK,
+然后在 Android TV 模拟器里用 `ci/shoot.sh` 模拟遥控器按键并截图。APK 在 Artifacts 的 `aura-apk` 里,
+截图在 `aura-screenshots` 里。
 
 ## 设为默认桌面
 
@@ -103,7 +110,8 @@ app/src/main/java/com/aura/launcher/
 
 ## 已知限制
 
-- 这份工程是在无法联网下载 Android 依赖的环境里写成的,**尚未在真机或模拟器上编译运行过**。
-  首次编译如遇到小的依赖版本或 API 报错,把报错贴给我即可快速修复。
+- 已在 GitHub Actions 上编译通过(JDK 17 / Gradle 8.9 / AGP 8.5.2),并在 Android TV 模拟器
+  (API 33,1920×1080)里安装、启动、用遥控器按键操作并截图;**尚未在真实的索尼电视上测试**。
+  不同机型的遥控器键值、"主页"键行为、U 盘挂载路径可能有差异。
 - 应用商店只提供「清单 → 下载 → 安装」的机制,APK 来源和版权由你自己负责。
 - 没有内置影视推荐内容(按你的选择只做应用和设置)。
