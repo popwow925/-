@@ -1,0 +1,47 @@
+{
+  "name": "Aura 应用商店(示例清单)",
+  "apps": [
+    {
+      "id": "vlc",
+      "name": "VLC 播放器",
+      "packageName": "org.videolan.vlc",
+      "versionCode": 0,
+      "versionName": "示例",
+      "size": 0,
+      "sha256": "",
+      "apkUrl": "https://your-server.example.com/apks/vlc.apk",
+      "iconUrl": "",
+      "bannerUrl": "",
+      "summary": "开源全能播放器。这是示例条目,请换成你自己托管的 APK 地址。",
+      "category": "影音"
+    },
+    {
+      "id": "kodi",
+      "name": "Kodi 媒体中心",
+      "packageName": "org.xbmc.kodi",
+      "versionCode": 0,
+      "versionName": "示例",
+      "size": 0,
+      "sha256": "",
+      "apkUrl": "https://your-server.example.com/apks/kodi.apk",
+      "iconUrl": "",
+      "bannerUrl": "",
+      "summary": "开源家庭影院软件。这是示例条目,请换成你自己托管的 APK 地址。",
+      "category": "影音"
+    },
+    {
+      "id": "jellyfin",
+      "name": "Jellyfin",
+      "packageName": "org.jellyfin.androidtv",
+      "versionCode": 0,
+      "versionName": "示例",
+      "size": 0,
+      "sha256": "",
+      "apkUrl": "https://your-server.example.com/apks/jellyfin.apk",
+      "iconUrl": "",
+      "bannerUrl": "",
+      "summary": "自建媒体库客户端。这是示例条目,请换成你自己托管的 APK 地址。",
+      "category": "影音"
+    }
+  ]
+}

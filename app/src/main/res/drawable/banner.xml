@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android TV 应用列表里的 320x180 横幅。正式发布时请换成带应用名的设计稿 PNG。 -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:angle="315"
+                android:endColor="#FF5B7CFF"
+                android:startColor="#FF1B1F3B" />
+        </shape>
+    </item>
+    <item
+        android:bottom="60dp"
+        android:left="110dp"
+        android:right="110dp"
+        android:top="60dp">
+        <shape android:shape="oval">
+            <solid android:color="#33FFFFFF" />
+            <stroke
+                android:width="3dp"
+                android:color="#CCFFFFFF" />
+        </shape>
+    </item>
+</layer-list>
