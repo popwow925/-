@@ -5,8 +5,9 @@ on:
     branches: [aura-tv-launcher]
   workflow_dispatch:
 
+# 需要写权限,用来把日志 / APK / 截图推到 aura-ci-* 分支
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
@@ -25,7 +26,10 @@ jobs:
           gradle-version: '8.9'
 
       - name: Build APKs
-        run: gradle assembleDebug assembleRelease --no-daemon --stacktrace
+        run: |
+          set -o pipefail
+          mkdir -p out
+          gradle assembleDebug assembleRelease --no-daemon --stacktrace 2>&1 | tee out/build.log
 
       - uses: actions/upload-artifact@v4
         with:
@@ -33,6 +37,15 @@ jobs:
           path: |
             app/build/outputs/apk/release/*.apk
             app/build/outputs/apk/debug/*.apk
+
+      - name: Publish build output
+        if: always()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p out/apk
+          cp app/build/outputs/apk/release/*.apk out/apk/ 2>/dev/null || true
+          bash ci/publish.sh aura-ci-build out
 
   screenshots:
     needs: build
@@ -68,3 +81,9 @@ jobs:
         with:
           name: aura-screenshots
           path: shots/
+
+      - name: Publish screenshots
+        if: always()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bash ci/publish.sh aura-ci-shots shots
