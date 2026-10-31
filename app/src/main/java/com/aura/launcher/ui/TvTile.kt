@@ -41,6 +41,7 @@ import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.focus.FocusRequester
@@ -252,6 +253,8 @@ fun TvButton(
     subtitle: String? = null,
     trailing: String? = null,
     danger: Boolean = false,
+    /** 竖向列表里的整行按钮:吞掉左右键,否则 Compose 会把"向右"解析成跳到顶栏标签。并排按钮传 false。 */
+    lockHorizontal: Boolean = true,
     onFocused: () -> Unit = {},
     onClick: () -> Unit,
 ) {
@@ -273,6 +276,9 @@ fun TvButton(
             .graphicsLayer { scaleX = scale; scaleY = scale }
             .clip(RoundedCornerShape(ui.dp(18)))
             .background(bg)
+            .onPreviewKeyEvent { e ->
+                lockHorizontal && (e.key == Key.DirectionLeft || e.key == Key.DirectionRight)
+            }
             .onFocusChanged {
                 focused = it.isFocused
                 if (it.isFocused) curFocused()

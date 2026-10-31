@@ -5,6 +5,16 @@ mkdir -p shots
 
 cap() { sleep "${2:-1.5}"; adb exec-out screencap -p > "shots/$1.png"; }
 key() { adb shell input keyevent "$1"; sleep 0.8; }
+rep() { local n=$1 k=$2; for _ in $(seq 1 "$n"); do key "$k"; done; }
+
+# 绝对定位到第 N 个顶栏标签(0 主页 / 1 全部应用 / 2 应用商店 / 3 本地安装 / 4 设置)并确认。
+# 先连按"上"回到顶栏,再连按"左"到最左边的标签,最后向右走 N 步。
+goto_tab() {
+  rep 6 KEYCODE_DPAD_UP
+  rep 6 KEYCODE_DPAD_LEFT
+  [ "$1" -gt 0 ] && rep "$1" KEYCODE_DPAD_RIGHT
+  key KEYCODE_DPAD_CENTER
+}
 
 adb wait-for-device
 adb shell input keyevent KEYCODE_WAKEUP || true
@@ -27,46 +37,42 @@ key KEYCODE_DPAD_RIGHT
 key KEYCODE_DPAD_RIGHT
 cap 02-home-selected 1.5
 
-# 3 回到顶栏,切到「全部应用」
-key KEYCODE_DPAD_UP
-for i in 1 2 3 4 5 6; do key KEYCODE_DPAD_LEFT; done
-key KEYCODE_DPAD_RIGHT
-key KEYCODE_DPAD_CENTER
+# 3 全部应用
+goto_tab 1
 key KEYCODE_DPAD_DOWN
 key KEYCODE_DPAD_RIGHT
 cap 03-apps 1.5
 
 # 4 应用商店
-key KEYCODE_DPAD_UP
-key KEYCODE_DPAD_RIGHT
-key KEYCODE_DPAD_CENTER
-cap 04-store 2
+goto_tab 2
+cap 04-store 3
 key KEYCODE_DPAD_DOWN
-key KEYCODE_DPAD_RIGHT
 cap 05-store-focus 1.5
 
-# 5 本地安装
-key KEYCODE_DPAD_UP
-key KEYCODE_DPAD_RIGHT
-key KEYCODE_DPAD_CENTER
+# 5 本地安装:向下进入"授予文件访问权限"按钮,再按右键,焦点应留在按钮上
+goto_tab 3
 cap 06-install 2
-
-# 6 设置
-key KEYCODE_DPAD_UP
-key KEYCODE_DPAD_RIGHT
-key KEYCODE_DPAD_CENTER
-cap 07-settings 2
 key KEYCODE_DPAD_DOWN
 key KEYCODE_DPAD_RIGHT
-cap 08-settings-wallpaper 1.5
+cap 07-install-focus 1.5
 
-# 7 长按 OK 的应用菜单:回到主页第一个磁贴
-adb shell input keyevent KEYCODE_HOME
-sleep 2
-adb shell am start -n com.aura.launcher/.MainActivity
-sleep 4
+# 6 设置:聚焦壁纸,按 OK 切换
+goto_tab 4
+cap 08-settings 2
+key KEYCODE_DPAD_DOWN
+cap 09-settings-wallpaper 1.5
+key KEYCODE_DPAD_CENTER
+cap 10-wallpaper-applied 2
+
+# 7 模拟遥控器主页键:HOME 意图应把桌面切回「主页」并聚焦第一个应用
+adb shell input keyevent KEYCODE_BACK
+sleep 1
+adb shell am start -a android.intent.action.MAIN -c android.intent.category.HOME -n com.aura.launcher/.MainActivity
+cap 11-back-home 3
+
+# 8 长按 OK 的应用菜单
 adb shell input keyevent --longpress KEYCODE_DPAD_CENTER
-cap 09-app-menu 2
+cap 12-app-menu 2
 
 adb logcat -d > shots/logcat-full.txt 2>&1 || true
 grep -E "AndroidRuntime|FATAL|com.aura.launcher" shots/logcat-full.txt | tail -200 > shots/logcat-aura.txt || true

@@ -114,8 +114,8 @@ fun TextInputDialog(
                 .padding(horizontal = ui.dp(26), vertical = ui.dp(20)),
         )
         Row(horizontalArrangement = Arrangement.spacedBy(ui.dp(16))) {
-            TvButton("确定", Modifier.weight(1f), onClick = { onConfirm(text); onDismiss() })
-            TvButton("取消", Modifier.weight(1f), onClick = onDismiss)
+            TvButton("确定", Modifier.weight(1f), lockHorizontal = false, onClick = { onConfirm(text); onDismiss() })
+            TvButton("取消", Modifier.weight(1f), lockHorizontal = false, onClick = onDismiss)
         }
     }
 }
