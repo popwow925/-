@@ -38,7 +38,7 @@ key KEYCODE_DPAD_RIGHT
 cap 02-home-selected 1.5
 
 # 2b 主页上下键(此时焦点在第三个磁贴 Play Store):
-#    上 → 回到当前选中的「主页」标签;下 → 应回到同一个磁贴;再下 → 第二行;再下 → 到底不动;上 → 回第一行
+#    上 → 回到当前选中的「主页」标签;下 → 应回到同一个磁贴;再下 → 第二行;再下 → 到底不动;上 → 回第一行;再上 → 回标签
 key KEYCODE_DPAD_UP
 cap 15-home-up-to-tab 1.2
 key KEYCODE_DPAD_DOWN
@@ -49,6 +49,8 @@ key KEYCODE_DPAD_DOWN
 cap 18-home-bottom-noop 1
 key KEYCODE_DPAD_UP
 cap 19-home-back-row1 1.5
+key KEYCODE_DPAD_UP
+cap 20-home-up-again 1.2
 
 # 3 全部应用
 goto_tab 1
@@ -73,6 +75,8 @@ if [ -f stub-out/demo.apk ]; then
   cap 13-store-preinstall 3
   key KEYCODE_DPAD_DOWN
   cap 14-store-preinstall-focus 1.5
+  key KEYCODE_DPAD_DOWN
+  cap 21-store-preinstall-down 1.5
 fi
 
 # 5 本地安装:向下进入"授予文件访问权限"按钮,再按右键,焦点应留在按钮上

@@ -98,41 +98,13 @@ fun TvTile(
     }
 
     Column(modifier.size(width, height + ui.dp(64)), horizontalAlignment = Alignment.CenterHorizontally) {
+        // 外层:只负责焦点和按键,尺寸固定,不做任何变换。
+        // Compose 找"下一个焦点"用的是节点变换之后的外框:如果在这一层放大/上浮,
+        // 聚焦磁贴的底边会比同行邻居更靠下,按"下"会被当成"邻居在下面"而横着跑,
+        // 永远下不到下一行。所以放大、上浮、倾斜、光晕全部放到内层去做。
         Box(
             Modifier
                 .size(width, height)
-                .graphicsLayer {
-                    val f = focus.value
-                    val s = 1f + 0.10f * f
-                    scaleX = s
-                    scaleY = s
-                    rotationY = tiltX.value
-                    rotationX = tiltY.value
-                    translationY = -8f * density * f
-                    cameraDistance = 14f * density
-                }
-                .drawBehind {
-                    val f = focus.value
-                    if (f > 0.02f) {
-                        // 圆形光晕:渐变半径与圆半径一致,边缘完全淡出,不会出现矩形硬边;
-                        // 终点用同色透明,避免插值时发黑。中段快速衰减,
-                        // 这样光晕伸到所在行的裁剪边界时已经几乎透明,不会留下一条横线
-                        val r = size.width * 0.5f
-                        val c = Offset(size.width / 2f, size.height * 0.84f)
-                        val a = (0.5f * f).coerceIn(0f, 0.6f)
-                        drawCircle(
-                            brush = Brush.radialGradient(
-                                0f to accent.copy(alpha = a),
-                                0.45f to accent.copy(alpha = a * 0.32f),
-                                1f to accent.copy(alpha = 0f),
-                                center = c,
-                                radius = r,
-                            ),
-                            radius = r,
-                            center = c,
-                        )
-                    }
-                }
                 .onKeyEvent { e ->
                     val k = e.key
                     if (k == Key.DirectionCenter || k == Key.Enter || k == Key.NumPadEnter) {
@@ -163,28 +135,66 @@ fun TvTile(
                 .focusable()
                 .pointerInput(Unit) {
                     detectTapGestures(onTap = { curClick() }, onLongPress = { curLong?.invoke() })
-                }
-                .clip(shape)
-                .border(1.dp, Color.White.copy(alpha = 0.10f), shape),
+                },
         ) {
-            content()
-            // 表面高光:焦点时从左上角斜扫一层白光
+            // 内层:全部视觉效果
             Box(
                 Modifier
                     .fillMaxSize()
+                    .graphicsLayer {
+                        val f = focus.value
+                        val s = 1f + 0.10f * f
+                        scaleX = s
+                        scaleY = s
+                        rotationY = tiltX.value
+                        rotationX = tiltY.value
+                        translationY = -8f * density * f
+                        cameraDistance = 14f * density
+                    }
                     .drawBehind {
-                        val a = focus.value
-                        if (a > 0.02f) {
-                            drawRect(
-                                Brush.linearGradient(
-                                    listOf(Color.White.copy(alpha = (0.24f * a).coerceIn(0f, 0.3f)), Color.Transparent),
-                                    start = Offset.Zero,
-                                    end = Offset(size.width, size.height * 1.3f),
-                                )
+                        val f = focus.value
+                        if (f > 0.02f) {
+                            // 圆形光晕:渐变半径与圆半径一致,边缘完全淡出,不会出现矩形硬边;
+                            // 终点用同色透明,避免插值时发黑。中段快速衰减,
+                            // 这样光晕伸到所在行的裁剪边界时已经几乎透明,不会留下一条横线
+                            val r = size.width * 0.5f
+                            val c = Offset(size.width / 2f, size.height * 0.84f)
+                            val a = (0.5f * f).coerceIn(0f, 0.6f)
+                            drawCircle(
+                                brush = Brush.radialGradient(
+                                    0f to accent.copy(alpha = a),
+                                    0.45f to accent.copy(alpha = a * 0.32f),
+                                    1f to accent.copy(alpha = 0f),
+                                    center = c,
+                                    radius = r,
+                                ),
+                                radius = r,
+                                center = c,
                             )
                         }
                     }
-            )
+                    .clip(shape)
+                    .border(1.dp, Color.White.copy(alpha = 0.10f), shape),
+            ) {
+                content()
+                // 表面高光:焦点时从左上角斜扫一层白光
+                Box(
+                    Modifier
+                        .fillMaxSize()
+                        .drawBehind {
+                            val a = focus.value
+                            if (a > 0.02f) {
+                                drawRect(
+                                    Brush.linearGradient(
+                                        listOf(Color.White.copy(alpha = (0.24f * a).coerceIn(0f, 0.3f)), Color.Transparent),
+                                        start = Offset.Zero,
+                                        end = Offset(size.width, size.height * 1.3f),
+                                    )
+                                )
+                            }
+                        }
+                )
+            }
         }
         if (label != null) {
             Text(
