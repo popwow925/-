@@ -141,7 +141,7 @@ struct PrivatePanel: View {
                     .padding(12)
                     .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 16))
             }
-            if model.connectionEnded { ConnectionBar() }
+            if model.connectionEnded && pub.phase != .ended { ConnectionBar() }
             phasePanel
             secretCards
             moderationMenu
@@ -253,6 +253,9 @@ struct PrivatePanel: View {
                     Button(L("award.decline")) { model.send(.awardDecline) }.buttonStyle(BigButtonStyle(tint: .gray))
                 }
             } else {
+                if let q = pub.events.first(where: { $0.key.hasPrefix("prompt.") }) {
+                    Text(model.text(q.key)).font(.title.bold()).multilineTextAlignment(.center)
+                }
                 Text(L("award.vote_hint")).foregroundColor(.secondary)
                 TargetPicker(players: others, selection: $target)
                 Button(L("award.vote")) {

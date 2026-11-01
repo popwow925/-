@@ -65,6 +65,8 @@ struct DemoView: View {
                     .buttonStyle(BigButtonStyle(tint: .gray)).padding()
             }
         }
+        .frame(maxWidth: 680)
+        .frame(maxWidth: .infinity)
     }
 }
 
@@ -93,6 +95,8 @@ struct ClientRootView: View {
                         .buttonStyle(BigButtonStyle(tint: .gray)).padding()
                 }
             }
+            .frame(maxWidth: 680)
+            .frame(maxWidth: .infinity)
         } else {
             JoinView()
         }
