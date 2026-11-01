@@ -65,12 +65,16 @@ final class AppModel: ObservableObject {
 
     // MARK: Demo (offline)
 
-    func startDemo() {
+    func startDemo(seed: UInt64 = UInt64.random(in: 1...UInt64.max >> 1),
+                   config: GameConfig = DemoRoom.defaultConfig(),
+                   botNames: [String] = []) {
         leave()
-        let room = DemoRoom(seed: UInt64.random(in: 1...UInt64.max >> 1),
+        let room = DemoRoom(seed: seed,
                             botCount: 3,
+                            config: config,
                             library: content,
-                            humanNickname: profile.effectiveNickname)
+                            humanNickname: profile.effectiveNickname,
+                            botNames: botNames)
         demo = room
         mode = .demo
         if let human = room.human {
@@ -238,3 +242,50 @@ final class AppModel: ObservableObject {
         session.onEnd = { [weak self] in self?.connectionEnded = true }
     }
 }
+
+#if DEBUG
+// MARK: - Screenshot mode (Debug builds only)
+//
+// Launch arguments, used by .github/workflows/screenshots.yml to take App Store screenshots of the
+// REAL app running in the simulator:
+//   -screenshot home|motion|sabotage|award|bet|results|tv
+// The demo is advanced with a fixed seed until the requested screen is reached. Nothing here exists
+// in Release builds.
+extension AppModel {
+    static var screenshotScene: String? {
+        UserDefaults.standard.string(forKey: "screenshot")
+    }
+
+    func runScreenshotScene(_ scene: String) {
+        guard scene != "home" else { return }
+        let english = (Locale.preferredLanguages.first ?? "").hasPrefix("en")
+        var config = DemoRoom.defaultConfig()
+        config.contentLocale = english ? .en : .zhHans
+        let names = english ? ["Mia", "Leo", "Sam"] : ["小鱼", "阿杰", "豆豆"]
+        startDemo(seed: 7, config: config, botNames: names)
+        guard let room = demo else { return }
+
+        func reached() -> Bool {
+            let e = room.engine
+            switch scene {
+            case "motion":
+                return e.phase == .miniGame && e.currentMiniGame?.kind == .motion
+                    && e.pendingScorePlayers.contains("human")
+            case "sabotage":
+                guard e.phase == .sabotage, let p = privateState, let pub = publicState else { return false }
+                return p.vouchers.contains { pub.round >= $0.usableFromRound && pub.round <= $0.lastUsableRound }
+            case "award": return e.phase == .award
+            case "bet": return e.phase == .betting
+            case "results": return e.phase == .ended
+            case "tv": return e.phase == .tile && (publicState?.events.count ?? 0) >= 2
+            default: return true
+            }
+        }
+        var steps = 0
+        while !reached() && room.engine.phase != .ended && steps < 3000 {
+            room.advance(autoHuman: true)
+            steps += 1
+        }
+    }
+}
+#endif

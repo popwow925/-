@@ -21,7 +21,8 @@ public final class DemoRoom {
                 botCount: Int = 3,
                 config: GameConfig = DemoRoom.defaultConfig(),
                 library: ContentLibrary? = nil,
-                humanNickname: String? = "You") {
+                humanNickname: String? = "You",
+                botNames: [String] = []) {
         precondition(botCount >= 1 && botCount + (humanNickname == nil ? 0 : 1) <= Limits.maxPlayers)
         random = SeededRandom(seed: seed)
         humanRandom = SeededRandom(seed: seed &+ 99)
@@ -42,7 +43,8 @@ public final class DemoRoom {
         }
         human = humanSession
         for i in 1...botCount {
-            let p = Player(id: "bot\(i)", nickname: "Bot\(i)", avatar: Avatar(shape: i % 4, face: i % 3, colorIndex: i % 6))
+            let name = i - 1 < botNames.count ? botNames[i - 1] : "Bot\(i)"
+            let p = Player(id: "bot\(i)", nickname: name, avatar: Avatar(shape: i % 4, face: i % 3, colorIndex: i % 6))
             let s = ClientSession(player: p, transport: hub.makeClientTransport(id: p.id), contentVersion: version, uiLocale: "zh-Hans")
             bots.append(BotClient(session: s, random: random))
         }

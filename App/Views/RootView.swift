@@ -23,6 +23,11 @@ struct RootView: View {
         } message: {
             Text(model.failureText ?? "")
         }
+        #if DEBUG
+        .onAppear {
+            if let scene = AppModel.screenshotScene { model.runScreenshotScene(scene) }
+        }
+        #endif
         .onChange(of: model.mode) { _, new in
             // Keep the screen awake while a party is running; restore the system default afterwards.
             UIApplication.shared.isIdleTimerDisabled = (new != .none)

@@ -15,9 +15,22 @@ struct FrenemyApp: App {
 
     var body: some Scene {
         WindowGroup {
+            #if DEBUG
+            if AppModel.screenshotScene == "tv" {
+                // Screenshot of what the TV shows (external display), rendered full screen.
+                TVRootView()
+                    .environmentObject(model)
+                    .onAppear { model.runScreenshotScene("tv") }
+            } else {
+                RootView()
+                    .environmentObject(model)
+                    .environmentObject(model.profile)
+            }
+            #else
             RootView()
                 .environmentObject(model)
                 .environmentObject(model.profile)
+            #endif
         }
     }
 }

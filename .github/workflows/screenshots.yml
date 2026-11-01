@@ -1,0 +1,33 @@
+name: Screenshots
+
+on:
+  push:
+    branches: ["ci/**"]
+    paths:
+      - "App/**"
+      - "Sources/**"
+      - "tools/take_screenshots.py"
+      - ".github/workflows/screenshots.yml"
+
+jobs:
+  screenshots:
+    name: Simulator screenshots (real app)
+    runs-on: macos-15
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Build (Debug, simulator)
+        run: |
+          set -o pipefail
+          xcodegen generate
+          xcodebuild build -project FrenemyIsle.xcodeproj -scheme FrenemyIsleApp \
+            -configuration Debug -sdk iphonesimulator -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO 2>&1 | tail -20
+      - name: Take screenshots
+        run: python3 tools/take_screenshots.py build/Build/Products/Debug-iphonesimulator/FrenemyIsle.app shots
+      - uses: actions/upload-artifact@v4
+        with:
+          name: screenshots
+          path: shots
