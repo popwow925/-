@@ -65,7 +65,7 @@ key KEYCODE_DPAD_DOWN
 cap 31-movies-setup-focus 1
 key KEYCODE_DPAD_CENTER
 cap 32-connect-menu 1.5
-key KEYCODE_DPAD_CENTER           # 自动搜索
+key KEYCODE_DPAD_CENTER           # 自动搜索;连上后焦点应自动落在片库第一张磁贴
 sleep 7
 cap 33-movies-library 3
 key KEYCODE_DPAD_RIGHT
@@ -74,7 +74,9 @@ cap 34-movies-selected 1.5
 key KEYCODE_DPAD_DOWN
 cap 35-movies-row2 2
 key KEYCODE_DPAD_UP
-key KEYCODE_DPAD_CENTER           # 打开详情
+key KEYCODE_DPAD_LEFT
+key KEYCODE_DPAD_LEFT
+key KEYCODE_DPAD_CENTER           # 打开详情(第一部:星河漫游)
 cap 36-movie-detail 2
 key KEYCODE_DPAD_CENTER           # 播放
 cap 37-player-overlay 2.5
@@ -87,9 +89,26 @@ key KEYCODE_DPAD_CENTER           # 继续
 sleep 2
 adb shell input keyevent KEYCODE_BACK
 sleep 2
-cap 42-after-player 2
+cap 42-after-player 2             # 回到详情,应显示"继续播放"
 adb shell input keyevent KEYCODE_BACK
-cap 43-library-continue 2.5
+cap 43-library-continue 2.5       # 片库最上面多出"继续观看"一行
+
+# 剧集:走到「电影与剧集」行的最右端(剧集磁贴),打开剧集弹窗,播放第一集并拖到片尾,看"下一集"倒数
+key KEYCODE_DPAD_DOWN
+key KEYCODE_DPAD_DOWN
+for _ in 1 2 3 4 5 6 7 8; do adb shell input keyevent KEYCODE_DPAD_RIGHT; sleep 0.25; done
+cap 44-movies-poster-row 2
+key KEYCODE_DPAD_CENTER
+cap 45-series-dialog 2
+key KEYCODE_DPAD_CENTER           # 播放当前选中的一集
+sleep 4
+adb shell "input keyevent KEYCODE_DPAD_RIGHT KEYCODE_DPAD_RIGHT KEYCODE_DPAD_RIGHT KEYCODE_DPAD_RIGHT KEYCODE_DPAD_RIGHT KEYCODE_DPAD_RIGHT KEYCODE_DPAD_RIGHT KEYCODE_DPAD_RIGHT KEYCODE_DPAD_RIGHT KEYCODE_DPAD_RIGHT KEYCODE_DPAD_RIGHT KEYCODE_DPAD_RIGHT KEYCODE_DPAD_RIGHT KEYCODE_DPAD_RIGHT"
+cap 46-next-episode-card 3.5
+cap 47-next-episode-playing 9
+adb shell input keyevent KEYCODE_BACK
+sleep 2
+adb shell input keyevent KEYCODE_BACK
+sleep 1
 cp /tmp/mockhub/server.log shots/mockhub-server.log 2>/dev/null || true
 
 # 3 全部应用

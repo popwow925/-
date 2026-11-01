@@ -180,12 +180,27 @@ fun MoviesScreen(graph: AppGraph, onToast: (String) -> Unit, modifier: Modifier 
     val url by repo.url.collectAsState()
     val resume by graph.resumeTick.collectAsState()
     val scope = rememberCoroutineScope()
+    val bridge = LocalFocusBridge.current
     var connectDialog by remember { mutableStateOf(false) }
+    // 连接 / 重试成功后,连接面板上的按钮会消失,焦点会被系统甩到顶栏第一个标签;这里把它接回片库
+    var focusPending by remember { mutableStateOf(false) }
     var detailId by remember { mutableStateOf<Int?>(null) }
     var groupName by remember { mutableStateOf<String?>(null) }
 
     // 进入页面、地址变化、从播放器回来(进度变了)时刷新
     LaunchedEffect(url, resume) { repo.refresh(silent = repo.state.value is HubState.Ready) }
+
+    val hasLibrary = (state as? HubState.Ready)?.lib?.items?.isNotEmpty() == true
+    LaunchedEffect(focusPending, hasLibrary) {
+        if (focusPending && hasLibrary) {
+            delay(300)
+            bridge.enterContent?.invoke()
+            focusPending = false
+        } else if (focusPending) {
+            delay(10_000) // 一直没有片子出现就放弃,免得之后自动刷出片库时抢走焦点
+            focusPending = false
+        }
+    }
 
     // 电脑正在转码 / 分析时,每 3 秒刷新一次进度
     val working = (state as? HubState.Ready)?.lib?.items?.any { it.play == "transcoding" || it.play == "pending" } == true
@@ -204,7 +219,7 @@ fun MoviesScreen(graph: AppGraph, onToast: (String) -> Unit, modifier: Modifier 
                         title = "影视库还是空的",
                         body = "在电脑浏览器打开  $url  → 「影视」页:\n粘贴 B 站 / YouTube 链接或 mp4、mkv、m3u8 直链即可下载,\n也可以添加电脑上已有的影片文件夹。",
                         error = null, searching = false,
-                        primary = "刷新" to { scope.launch { repo.refresh() } },
+                        primary = "刷新" to { focusPending = true; scope.launch { repo.refresh() } },
                         onAuto = null, onManual = { connectDialog = true },
                     )
                 } else {
@@ -226,7 +241,7 @@ fun MoviesScreen(graph: AppGraph, onToast: (String) -> Unit, modifier: Modifier 
             is HubState.Offline -> SetupPanel(
                 title = "连不上家庭中心", body = "请确认电脑已开机并运行着家庭中心(双击 start.bat),且和电视在同一个 Wi-Fi。",
                 error = st.message, searching = false,
-                primary = "重试连接" to { scope.launch { repo.refresh() } },
+                primary = "重试连接" to { focusPending = true; scope.launch { repo.refresh() } },
                 onAuto = { connectDialog = true }, onManual = { connectDialog = true },
             )
             HubState.NotConfigured -> SetupPanel(
@@ -247,7 +262,7 @@ fun MoviesScreen(graph: AppGraph, onToast: (String) -> Unit, modifier: Modifier 
         val eps = lib?.items?.filter { it.series == name }?.sortedWith(compareBy({ it.season }, { it.episode }, { it.id }))
         if (eps.isNullOrEmpty()) groupName = null else SeriesDialog(name, eps, repo, onToast, onDismiss = { groupName = null })
     }
-    if (connectDialog) HubConnectDialogs(graph, onToast, onDismiss = { connectDialog = false })
+    if (connectDialog) HubConnectDialogs(graph, onToast, onConnected = { focusPending = true }, onDismiss = { connectDialog = false })
 }
 
 // ───────────────────────────── 连接面板 ─────────────────────────────
@@ -301,7 +316,7 @@ private fun SetupPanel(
 
 /** 连接家庭中心的全部弹窗:菜单 → 自动搜索 / 手动输入。设置页和影视页共用。 */
 @Composable
-fun HubConnectDialogs(graph: AppGraph, onToast: (String) -> Unit, onDismiss: () -> Unit) {
+fun HubConnectDialogs(graph: AppGraph, onToast: (String) -> Unit, onDismiss: () -> Unit, onConnected: () -> Unit = {}) {
     val repo = graph.hub
     val scope = rememberCoroutineScope()
     val url by repo.url.collectAsState()
@@ -316,6 +331,7 @@ fun HubConnectDialogs(graph: AppGraph, onToast: (String) -> Unit, onDismiss: () 
             repo.connect(target)
                 .onSuccess { name ->
                     onToast("已连接家庭中心" + if (name.isNotBlank()) "「$name」" else "")
+                    onConnected()
                     onDismiss()
                 }
                 .onFailure {
