@@ -104,7 +104,7 @@ def poster(lang, size, name, scenes):
     paste_shot(c, a, round(W * 0.07), top, sw, round(sw * 0.075))
     foot = "iPhone · iPad · 2–8 人 · 无需账号 · 即将上线" if lang == "zh-Hans" else "iPhone · iPad · 2–8 players · No account · Coming soon"
     band_h = round(110 * k)
-    band = Image.new("RGBA", (W, band_h), (8, 40, 90, 200))
+    band = Image.new("RGBA", (W, band_h), (14, 58, 128, 255))
     c.alpha_composite(band, (0, H - band_h))
     d = ImageDraw.Draw(c)
     d.text((W // 2, H - band_h // 2), foot, font=font(lang, round(34 * k), False), fill="white", anchor="mm")
