@@ -33,6 +33,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -526,17 +527,20 @@ private fun Library(lib: HubLibrary, repo: HubRepository, onOpen: (Entry) -> Uni
                 modifier = Modifier.graphicsLayer { alpha = (1f - scroll.value / ui.px(380)).coerceIn(0f, 1f) },
             )
             rows.forEachIndexed { ri, row ->
-                EntryRow(
-                    row = row, onPositioned = { rowTops[ri] = it },
-                    onUp = if (ri == 0) ({ bridge.enterTabs?.invoke() == true }) else null,
-                ) { index, entry ->
-                    val own = remember { FocusRequester() }
-                    val fr = if (ri == 0 && index == 0) firstTile else own
-                    EntryTile(
-                        entry = entry, portrait = row.portrait, repo = repo, focusRequester = fr,
-                        onClick = { curOpen(entry) },
-                        onFocused = { focused = entry; lastTile[0] = fr; focusRow(ri) },
-                    )
+                // 按行的 key 保持身份:顶部多出"继续观看"一行时,下面的磁贴不会被销毁重建,焦点才不会丢
+                key(row.key) {
+                    EntryRow(
+                        row = row, onPositioned = { rowTops[ri] = it },
+                        onUp = if (ri == 0) ({ bridge.enterTabs?.invoke() == true }) else null,
+                    ) { index, entry ->
+                        val own = remember { FocusRequester() }
+                        val fr = if (ri == 0 && index == 0) firstTile else own
+                        EntryTile(
+                            entry = entry, portrait = row.portrait, repo = repo, focusRequester = fr,
+                            onClick = { curOpen(entry) },
+                            onFocused = { focused = entry; lastTile[0] = fr; focusRow(ri) },
+                        )
+                    }
                 }
             }
             Box(Modifier.height(ui.dp(520)))
@@ -730,7 +734,8 @@ private fun DetailDialog(item: HubItem, repo: HubRepository, onToast: (String) -
     val ctx = LocalContext.current
     val scope = rememberCoroutineScope()
     val first = remember { FocusRequester() }
-    LaunchedEffect(Unit) {
+    // 看完一段回来后按钮会从"播放"变成"继续播放 / 从头播放",焦点要重新落在第一个按钮上
+    LaunchedEffect(item.inProgress, item.playable, item.watched) {
         delay(80)
         runCatching { first.requestFocus() }
     }
@@ -816,7 +821,7 @@ private fun SeriesDialog(name: String, episodes: List<HubItem>, repo: HubReposit
     val ctx = LocalContext.current
     val first = remember { FocusRequester() }
     val start = episodes.indexOfFirst { !it.watched }.coerceAtLeast(0)
-    LaunchedEffect(Unit) {
+    LaunchedEffect(start) {
         delay(120)
         runCatching { first.requestFocus() }
     }

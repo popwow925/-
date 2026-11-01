@@ -109,6 +109,19 @@ adb shell input keyevent KEYCODE_BACK
 sleep 2
 adb shell input keyevent KEYCODE_BACK
 sleep 1
+
+# 播放器的"等待转码"和"出错"界面:直接拉起播放器(条目 3 是"转码中 42%",条目 99 不存在)
+adb root > shots/adb-root.txt 2>&1 || true
+sleep 3
+adb wait-for-device
+adb shell am start -n com.aura.launcher/.ui.PlayerActivity --ei id 3 --ez resume false > shots/player-waiting-start.txt 2>&1 || true
+cap 48-player-waiting 4
+adb shell input keyevent KEYCODE_BACK
+sleep 1.5
+adb shell am start -n com.aura.launcher/.ui.PlayerActivity --ei id 99 --ez resume false > shots/player-failed-start.txt 2>&1 || true
+cap 49-player-failed 4
+adb shell input keyevent KEYCODE_BACK
+sleep 1.5
 cp /tmp/mockhub/server.log shots/mockhub-server.log 2>/dev/null || true
 
 # 3 全部应用
@@ -152,6 +165,18 @@ key KEYCODE_DPAD_DOWN
 cap 09-settings-wallpaper 1.5
 key KEYCODE_DPAD_CENTER
 cap 10-wallpaper-applied 2
+key KEYCODE_DPAD_DOWN
+key KEYCODE_DPAD_DOWN
+cap 22-settings-hub 1.5
+key KEYCODE_DPAD_CENTER
+cap 23-settings-hub-menu 1.5
+key KEYCODE_DPAD_DOWN
+key KEYCODE_DPAD_CENTER
+cap 24-address-keypad 2
+adb shell input keyevent KEYCODE_BACK
+sleep 1
+adb shell input keyevent KEYCODE_BACK
+sleep 1
 
 # 7 模拟遥控器主页键:HOME 意图应把桌面切回「主页」并聚焦第一个应用
 adb shell input keyevent KEYCODE_BACK
