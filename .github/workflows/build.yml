@@ -59,6 +59,21 @@ jobs:
           name: aura-apk
           path: apk
 
+      - name: Build a harmless stub APK (used to demo the built-in apps section)
+        continue-on-error: true
+        run: |
+          BT=$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)
+          AJ=$(ls "$ANDROID_HOME"/platforms/android-*/android.jar | sort -V | tail -1)
+          echo "build-tools: $BT"; echo "android.jar: $AJ"
+          mkdir -p stub-out
+          "$BT/aapt2" link -o stub-out/unsigned.apk --manifest ci/stub/AndroidManifest.xml \
+            -I "$AJ" --min-sdk-version 28 --target-sdk-version 34
+          keytool -genkeypair -keystore stub-out/stub.jks -storepass android -keypass android \
+            -alias k -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=stub"
+          "$BT/apksigner" sign --ks stub-out/stub.jks --ks-pass pass:android \
+            --out stub-out/demo.apk stub-out/unsigned.apk
+          ls -la stub-out
+
       - name: Enable KVM
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules

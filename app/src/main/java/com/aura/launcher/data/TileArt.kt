@@ -45,7 +45,7 @@ object TileArtLoader {
     }
 
     /** 取图标里最鲜艳的颜色,再压到适合做背景的明度,用来生成磁贴渐变底色。 */
-    private fun accentOf(bmp: Bitmap): Color {
+    fun accentOf(bmp: Bitmap): Color {
         val small = Bitmap.createScaledBitmap(bmp, 8, 8, true)
         var bestScore = -1f
         var best = 0

@@ -3,6 +3,7 @@ package com.aura.launcher.ui
 import android.content.Context
 import android.content.Intent
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.LocalBringIntoViewSpec
 import androidx.compose.foundation.layout.Arrangement
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,6 +19,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
@@ -47,6 +50,8 @@ import com.aura.launcher.data.AppGraph
 import com.aura.launcher.data.ApkInstaller
 import com.aura.launcher.data.InstallEvents
 import com.aura.launcher.data.InstallState
+import com.aura.launcher.data.PreApp
+import com.aura.launcher.data.Preinstall
 import com.aura.launcher.data.StoreItem
 import com.aura.launcher.data.StoreRepository
 import com.aura.launcher.data.StoreResult
@@ -82,9 +87,14 @@ fun StoreScreen(graph: AppGraph, onToast: (String) -> Unit, modifier: Modifier =
         value = null
         value = StoreRepository.load(ctx, storeUrl)
     }
+    // 内置应用:随桌面分发的 APK;装/卸应用或回到桌面时重新扫描,以刷新"已安装/可更新"状态
+    val preApps by produceState(emptyList<PreApp>(), apps, resume, reload) {
+        value = Preinstall.scan(ctx)
+    }
     val progress = remember { mutableStateMapOf<String, Progress>() }
     val jobs = remember { HashMap<String, Job>() }
     var focusedItem by remember { mutableStateOf<StoreItem?>(null) }
+    var focusedPre by remember { mutableStateOf<PreApp?>(null) }
     var needInstallPermission by remember { mutableStateOf(false) }
     val edge = remember(ui) { EdgeSpec(ui.px(150)) }
 
@@ -131,6 +141,21 @@ fun StoreScreen(graph: AppGraph, onToast: (String) -> Unit, modifier: Modifier =
         }
     }
 
+    fun actPre(app: PreApp) {
+        if (app.state == InstallState.INSTALLED) {
+            if (!openApp(ctx, app.packageName)) onToast("无法打开「${app.label}」")
+            return
+        }
+        if (!ApkInstaller.canRequestInstalls(ctx)) {
+            needInstallPermission = true
+            return
+        }
+        scope.launch {
+            onToast("正在提交安装:${app.label}")
+            ApkInstaller.install(ctx, app.file).onFailure { onToast("安装失败:${it.message ?: "未知错误"}") }
+        }
+    }
+
     Column(modifier.fillMaxSize()) {
         Row(
             Modifier.fillMaxWidth().padding(start = ui.dp(110), end = ui.dp(110), bottom = ui.dp(18)),
@@ -139,7 +164,13 @@ fun StoreScreen(graph: AppGraph, onToast: (String) -> Unit, modifier: Modifier =
             Column(Modifier.weight(1f)) {
                 Text(result?.title ?: "应用商店", color = Palette.text, fontSize = ui.sp(40), fontWeight = FontWeight.SemiBold, maxLines = 1)
                 val f = focusedItem
+                val p = focusedPre
                 val sub = when {
+                    p != null -> buildString {
+                        append("内置应用  ·  ").append(p.packageName)
+                        if (p.versionName.isNotBlank()) append("  ·  ").append(p.versionName)
+                        append("  ·  ").append("%.1f MB".format(p.sizeBytes / 1048576.0))
+                    }
                     result == null -> "正在加载清单……"
                     f != null -> buildString {
                         append(f.summary.ifBlank { f.packageName })
@@ -173,12 +204,25 @@ fun StoreScreen(graph: AppGraph, onToast: (String) -> Unit, modifier: Modifier =
                 horizontalArrangement = Arrangement.spacedBy(ui.dp(40)),
                 verticalArrangement = Arrangement.spacedBy(ui.dp(24)),
             ) {
+                if (preApps.isNotEmpty()) {
+                    item(key = "h-pre", span = { GridItemSpan(maxLineSpan) }) { SectionTitle("内置应用") }
+                    items(preApps, key = { "pre-" + it.packageName }) { app ->
+                        PreTile(
+                            app = app,
+                            onClick = { actPre(app) },
+                            onFocused = { focusedPre = app; focusedItem = null },
+                        )
+                    }
+                    if (storeItems.isNotEmpty()) {
+                        item(key = "h-store", span = { GridItemSpan(maxLineSpan) }) { SectionTitle("更多应用") }
+                    }
+                }
                 items(storeItems, key = { it.id }) { item ->
                     val state = remember(item, apps, resume) { StoreRepository.stateOf(ctx, item) }
                     StoreTile(
                         item = item, state = state, progress = progress[item.id],
                         onClick = { act(item) },
-                        onFocused = { focusedItem = item },
+                        onFocused = { focusedItem = item; focusedPre = null },
                     )
                 }
             }
@@ -199,6 +243,68 @@ fun StoreScreen(graph: AppGraph, onToast: (String) -> Unit, modifier: Modifier =
             ),
             onDismiss = { needInstallPermission = false },
         )
+    }
+}
+
+@Composable
+private fun SectionTitle(text: String) {
+    val ui = LocalUi.current
+    Text(
+        text, color = Palette.text, fontSize = ui.sp(30), fontWeight = FontWeight.SemiBold,
+        modifier = Modifier.padding(top = ui.dp(8)),
+    )
+}
+
+/** 内置应用磁贴:图标取自 APK 本身,左上角带"内置"角标。 */
+@Composable
+private fun PreTile(app: PreApp, onClick: () -> Unit, onFocused: () -> Unit) {
+    val ui = LocalUi.current
+    val status = when (app.state) {
+        InstallState.NOT_INSTALLED -> "安装"
+        InstallState.INSTALLED -> "已安装 · 打开"
+        InstallState.UPDATABLE -> "更新"
+    }
+    TvTile(
+        width = ui.dp(540), height = ui.dp(304), accent = app.accent,
+        label = app.label, onClick = onClick, onFocused = onFocused,
+    ) {
+        Box(
+            Modifier.fillMaxSize().background(
+                Brush.linearGradient(listOf(lerp(app.accent, Color.White, 0.14f), lerp(app.accent, Color.Black, 0.55f)))
+            )
+        )
+        val icon = app.icon
+        if (icon != null) {
+            Image(
+                bitmap = icon, contentDescription = null,
+                modifier = Modifier.align(Alignment.Center).fillMaxHeight(0.5f).aspectRatio(1f),
+            )
+        } else {
+            Text(
+                app.label.take(1), color = Palette.text.copy(alpha = 0.9f), fontSize = ui.sp(120),
+                fontWeight = FontWeight.Bold, modifier = Modifier.align(Alignment.Center),
+            )
+        }
+        Box(
+            Modifier
+                .align(Alignment.TopStart)
+                .padding(ui.dp(16))
+                .clip(CircleShape)
+                .background(Color.White.copy(alpha = 0.22f))
+                .padding(horizontal = ui.dp(18), vertical = ui.dp(6)),
+        ) {
+            Text("内置", color = Palette.text, fontSize = ui.sp(22), maxLines = 1)
+        }
+        Box(
+            Modifier
+                .align(Alignment.BottomEnd)
+                .padding(ui.dp(16))
+                .clip(CircleShape)
+                .background(Color.Black.copy(alpha = 0.58f))
+                .padding(horizontal = ui.dp(20), vertical = ui.dp(8)),
+        ) {
+            Text(status, color = Palette.text, fontSize = ui.sp(24), maxLines = 1)
+        }
     }
 }
 

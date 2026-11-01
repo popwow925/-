@@ -49,6 +49,19 @@ cap 04-store 3
 key KEYCODE_DPAD_DOWN
 cap 05-store-focus 1.5
 
+# 4b 内置应用:把示例 APK 推到外部"内置应用"目录,重新进入商店页后应出现「内置应用」区
+if [ -f stub-out/demo.apk ]; then
+  PRE=/sdcard/Android/data/com.aura.launcher/files/preinstall
+  adb shell mkdir -p "$PRE" 2>&1 | tee -a shots/preinstall.txt
+  adb push stub-out/demo.apk "$PRE/demo.apk" 2>&1 | tee -a shots/preinstall.txt
+  adb shell ls -l "$PRE" 2>&1 | tee -a shots/preinstall.txt
+  goto_tab 0
+  goto_tab 2
+  cap 13-store-preinstall 3
+  key KEYCODE_DPAD_DOWN
+  cap 14-store-preinstall-focus 1.5
+fi
+
 # 5 本地安装:向下进入"授予文件访问权限"按钮,再按右键,焦点应留在按钮上
 goto_tab 3
 cap 06-install 2
