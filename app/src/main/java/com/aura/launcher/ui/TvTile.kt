@@ -87,7 +87,7 @@ fun TvTile(
 
     androidx.compose.runtime.LaunchedEffect(focused) {
         if (focused) {
-            launch { focus.animateTo(1f, spring(dampingRatio = 0.58f, stiffness = 320f)) }
+            launch { focus.animateTo(1f, spring(dampingRatio = 0.62f, stiffness = 420f)) }
             tiltX.snapTo(-navDir.dx * 7f)
             tiltY.snapTo(navDir.dy * 5f)
             launch { tiltX.animateTo(0f, spring(dampingRatio = 0.45f, stiffness = 90f)) }
@@ -115,15 +115,16 @@ fun TvTile(
                     val f = focus.value
                     if (f > 0.02f) {
                         // 圆形光晕:渐变半径与圆半径一致,边缘完全淡出,不会出现矩形硬边;
-                        // 终点用同色透明,避免插值时发黑
-                        val r = size.width * 0.62f
-                        val c = Offset(size.width / 2f, size.height * 0.9f)
+                        // 终点用同色透明,避免插值时发黑。中段快速衰减,
+                        // 这样光晕伸到所在行的裁剪边界时已经几乎透明,不会留下一条横线
+                        val r = size.width * 0.5f
+                        val c = Offset(size.width / 2f, size.height * 0.84f)
+                        val a = (0.5f * f).coerceIn(0f, 0.6f)
                         drawCircle(
                             brush = Brush.radialGradient(
-                                listOf(
-                                    accent.copy(alpha = (0.5f * f).coerceIn(0f, 0.6f)),
-                                    accent.copy(alpha = 0f),
-                                ),
+                                0f to accent.copy(alpha = a),
+                                0.45f to accent.copy(alpha = a * 0.32f),
+                                1f to accent.copy(alpha = 0f),
                                 center = c,
                                 radius = r,
                             ),
@@ -212,10 +213,12 @@ fun TabItem(
     title: String,
     selected: Boolean,
     modifier: Modifier = Modifier,
+    focusRequester: FocusRequester? = null,
     onFocused: () -> Unit = {},
     onClick: () -> Unit,
 ) {
     val ui = LocalUi.current
+    val bridge = LocalFocusBridge.current
     var focused by remember { mutableStateOf(false) }
     val bg by animateColorAsState(
         if (focused) Color.White else if (selected) Color.White.copy(alpha = 0.16f) else Color.Transparent,
@@ -233,6 +236,12 @@ fun TabItem(
             .graphicsLayer { scaleX = scale; scaleY = scale }
             .clip(CircleShape)
             .background(bg)
+            // 按"下"回到上次聚焦的内容;页面没有注册交接动作(或交接失败)时,走系统默认的就近查找
+            .onPreviewKeyEvent { e ->
+                e.type == KeyEventType.KeyDown && e.key == Key.DirectionDown &&
+                    bridge.enterContent?.invoke() == true
+            }
+            .then(if (focusRequester != null) Modifier.focusRequester(focusRequester) else Modifier)
             .onFocusChanged {
                 focused = it.isFocused
                 if (it.isFocused) curFocused()

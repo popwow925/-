@@ -18,6 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -27,6 +28,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.Key
@@ -50,6 +52,7 @@ fun LauncherRoot(graph: AppGraph, homeSignal: Int, onRequestStoragePermission: (
         val density = LocalDensity.current.density
         val ui = remember(maxWidth, density) { Ui(maxWidth.value / 1920f, density) }
         val navDir = remember { NavDir() }
+        val bridge = remember { FocusBridge() }
         var tab by remember { mutableStateOf(Tab.HOME) }
         var heroLabel by remember { mutableStateOf<String?>(null) }
         var focusToken by remember { mutableIntStateOf(0) }
@@ -79,7 +82,7 @@ fun LauncherRoot(graph: AppGraph, homeSignal: Int, onRequestStoragePermission: (
             if (!graph.launch(entry)) toast = "无法打开「${entry.label}」"
         }
 
-        CompositionLocalProvider(LocalUi provides ui, LocalNavDir provides navDir) {
+        CompositionLocalProvider(LocalUi provides ui, LocalNavDir provides navDir, LocalFocusBridge provides bridge) {
             Box(
                 Modifier.fillMaxSize().onPreviewKeyEvent { e ->
                     if (e.type == KeyEventType.KeyDown) {
@@ -136,6 +139,12 @@ fun LauncherRoot(graph: AppGraph, homeSignal: Int, onRequestStoragePermission: (
 @Composable
 private fun TopBar(selected: Tab, onSelect: (Tab) -> Unit, onFocusTab: () -> Unit) {
     val ui = LocalUi.current
+    val bridge = LocalFocusBridge.current
+    val requesters = remember { Tab.entries.map { FocusRequester() } }
+    // 内容区按"上"回到顶栏时,总是落在当前选中的标签上,而不是正上方随便哪个
+    SideEffect {
+        bridge.enterTabs = { runCatching { requesters[selected.ordinal].requestFocus() }.isSuccess }
+    }
     Box(
         Modifier
             .fillMaxWidth()
@@ -149,6 +158,7 @@ private fun TopBar(selected: Tab, onSelect: (Tab) -> Unit, onFocusTab: () -> Uni
             Tab.entries.forEach { t ->
                 TabItem(
                     title = t.title, selected = t == selected,
+                    focusRequester = requesters[t.ordinal],
                     onFocused = onFocusTab, onClick = { onSelect(t) },
                 )
             }

@@ -35,6 +35,22 @@ class NavDir {
 
 val LocalNavDir = staticCompositionLocalOf { NavDir() }
 
+/**
+ * 顶栏与页面内容之间的焦点交接。
+ * Compose 默认按几何位置就近找下一个焦点,所以从顶栏按"下"会落在正下方的某个磁贴上,
+ * 而不是你刚才离开的那个;从内容按"上"也可能落到不是当前页的标签。
+ * 这里让页面注册"回到内容"的动作,让顶栏注册"回到当前标签"的动作,两边显式交接。
+ */
+class FocusBridge {
+    /** 当前页面注册:把焦点交还给上次聚焦(或第一个)内容,成功返回 true。 */
+    var enterContent: (() -> Boolean)? = null
+
+    /** 顶栏注册:把焦点交给当前选中的标签,成功返回 true。 */
+    var enterTabs: (() -> Boolean)? = null
+}
+
+val LocalFocusBridge = staticCompositionLocalOf { FocusBridge() }
+
 object Palette {
     val text = Color.White
     val textDim = Color.White.copy(alpha = 0.64f)
@@ -49,7 +65,8 @@ object Palette {
 /** 焦点项只在快要出屏时才滚动,并留出边距;滚动用无回弹的柔和弹簧。 */
 @OptIn(ExperimentalFoundationApi::class)
 class EdgeSpec(private val marginPx: Float) : BringIntoViewSpec {
-    override val scrollAnimationSpec: AnimationSpec<Float> = spring(dampingRatio = 1f, stiffness = 240f)
+    // 刚度调高后横向滚动更跟手:连按方向键时焦点不会跑到视口外再被追回
+    override val scrollAnimationSpec: AnimationSpec<Float> = spring(dampingRatio = 1f, stiffness = 420f)
 
     override fun calculateScrollDistance(offset: Float, size: Float, containerSize: Float): Float {
         val trailing = offset + size

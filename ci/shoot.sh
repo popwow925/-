@@ -37,6 +37,19 @@ key KEYCODE_DPAD_RIGHT
 key KEYCODE_DPAD_RIGHT
 cap 02-home-selected 1.5
 
+# 2b 主页上下键(此时焦点在第三个磁贴 Play Store):
+#    上 → 回到当前选中的「主页」标签;下 → 应回到同一个磁贴;再下 → 第二行;再下 → 到底不动;上 → 回第一行
+key KEYCODE_DPAD_UP
+cap 15-home-up-to-tab 1.2
+key KEYCODE_DPAD_DOWN
+cap 16-home-down-restore 1.5
+key KEYCODE_DPAD_DOWN
+cap 17-home-row2 1.5
+key KEYCODE_DPAD_DOWN
+cap 18-home-bottom-noop 1
+key KEYCODE_DPAD_UP
+cap 19-home-back-row1 1.5
+
 # 3 全部应用
 goto_tab 1
 key KEYCODE_DPAD_DOWN

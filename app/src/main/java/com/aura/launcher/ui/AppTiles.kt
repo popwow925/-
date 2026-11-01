@@ -96,6 +96,7 @@ fun ShortcutTile(
     width: Dp,
     accent: Color,
     modifier: Modifier = Modifier,
+    focusRequester: FocusRequester? = null,
     onClick: () -> Unit,
     onFocused: () -> Unit = {},
 ) {
@@ -108,6 +109,7 @@ fun ShortcutTile(
         modifier = modifier,
         onClick = onClick,
         onFocused = onFocused,
+        focusRequester = focusRequester,
     ) {
         Box(
             Modifier

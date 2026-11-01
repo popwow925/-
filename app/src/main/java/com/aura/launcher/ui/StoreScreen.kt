@@ -88,7 +88,9 @@ fun StoreScreen(graph: AppGraph, onToast: (String) -> Unit, modifier: Modifier =
         value = StoreRepository.load(ctx, storeUrl)
     }
     // 内置应用:随桌面分发的 APK;装/卸应用或回到桌面时重新扫描,以刷新"已安装/可更新"状态
-    val preApps by produceState(emptyList<PreApp>(), apps, resume, reload) {
+    // 初始为 null:扫描完成前不显示网格。否则先出现的商店条目会成为"第一个可见项",
+    // 后到的内置应用被插到它上面,LazyGrid 会保持原位,把内置区挤到视口上方看不见。
+    val preApps by produceState<List<PreApp>?>(null, apps, resume, reload) {
         value = Preinstall.scan(ctx)
     }
     val progress = remember { mutableStateMapOf<String, Progress>() }
@@ -196,7 +198,8 @@ fun StoreScreen(graph: AppGraph, onToast: (String) -> Unit, modifier: Modifier =
             )
         }
 
-        CompositionLocalProvider(LocalBringIntoViewSpec provides edge) {
+        val pre = preApps
+        if (pre != null) CompositionLocalProvider(LocalBringIntoViewSpec provides edge) {
             LazyVerticalGrid(
                 columns = GridCells.Fixed(3),
                 modifier = Modifier.fillMaxSize(),
@@ -204,9 +207,9 @@ fun StoreScreen(graph: AppGraph, onToast: (String) -> Unit, modifier: Modifier =
                 horizontalArrangement = Arrangement.spacedBy(ui.dp(40)),
                 verticalArrangement = Arrangement.spacedBy(ui.dp(24)),
             ) {
-                if (preApps.isNotEmpty()) {
+                if (pre.isNotEmpty()) {
                     item(key = "h-pre", span = { GridItemSpan(maxLineSpan) }) { SectionTitle("内置应用") }
-                    items(preApps, key = { "pre-" + it.packageName }) { app ->
+                    items(pre, key = { "pre-" + it.packageName }) { app ->
                         PreTile(
                             app = app,
                             onClick = { actPre(app) },

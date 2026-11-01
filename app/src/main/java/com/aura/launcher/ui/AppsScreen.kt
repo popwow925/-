@@ -13,15 +13,18 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import com.aura.launcher.data.AppEntry
 import com.aura.launcher.data.AppGraph
+import com.aura.launcher.data.TileArtLoader
 
 /** 全部应用:5 列网格,长按 OK 键管理应用。 */
 @OptIn(ExperimentalFoundationApi::class)
@@ -38,6 +41,10 @@ fun AppsScreen(
     val visible = remember(apps, hidden) { apps.filter { it.packageName !in hidden } }
     var menuApp by remember { mutableStateOf<AppEntry?>(null) }
     val edge = remember(ui) { EdgeSpec(ui.px(150)) }
+    val ctx = LocalContext.current
+
+    // 提前解码图标,滚动到屏幕外的磁贴时不会"先空后闪出图"
+    LaunchedEffect(visible) { visible.forEach { TileArtLoader.load(ctx, it) } }
 
     CompositionLocalProvider(LocalBringIntoViewSpec provides edge) {
         LazyVerticalGrid(
