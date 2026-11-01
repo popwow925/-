@@ -1,0 +1,212 @@
+{
+  "version": 1,
+  "locale": "zh-Hans",
+  "entries": {
+    "game.start": "游戏开始！",
+    "round.start": "第 {round} 轮开始",
+    "roll.result": "{player} 掷出了 {value}",
+    "award.winner": "{player} 获得称号：{title}",
+    "shop.bought_shield": "{player} 买了一面护盾",
+    "card.blocked": "{target} 的护盾挡下了 {by} 的「{card}」",
+    "card.played": "{by} 对 {target} 使用了「{card}」",
+    "tile.crystal": "{player} 捡到 {amount} 颗水晶",
+    "tile.trap": "{player} 踩到陷阱，掉了 {amount} 颗水晶",
+    "tile.teleport": "{player} 被传送到第 {to} 格",
+    "tile.shop": "{player} 来到商店",
+    "tile.shop_skipped": "{player} 的商店这次被跳过了",
+    "event.everyone_gains_one": "事件：所有人 +1 水晶",
+    "event.last_place_gains_two": "事件：最后一名 +2 水晶",
+    "event.roller_gets_shield": "事件：{player} 获得一面护盾",
+    "payout.done": "第 {round} 轮水晶已结算",
+    "mission.mystery_reward": "有人拿到了神秘奖励！",
+    "bet.result": "{player} 押了 {target}，入账 {credited} 颗水晶",
+    "rule.left_hand": "这一局只能用左手",
+    "card.reverseDice": "反向骰",
+    "card.leftHandRule": "左手规则",
+    "card.swapNickname": "换外号",
+    "card.stealCrystals": "偷水晶",
+    "card.skipShop": "封商店",
+    "title.sunshine": "气氛小太阳",
+    "title.planner": "计划达人",
+    "title.foodie": "干饭王",
+    "title.comedian": "搞笑担当",
+    "title.peacemaker": "和事佬",
+    "title.explorer": "探险家",
+    "title.night_owl": "夜猫子",
+    "title.early_bird": "早起鸟",
+    "title.storyteller": "故事大王",
+    "title.cheerleader": "啦啦队长",
+    "title.lucky_star": "锦鲤本鲤",
+    "title.snack_hero": "零食守护神",
+    "nickname.fun.001": "小甜饼",
+    "nickname.fun.002": "大白鹅",
+    "nickname.fun.003": "跳跳糖",
+    "nickname.fun.004": "芝士球",
+    "nickname.fun.005": "泡泡鱼",
+    "nickname.fun.006": "奶茶杯",
+    "nickname.fun.007": "团子",
+    "nickname.fun.008": "土豆泥",
+    "nickname.fun.009": "小火龙虾",
+    "nickname.fun.010": "棉花糖",
+    "nickname.fun.011": "布丁",
+    "nickname.fun.012": "汤圆",
+    "mission.make_table_laugh": "让桌上至少一个人笑出声",
+    "mission.finish_in_middle": "这一轮的小游戏，把名次保持在中间",
+    "mission.cheer_last_place": "当众鼓励这一轮排名最后的人",
+    "mission.stay_calm_all_round": "这一整轮保持淡定，不要大喊大叫",
+    "mission.pick_same_as_leader": "选择和当前领先者一样的目标",
+    "mission.dont_be_first": "这一轮不要做第一个行动的人",
+    "prompt.most_likely.001": "谁最可能迟到？",
+    "prompt.most_likely.002": "谁最可能在电影院哭出来？",
+    "prompt.most_likely.003": "谁最可能半夜点外卖？",
+    "prompt.most_likely.004": "谁最可能把手机掉进水里？",
+    "prompt.most_likely.005": "谁最可能第一个睡着？",
+    "prompt.most_likely.006": "谁最可能迷路还不肯问路？",
+    "prompt.most_likely.007": "谁最可能中彩票后消失？",
+    "prompt.most_likely.008": "谁最可能收藏一堆没用的东西？",
+    "prompt.most_likely.009": "谁最可能把笑话讲砸还自己笑？",
+    "prompt.most_likely.010": "谁最可能带着最重的行李去旅行？"
+  },
+  "quiz": [
+    {
+      "id": "quiz.001",
+      "question": "地球上最大的海洋是？",
+      "choices": [
+        "大西洋",
+        "太平洋",
+        "印度洋",
+        "北冰洋"
+      ],
+      "answerIndex": 1
+    },
+    {
+      "id": "quiz.002",
+      "question": "一个正方形有几条对称轴？",
+      "choices": [
+        "2",
+        "3",
+        "4",
+        "8"
+      ],
+      "answerIndex": 2
+    },
+    {
+      "id": "quiz.003",
+      "question": "水的化学式是？",
+      "choices": [
+        "CO2",
+        "H2O",
+        "O2",
+        "NaCl"
+      ],
+      "answerIndex": 1
+    },
+    {
+      "id": "quiz.004",
+      "question": "彩虹常见的颜色有几种？",
+      "choices": [
+        "5",
+        "6",
+        "7",
+        "8"
+      ],
+      "answerIndex": 2
+    },
+    {
+      "id": "quiz.005",
+      "question": "一年中白天最长的节气是？",
+      "choices": [
+        "春分",
+        "夏至",
+        "秋分",
+        "冬至"
+      ],
+      "answerIndex": 1
+    },
+    {
+      "id": "quiz.006",
+      "question": "太阳系中最大的行星是？",
+      "choices": [
+        "地球",
+        "土星",
+        "木星",
+        "海王星"
+      ],
+      "answerIndex": 2
+    },
+    {
+      "id": "quiz.007",
+      "question": "一小时有多少秒？",
+      "choices": [
+        "360",
+        "3600",
+        "6000",
+        "36000"
+      ],
+      "answerIndex": 1
+    },
+    {
+      "id": "quiz.008",
+      "question": "下面哪个是哺乳动物？",
+      "choices": [
+        "鲨鱼",
+        "企鹅",
+        "海豚",
+        "鳄鱼"
+      ],
+      "answerIndex": 2
+    }
+  ],
+  "wordPairs": [
+    {
+      "id": "pair.001",
+      "civilian": "苹果",
+      "undercover": "梨"
+    },
+    {
+      "id": "pair.002",
+      "civilian": "咖啡",
+      "undercover": "奶茶"
+    },
+    {
+      "id": "pair.003",
+      "civilian": "篮球",
+      "undercover": "足球"
+    },
+    {
+      "id": "pair.004",
+      "civilian": "火锅",
+      "undercover": "烧烤"
+    },
+    {
+      "id": "pair.005",
+      "civilian": "地铁",
+      "undercover": "公交"
+    },
+    {
+      "id": "pair.006",
+      "civilian": "钢琴",
+      "undercover": "吉他"
+    },
+    {
+      "id": "pair.007",
+      "civilian": "海滩",
+      "undercover": "泳池"
+    },
+    {
+      "id": "pair.008",
+      "civilian": "饺子",
+      "undercover": "包子"
+    },
+    {
+      "id": "pair.009",
+      "civilian": "微信",
+      "undercover": "短信"
+    },
+    {
+      "id": "pair.010",
+      "civilian": "牙刷",
+      "undercover": "梳子"
+    }
+  ]
+}

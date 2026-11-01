@@ -1,0 +1,212 @@
+{
+  "version": 1,
+  "locale": "en",
+  "entries": {
+    "game.start": "Game on!",
+    "round.start": "Round {round} begins",
+    "roll.result": "{player} rolled a {value}",
+    "award.winner": "{player} earned the title: {title}",
+    "shop.bought_shield": "{player} bought a shield",
+    "card.blocked": "{target}'s shield blocked {by}'s “{card}”",
+    "card.played": "{by} played “{card}” on {target}",
+    "tile.crystal": "{player} found {amount} crystals",
+    "tile.trap": "{player} hit a trap and lost {amount} crystals",
+    "tile.teleport": "{player} was teleported to tile {to}",
+    "tile.shop": "{player} reached the shop",
+    "tile.shop_skipped": "{player}'s shop visit was skipped",
+    "event.everyone_gains_one": "Event: everyone gets +1 crystal",
+    "event.last_place_gains_two": "Event: last place gets +2 crystals",
+    "event.roller_gets_shield": "Event: {player} gets a shield",
+    "payout.done": "Round {round} crystals paid out",
+    "mission.mystery_reward": "Someone earned a mystery reward!",
+    "bet.result": "{player} backed {target} and received {credited} crystals",
+    "rule.left_hand": "Left hand only this round",
+    "card.reverseDice": "Reverse Dice",
+    "card.leftHandRule": "Left-Hand Rule",
+    "card.swapNickname": "Swap Nickname",
+    "card.stealCrystals": "Steal Crystals",
+    "card.skipShop": "Skip Shop",
+    "title.sunshine": "Ray of Sunshine",
+    "title.planner": "Master Planner",
+    "title.foodie": "Foodie",
+    "title.comedian": "Comedian",
+    "title.peacemaker": "Peacemaker",
+    "title.explorer": "Explorer",
+    "title.night_owl": "Night Owl",
+    "title.early_bird": "Early Bird",
+    "title.storyteller": "Storyteller",
+    "title.cheerleader": "Cheerleader",
+    "title.lucky_star": "Lucky Star",
+    "title.snack_hero": "Snack Hero",
+    "nickname.fun.001": "Cookie",
+    "nickname.fun.002": "Goose",
+    "nickname.fun.003": "Pop Rocks",
+    "nickname.fun.004": "Cheese Ball",
+    "nickname.fun.005": "Bubble Fish",
+    "nickname.fun.006": "Boba",
+    "nickname.fun.007": "Dumpling",
+    "nickname.fun.008": "Mashed Potato",
+    "nickname.fun.009": "Lobster",
+    "nickname.fun.010": "Marshmallow",
+    "nickname.fun.011": "Pudding",
+    "nickname.fun.012": "Rice Ball",
+    "mission.make_table_laugh": "Make at least one person laugh out loud",
+    "mission.finish_in_middle": "Finish this round's mini-game in the middle of the pack",
+    "mission.cheer_last_place": "Publicly cheer up whoever finishes last this round",
+    "mission.stay_calm_all_round": "Stay calm the whole round — no shouting",
+    "mission.pick_same_as_leader": "Pick the same target as the current leader",
+    "mission.dont_be_first": "Do not be the first person to act this round",
+    "prompt.most_likely.001": "Who is most likely to be late?",
+    "prompt.most_likely.002": "Who is most likely to cry at the movies?",
+    "prompt.most_likely.003": "Who is most likely to order food at midnight?",
+    "prompt.most_likely.004": "Who is most likely to drop their phone in water?",
+    "prompt.most_likely.005": "Who is most likely to fall asleep first?",
+    "prompt.most_likely.006": "Who is most likely to get lost and refuse to ask?",
+    "prompt.most_likely.007": "Who is most likely to vanish after winning the lottery?",
+    "prompt.most_likely.008": "Who is most likely to hoard useless things?",
+    "prompt.most_likely.009": "Who is most likely to ruin a joke and laugh anyway?",
+    "prompt.most_likely.010": "Who is most likely to bring the heaviest luggage?"
+  },
+  "quiz": [
+    {
+      "id": "quiz.001",
+      "question": "Which is the largest ocean on Earth?",
+      "choices": [
+        "Atlantic",
+        "Pacific",
+        "Indian",
+        "Arctic"
+      ],
+      "answerIndex": 1
+    },
+    {
+      "id": "quiz.002",
+      "question": "How many lines of symmetry does a square have?",
+      "choices": [
+        "2",
+        "3",
+        "4",
+        "8"
+      ],
+      "answerIndex": 2
+    },
+    {
+      "id": "quiz.003",
+      "question": "What is the chemical formula of water?",
+      "choices": [
+        "CO2",
+        "H2O",
+        "O2",
+        "NaCl"
+      ],
+      "answerIndex": 1
+    },
+    {
+      "id": "quiz.004",
+      "question": "How many colors are usually listed in a rainbow?",
+      "choices": [
+        "5",
+        "6",
+        "7",
+        "8"
+      ],
+      "answerIndex": 2
+    },
+    {
+      "id": "quiz.005",
+      "question": "Which season has the longest daylight in the northern hemisphere?",
+      "choices": [
+        "Spring",
+        "Summer",
+        "Autumn",
+        "Winter"
+      ],
+      "answerIndex": 1
+    },
+    {
+      "id": "quiz.006",
+      "question": "Which is the largest planet in the solar system?",
+      "choices": [
+        "Earth",
+        "Saturn",
+        "Jupiter",
+        "Neptune"
+      ],
+      "answerIndex": 2
+    },
+    {
+      "id": "quiz.007",
+      "question": "How many seconds are in one hour?",
+      "choices": [
+        "360",
+        "3600",
+        "6000",
+        "36000"
+      ],
+      "answerIndex": 1
+    },
+    {
+      "id": "quiz.008",
+      "question": "Which of these is a mammal?",
+      "choices": [
+        "Shark",
+        "Penguin",
+        "Dolphin",
+        "Crocodile"
+      ],
+      "answerIndex": 2
+    }
+  ],
+  "wordPairs": [
+    {
+      "id": "pair.001",
+      "civilian": "apple",
+      "undercover": "pear"
+    },
+    {
+      "id": "pair.002",
+      "civilian": "coffee",
+      "undercover": "tea"
+    },
+    {
+      "id": "pair.003",
+      "civilian": "basketball",
+      "undercover": "football"
+    },
+    {
+      "id": "pair.004",
+      "civilian": "hot pot",
+      "undercover": "barbecue"
+    },
+    {
+      "id": "pair.005",
+      "civilian": "subway",
+      "undercover": "bus"
+    },
+    {
+      "id": "pair.006",
+      "civilian": "piano",
+      "undercover": "guitar"
+    },
+    {
+      "id": "pair.007",
+      "civilian": "beach",
+      "undercover": "pool"
+    },
+    {
+      "id": "pair.008",
+      "civilian": "dumpling",
+      "undercover": "bun"
+    },
+    {
+      "id": "pair.009",
+      "civilian": "text message",
+      "undercover": "email"
+    },
+    {
+      "id": "pair.010",
+      "civilian": "toothbrush",
+      "undercover": "comb"
+    }
+  ]
+}

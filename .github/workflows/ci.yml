@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, "ci/**"]
+  pull_request:
+
+jobs:
+  core-tests:
+    name: Core package tests
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Toolchain versions
+        run: |
+          xcodebuild -version
+          swift --version
+      - name: swift test
+        run: swift test 2>&1 | tee swift-test.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: swift-test-log
+          path: swift-test.log
+
+  app-build:
+    name: App build (iOS Simulator, unsigned)
+    runs-on: macos-15
+    needs: core-tests
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Generate Xcode project
+        run: xcodegen generate
+      - name: xcodebuild
+        run: |
+          set -o pipefail
+          xcodebuild build \
+            -project FrenemyIsle.xcodeproj \
+            -scheme FrenemyIsleApp \
+            -destination 'generic/platform=iOS Simulator' \
+            CODE_SIGNING_ALLOWED=NO \
+            2>&1 | tee xcodebuild.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: xcodebuild-log
+          path: xcodebuild.log
