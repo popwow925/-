@@ -1,45 +1,28 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
   <defs>
-    <radialGradient id="bg" cx="0.12" cy="1.02" r="1.5" gradientUnits="objectBoundingBox">
-      <stop offset="0"    stop-color="#FFC857"/>
-      <stop offset="0.22" stop-color="#FF7A45"/>
-      <stop offset="0.48" stop-color="#F0366F"/>
-      <stop offset="0.75" stop-color="#B02FC8"/>
-      <stop offset="1"    stop-color="#5B4FE0"/>
-    </radialGradient>
-    <!-- face with eyes + smile punched out so the gradient shows through -->
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1FC8B4"/>
+      <stop offset="1" stop-color="#1673D1"/>
+    </linearGradient>
     <mask id="faceMask" maskUnits="userSpaceOnUse" x="0" y="0" width="1024" height="1024">
       <rect width="1024" height="1024" fill="#fff"/>
-      <circle cx="438" cy="450" r="28" fill="#000"/>
-      <circle cx="586" cy="450" r="28" fill="#000"/>
-      <path d="M428 532 Q512 622 596 532" fill="none" stroke="#000" stroke-width="34" stroke-linecap="round"/>
+      <circle cx="446" cy="430" r="30" fill="#000"/>
+      <circle cx="578" cy="430" r="30" fill="#000"/>
+      <path d="M440 512 Q512 580 584 512" fill="none" stroke="#000" stroke-width="34" stroke-linecap="round"/>
     </mask>
-    <!-- the face is visible above the ring's centre line and inside the ring only -->
     <mask id="backArcMask" maskUnits="userSpaceOnUse" x="0" y="0" width="1024" height="1024">
       <rect width="1024" height="1024" fill="#fff"/>
-      <rect x="364" y="0" width="296" height="1024" fill="#000"/>
+      <rect x="372" y="0" width="280" height="1024" fill="#000"/>
     </mask>
     <clipPath id="insideClip">
-      <ellipse cx="512" cy="700" rx="248" ry="108"/>
-      <rect x="0" y="0" width="1024" height="700"/>
+      <ellipse cx="512" cy="680" rx="242" ry="104"/>
+      <rect x="0" y="0" width="1024" height="680"/>
     </clipPath>
   </defs>
-
   <rect width="1024" height="1024" fill="url(#bg)"/>
-
-  <!-- back half of the pit ring -->
-  <path d="M222 700 A290 140 0 0 1 802 700" fill="none" stroke="#fff" stroke-width="44" stroke-linecap="round" mask="url(#backArcMask)"/>
-
-  <!-- friend peeking out -->
+  <path d="M230 680 A282 136 0 0 1 794 680" fill="none" stroke="#fff" stroke-width="46" stroke-linecap="round" mask="url(#backArcMask)"/>
   <g clip-path="url(#insideClip)">
-    <rect x="364" y="316" width="296" height="560" rx="110" fill="#fff" mask="url(#faceMask)"/>
+    <rect x="372" y="290" width="280" height="580" rx="140" fill="#fff" mask="url(#faceMask)"/>
   </g>
-
-  <!-- front half of the pit ring -->
-  <path d="M222 700 A290 140 0 0 0 802 700" fill="none" stroke="#fff" stroke-width="44" stroke-linecap="round"/>
-
-  <!-- sparkles -->
-  <path d="M800 236 L818 292 L874 310 L818 328 L800 384 L782 328 L726 310 L782 292 Z" fill="#fff"/>
-  <path d="M226 300 L236 330 L266 340 L236 350 L226 380 L216 350 L186 340 L216 330 Z" fill="#fff" opacity="0.9"/>
-  <circle cx="860" cy="470" r="14" fill="#fff" opacity="0.85"/>
+  <path d="M230 680 A282 136 0 0 0 794 680" fill="none" stroke="#fff" stroke-width="46" stroke-linecap="round"/>
 </svg>
