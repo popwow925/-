@@ -28,9 +28,9 @@ data class PreApp(
 
 /**
  * 内置应用有两个来源,会合并显示(同一包名取版本更高的):
- *  1. 编译进桌面安装包的 `assets/preinstall/*.apk`;
- *  2. 外部目录 `/sdcard/Android/data/<包名>/files/preinstall/*.apk`,
- *     可以用 `adb push` 直接放入,不用重新编译。
+ *  1. 编译进桌面安装包的 assets 下 preinstall 文件夹里的 APK;
+ *  2. 外部目录 /sdcard/Android/data/(桌面包名)/files/preinstall 里的 APK,
+ *     可以用 adb push 直接放入,不用重新编译。
  */
 object Preinstall {
     const val DIR = "preinstall"
