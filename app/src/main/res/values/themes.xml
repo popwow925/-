@@ -9,4 +9,10 @@
         <item name="android:windowAnimationStyle">@null</item>
         <item name="android:windowDisablePreview">false</item>
     </style>
+
+    <!-- 播放器:纯黑背景,进出不做窗口动画 -->
+    <style name="Theme.Aura.Player" parent="Theme.Aura">
+        <item name="android:windowBackground">@android:color/black</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
 </resources>

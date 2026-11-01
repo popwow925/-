@@ -74,6 +74,17 @@ jobs:
             --out stub-out/demo.apk stub-out/unsigned.apk
           ls -la stub-out
 
+      - name: Install ffmpeg (generates the demo videos for the mock family hub)
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg fonts-dejavu-core
+          ffmpeg -hide_banner -filters 2>/dev/null | grep -E " gradients | drawtext "
+
+      - name: Start mock family hub (real API output + generated demo videos)
+        run: |
+          bash ci/mockhub/run.sh
+          curl -s http://127.0.0.1:8080/api/tv/hello; echo
+
       - name: Enable KVM
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules

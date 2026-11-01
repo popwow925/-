@@ -25,6 +25,9 @@ class Prefs(context: Context) {
     private val _storeUrl = MutableStateFlow(sp.getString("storeUrl", null) ?: BuildConfig.STORE_URL)
     val storeUrl: StateFlow<String> = _storeUrl.asStateFlow()
 
+    private val _hubUrl = MutableStateFlow(sp.getString("hubUrl", "").orEmpty())
+    val hubUrl: StateFlow<String> = _hubUrl.asStateFlow()
+
     private fun readList(key: String): List<String> =
         sp.getString(key, "").orEmpty().split('\n').filter { it.isNotBlank() }
 
@@ -77,5 +80,18 @@ class Prefs(context: Context) {
         val v = url.trim()
         _storeUrl.value = v.ifEmpty { BuildConfig.STORE_URL }
         sp.edit().putString("storeUrl", v).apply()
+    }
+
+    /** 家庭中心(影视)地址,形如 http://192.168.1.5:8080;为空表示还没连接。 */
+    fun setHubUrl(url: String) {
+        val v = url.trim().trimEnd('/')
+        _hubUrl.value = v
+        sp.edit().putString("hubUrl", v).apply()
+    }
+
+    companion object {
+        /** 播放器进程内直接读取已保存的地址。 */
+        fun readHubUrl(context: Context): String =
+            context.getSharedPreferences("aura", Context.MODE_PRIVATE).getString("hubUrl", "").orEmpty()
     }
 }

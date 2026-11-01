@@ -7,7 +7,7 @@ cap() { sleep "${2:-1.5}"; adb exec-out screencap -p > "shots/$1.png"; }
 key() { adb shell input keyevent "$1"; sleep 0.8; }
 rep() { local n=$1 k=$2; for _ in $(seq 1 "$n"); do key "$k"; done; }
 
-# 绝对定位到第 N 个顶栏标签(0 主页 / 1 全部应用 / 2 应用商店 / 3 本地安装 / 4 设置)并确认。
+# 绝对定位到第 N 个顶栏标签(0 主页 / 1 影视 / 2 全部应用 / 3 应用商店 / 4 本地安装 / 5 设置)并确认。
 # 先连按"上"回到顶栏,再连按"左"到最左边的标签,最后向右走 N 步。
 goto_tab() {
   rep 6 KEYCODE_DPAD_UP
@@ -15,6 +15,9 @@ goto_tab() {
   [ "$1" -gt 0 ] && rep "$1" KEYCODE_DPAD_RIGHT
   key KEYCODE_DPAD_CENTER
 }
+
+# 连发一串按键后立刻截图(用于只出现不到一秒的界面,例如快进预览)
+burst() { adb shell "input keyevent $2 && screencap -p /sdcard/fast.png" && adb pull /sdcard/fast.png "shots/$1.png" > /dev/null; }
 
 adb wait-for-device
 adb shell input keyevent KEYCODE_WAKEUP || true
@@ -52,14 +55,51 @@ cap 19-home-back-row1 1.5
 key KEYCODE_DPAD_UP
 cap 20-home-up-again 1.2
 
-# 3 全部应用
+# 2c 影视:"模拟家庭中心"已在工作流里启动(真实家庭中心的接口输出 + ffmpeg 生成的演示影片)。
+#     模拟器里电脑固定是 10.0.2.2,Aura 用 UDP 广播自动找到它
+curl -s http://127.0.0.1:8080/api/tv/hello > shots/mockhub-hello.txt 2>&1 || true
+
 goto_tab 1
+cap 30-movies-setup 2
+key KEYCODE_DPAD_DOWN
+cap 31-movies-setup-focus 1
+key KEYCODE_DPAD_CENTER
+cap 32-connect-menu 1.5
+key KEYCODE_DPAD_CENTER           # 自动搜索
+sleep 7
+cap 33-movies-library 3
+key KEYCODE_DPAD_RIGHT
+key KEYCODE_DPAD_RIGHT
+cap 34-movies-selected 1.5
+key KEYCODE_DPAD_DOWN
+cap 35-movies-row2 2
+key KEYCODE_DPAD_UP
+key KEYCODE_DPAD_CENTER           # 打开详情
+cap 36-movie-detail 2
+key KEYCODE_DPAD_CENTER           # 播放
+cap 37-player-overlay 2.5
+cap 38-player-clean 6
+burst 39-player-seek-preview "KEYCODE_DPAD_RIGHT KEYCODE_DPAD_RIGHT KEYCODE_DPAD_RIGHT"
+cap 40-player-after-seek 2.5
+key KEYCODE_DPAD_CENTER           # 暂停
+cap 41-player-paused 1
+key KEYCODE_DPAD_CENTER           # 继续
+sleep 2
+adb shell input keyevent KEYCODE_BACK
+sleep 2
+cap 42-after-player 2
+adb shell input keyevent KEYCODE_BACK
+cap 43-library-continue 2.5
+cp /tmp/mockhub/server.log shots/mockhub-server.log 2>/dev/null || true
+
+# 3 全部应用
+goto_tab 2
 key KEYCODE_DPAD_DOWN
 key KEYCODE_DPAD_RIGHT
 cap 03-apps 1.5
 
 # 4 应用商店
-goto_tab 2
+goto_tab 3
 cap 04-store 3
 key KEYCODE_DPAD_DOWN
 cap 05-store-focus 1.5
@@ -71,7 +111,7 @@ if [ -f stub-out/demo.apk ]; then
   adb push stub-out/demo.apk "$PRE/demo.apk" 2>&1 | tee -a shots/preinstall.txt
   adb shell ls -l "$PRE" 2>&1 | tee -a shots/preinstall.txt
   goto_tab 0
-  goto_tab 2
+  goto_tab 3
   cap 13-store-preinstall 3
   key KEYCODE_DPAD_DOWN
   cap 14-store-preinstall-focus 1.5
@@ -80,14 +120,14 @@ if [ -f stub-out/demo.apk ]; then
 fi
 
 # 5 本地安装:向下进入"授予文件访问权限"按钮,再按右键,焦点应留在按钮上
-goto_tab 3
+goto_tab 4
 cap 06-install 2
 key KEYCODE_DPAD_DOWN
 key KEYCODE_DPAD_RIGHT
 cap 07-install-focus 1.5
 
 # 6 设置:聚焦壁纸,按 OK 切换
-goto_tab 4
+goto_tab 5
 cap 08-settings 2
 key KEYCODE_DPAD_DOWN
 cap 09-settings-wallpaper 1.5

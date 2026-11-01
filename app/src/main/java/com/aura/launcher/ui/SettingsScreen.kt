@@ -49,6 +49,7 @@ fun SettingsScreen(graph: AppGraph, onToast: (String) -> Unit, modifier: Modifie
     val wallpaper by prefs.wallpaper.collectAsState()
     val storeUrl by prefs.storeUrl.collectAsState()
     val hidden by prefs.hidden.collectAsState()
+    val hubUrl by graph.hub.url.collectAsState()
     var dialog by remember { mutableStateOf<String?>(null) }
     val edge = remember(ui) { EdgeSpec(ui.px(150)) }
 
@@ -94,6 +95,12 @@ fun SettingsScreen(graph: AppGraph, onToast: (String) -> Unit, modifier: Modifie
                     onClick = { dialog = "home" },
                 )
                 TvButton(
+                    "家庭中心(影视)", Modifier.fillMaxWidth(),
+                    subtitle = if (hubUrl.isBlank()) "未连接:连上电脑上的家庭中心,就能在电视上看电脑下载的影片"
+                    else "已设置:${hubUrl.removePrefix("http://")}",
+                    onClick = { dialog = "hub" },
+                )
+                TvButton(
                     "商店源地址", Modifier.fillMaxWidth(),
                     subtitle = storeUrl.ifBlank { "未配置(使用内置示例清单)" },
                     onClick = { dialog = "url" },
@@ -128,6 +135,7 @@ fun SettingsScreen(graph: AppGraph, onToast: (String) -> Unit, modifier: Modifie
     }
 
     when (dialog) {
+        "hub" -> HubConnectDialogs(graph, onToast, onDismiss = { dialog = null })
         "url" -> TextInputDialog(
             title = "商店源地址",
             initial = storeUrl,

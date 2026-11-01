@@ -43,7 +43,7 @@ import com.aura.launcher.data.InstallEvents
 import kotlinx.coroutines.delay
 
 enum class Tab(val title: String) {
-    HOME("主页"), APPS("全部应用"), STORE("应用商店"), INSTALL("本地安装"), SETTINGS("设置")
+    HOME("主页"), MOVIES("影视"), APPS("全部应用"), STORE("应用商店"), INSTALL("本地安装"), SETTINGS("设置")
 }
 
 @Composable
@@ -108,6 +108,7 @@ fun LauncherRoot(graph: AppGraph, homeSignal: Int, onRequestStoragePermission: (
                                     graph = graph, heroLabel = heroLabel, onHeroLabel = { heroLabel = it },
                                     focusToken = focusToken, onLaunch = launch, onToast = { toast = it },
                                 )
+                                Tab.MOVIES -> MoviesScreen(graph, onToast = { toast = it })
                                 Tab.APPS -> AppsScreen(graph, launch)
                                 Tab.STORE -> StoreScreen(graph, onToast = { toast = it })
                                 Tab.INSTALL -> InstallScreen(graph, onRequestStoragePermission, onToast = { toast = it })
