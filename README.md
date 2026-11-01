@@ -108,6 +108,21 @@ app/src/main/java/com/aura/launcher/
 └── ui/                      主题与缩放、磁贴与动画、各页面、弹窗、壁纸
 ```
 
+## 内置应用(随桌面一起分发的 APK)
+
+把要内置的 APK 放进 `app/src/main/assets/preinstall/`(例如 `bilibili-tv.apk`),重新编译。
+桌面「应用商店」页顶部会出现「内置应用」区,图标、名称、版本都从 APK 里读取,选中后按 OK 键安装;
+已安装的显示「已安装 · 打开」,APK 版本更高时显示「更新」。
+
+不想重新编译时,桌面运行过一次后,可以直接推送:
+
+```bash
+adb push xxx.apk /sdcard/Android/data/com.aura.launcher/files/preinstall/
+```
+
+> `.gitignore` 默认忽略 `*.apk`,避免把第三方应用误提交到公开仓库。第三方应用的版权属于原作者,
+> 内置分发前请自行确认有权这样做。云视听小电视(哔哩哔哩)的包名是 `com.xiaodianshi.tv.yst`。
+
 ## 已知限制
 
 - 已在 GitHub Actions 上编译通过(JDK 17 / Gradle 8.9 / AGP 8.5.2),并在 Android TV 模拟器
