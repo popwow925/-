@@ -19,4 +19,4 @@ No sign-in, no purchases, no ads, no tracking, no data collected by the develope
 - **出口合规**：Info.plist 中 `ITSAppUsesNonExemptEncryption = NO`（只使用系统自带的 MultipeerConnectivity 加密）。请你确认这个选择符合你的情况。
 - **截图**：iPhone 与 iPad 各一套；建议包含电视大屏画面（用单机演示截取）。
 - **本地网络权限**：真机测试时要先拒绝再允许各测一遍。
-- **App 图标**：需要 1024×1024 PNG（无透明、无圆角），放进 `App/Resources/Assets.xcassets/AppIcon.appiconset`。
+- **App 图标**：已内置 1024×1024（无透明、无圆角），上架前确认你满意即可。
