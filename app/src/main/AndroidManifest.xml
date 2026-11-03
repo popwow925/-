@@ -61,6 +61,15 @@
             android:theme="@style/Theme.Aura.Player"
             android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize|screenLayout|smallestScreenSize|uiMode|density|locale|layoutDirection" />
 
+        <!-- 央视直播:全屏网页播放官方公开直播页 -->
+        <activity
+            android:name=".ui.LiveActivity"
+            android:exported="false"
+            android:launchMode="singleTop"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme.Aura.Player"
+            android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize|screenLayout|smallestScreenSize|uiMode|density|locale|layoutDirection" />
+
         <receiver
             android:name=".data.InstallResultReceiver"
             android:exported="false" />

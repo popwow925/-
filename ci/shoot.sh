@@ -7,7 +7,7 @@ cap() { sleep "${2:-1.5}"; adb exec-out screencap -p > "shots/$1.png"; }
 key() { adb shell input keyevent "$1"; sleep 0.8; }
 rep() { local n=$1 k=$2; for _ in $(seq 1 "$n"); do key "$k"; done; }
 
-# 绝对定位到第 N 个顶栏标签(0 主页 / 1 影视 / 2 全部应用 / 3 应用商店 / 4 本地安装 / 5 设置)并确认。
+# 绝对定位到第 N 个顶栏标签(0 主页 / 1 影视 / 2 直播 / 3 全部应用 / 4 应用商店 / 5 本地安装 / 6 设置)并确认。
 # 先连按"上"回到顶栏,再连按"左"到最左边的标签,最后向右走 N 步。
 goto_tab() {
   rep 6 KEYCODE_DPAD_UP
@@ -124,14 +124,26 @@ adb shell input keyevent KEYCODE_BACK
 sleep 1.5
 cp /tmp/mockhub/server.log shots/mockhub-server.log 2>/dev/null || true
 
-# 3 全部应用
+# 2 直播(官方央视页;模拟器在海外网络下可能打不开,主要看列表和换台提示)
 goto_tab 2
+cap 50-live 2
+key KEYCODE_DPAD_DOWN
+cap 51-live-focus 1
+key KEYCODE_DPAD_CENTER
+cap 52-live-opening 8
+adb shell input keyevent KEYCODE_DPAD_DOWN
+cap 53-live-next 4
+adb shell input keyevent KEYCODE_BACK
+sleep 2
+
+# 3 全部应用
+goto_tab 3
 key KEYCODE_DPAD_DOWN
 key KEYCODE_DPAD_RIGHT
 cap 03-apps 1.5
 
 # 4 应用商店
-goto_tab 3
+goto_tab 4
 cap 04-store 3
 key KEYCODE_DPAD_DOWN
 cap 05-store-focus 1.5
@@ -143,7 +155,7 @@ if [ -f stub-out/demo.apk ]; then
   adb push stub-out/demo.apk "$PRE/demo.apk" 2>&1 | tee -a shots/preinstall.txt
   adb shell ls -l "$PRE" 2>&1 | tee -a shots/preinstall.txt
   goto_tab 0
-  goto_tab 3
+  goto_tab 4
   cap 13-store-preinstall 3
   key KEYCODE_DPAD_DOWN
   cap 14-store-preinstall-focus 1.5
@@ -152,14 +164,14 @@ if [ -f stub-out/demo.apk ]; then
 fi
 
 # 5 本地安装:向下进入"授予文件访问权限"按钮,再按右键,焦点应留在按钮上
-goto_tab 4
+goto_tab 5
 cap 06-install 2
 key KEYCODE_DPAD_DOWN
 key KEYCODE_DPAD_RIGHT
 cap 07-install-focus 1.5
 
 # 6 设置:聚焦壁纸,按 OK 切换
-goto_tab 5
+goto_tab 6
 cap 08-settings 2
 key KEYCODE_DPAD_DOWN
 cap 09-settings-wallpaper 1.5

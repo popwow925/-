@@ -12,8 +12,8 @@ android {
         applicationId = "com.aura.launcher"
         minSdk = 28 // Android 9
         targetSdk = 34
-        versionCode = 2
-        versionName = "1.1.0"
+        versionCode = 3
+        versionName = "1.2.0"
 
         val storeUrl = (project.findProperty("storeUrl") as String?) ?: ""
         buildConfigField("String", "STORE_URL", "\"$storeUrl\"")
