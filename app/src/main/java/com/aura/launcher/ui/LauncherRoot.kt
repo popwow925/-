@@ -68,6 +68,13 @@ fun LauncherRoot(graph: AppGraph, homeSignal: Int, onRequestStoragePermission: (
             }
         }
         LaunchedEffect(Unit) { InstallEvents.flow.collect { toast = it } }
+        // 开机后在后台预取影视库:进「影视」页时直接出片单,不用再等连接
+        LaunchedEffect(Unit) {
+            kotlinx.coroutines.delay(2500)
+            if (graph.prefs.hubUrl.value.isNotBlank() && graph.hub.state.value !is com.aura.launcher.data.HubState.Ready) {
+                runCatching { graph.hub.refresh(silent = true) }
+            }
+        }
         LaunchedEffect(toast) {
             if (toast != null) {
                 delay(3500)
@@ -102,7 +109,7 @@ fun LauncherRoot(graph: AppGraph, homeSignal: Int, onRequestStoragePermission: (
                 Column(Modifier.fillMaxSize()) {
                     TopBar(tab, onSelect = { tab = it }, onFocusTab = { heroLabel = null })
                     Box(Modifier.weight(1f).fillMaxWidth()) {
-                        Crossfade(tab, Modifier.fillMaxSize(), animationSpec = tween(220), label = "tab") { t ->
+                        Crossfade(tab, Modifier.fillMaxSize(), animationSpec = tween(160), label = "tab") { t ->
                             when (t) {
                                 Tab.HOME -> HomeScreen(
                                     graph = graph, heroLabel = heroLabel, onHeroLabel = { heroLabel = it },

@@ -1,0 +1,8 @@
+# Aura 启动/切页热点:桌面自身代码全部预编译(体积很小),Compose 库自带的基线配置会一并合并
+HSPLcom/aura/launcher/**->**(**)**
+Lcom/aura/launcher/**;
+HSPLandroidx/compose/runtime/**->**(**)**
+HSPLandroidx/compose/ui/**->**(**)**
+HSPLandroidx/compose/foundation/**->**(**)**
+HSPLandroidx/compose/animation/**->**(**)**
+HSPLcoil/**->**(**)**

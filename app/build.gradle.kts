@@ -12,8 +12,8 @@ android {
         applicationId = "com.aura.launcher"
         minSdk = 28 // Android 9
         targetSdk = 34
-        versionCode = 3
-        versionName = "1.2.0"
+        versionCode = 4
+        versionName = "1.3.0"
 
         val storeUrl = (project.findProperty("storeUrl") as String?) ?: ""
         buildConfigField("String", "STORE_URL", "\"$storeUrl\"")
@@ -63,4 +63,6 @@ dependencies {
     // 影视播放:只要 ExoPlayer 内核,控制界面自己用 Compose 画(不引入 media3-ui)
     implementation("androidx.media3:media3-exoplayer:1.4.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
+    // 启动加速:安装后按下面的 baseline-prof.txt 预编译常用代码
+    implementation("androidx.profileinstaller:profileinstaller:1.3.1")
 }

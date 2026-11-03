@@ -18,6 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -80,6 +81,12 @@ fun LiveScreen(modifier: Modifier = Modifier) {
     var last by remember { mutableIntStateOf(liveLastChannel(ctx)) }
     val edge = remember(ui) { EdgeSpec(ui.px(150)) }
 
+    // 进直播页就预热浏览器内核:第一次打开频道能快 0.5~1 秒(老电视更明显)
+    LaunchedEffect(Unit) {
+        kotlinx.coroutines.delay(400)
+        LiveWarmup.run(ctx)
+    }
+
     DisposableEffect(bridge) {
         val enter: () -> Boolean = { runCatching { first.requestFocus() }.isSuccess }
         bridge.enterContent = enter
@@ -140,5 +147,15 @@ fun LiveScreen(modifier: Modifier = Modifier) {
                 }
             }
         }
+    }
+}
+
+/** 进程里第一次创建 WebView 要加载浏览器内核,很慢;提前做一次,之后打开直播就快了。 */
+object LiveWarmup {
+    private var done = false
+    fun run(ctx: Context) {
+        if (done) return
+        done = true
+        runCatching { android.webkit.WebView(ctx.applicationContext).destroy() }
     }
 }

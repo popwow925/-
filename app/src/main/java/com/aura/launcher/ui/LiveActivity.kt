@@ -4,34 +4,51 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import android.graphics.Typeface
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.Gravity
 import android.view.KeyEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.webkit.JavascriptInterface
 import android.webkit.WebChromeClient
+import android.webkit.WebResourceRequest
+import android.webkit.WebResourceResponse
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.FrameLayout
+import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.activity.ComponentActivity
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import java.io.ByteArrayInputStream
 
 /**
- * 央视直播:在全屏网页里打开央视官方公开直播页,自动开始播放并铺满屏幕。
- * 遥控器:上/下 或 频道+/- 换台,确定 暂停/播放,返回 退出。
+ * 央视直播:全屏网页打开央视官方公开直播页。
+ * - 出画前盖一层纯黑"正在打开 CCTV-X"遮罩,老人看不到网页本身;
+ * - 视频开始播放后只保留播放器,铺满全屏;网页图片、字体不加载,出画更快;
+ * - 25 秒还没出画就提示换台/返回。
+ * 遥控器:上/下 或 频道+/- 换台,确定 暂停/播放,左/右/菜单 显示台标,返回 退出。
  */
 class LiveActivity : ComponentActivity() {
     private lateinit var web: WebView
-    private lateinit var tip: TextView
     private lateinit var root: FrameLayout
+    private lateinit var cover: LinearLayout
+    private lateinit var coverTitle: TextView
+    private lateinit var coverMsg: TextView
+    private lateinit var coverSpin: ProgressBar
+    private lateinit var tip: TextView
     private var index = 0
+    private var playing = false
+    private var loadSeq = 0
     private val handler = Handler(Looper.getMainLooper())
     private var customView: View? = null
     private var customCb: WebChromeClient.CustomViewCallback? = null
@@ -39,16 +56,16 @@ class LiveActivity : ComponentActivity() {
 
     private val keepPlaying = object : Runnable {
         override fun run() {
-            injectPlay()
-            if (++tick < 40) handler.postDelayed(this, 1500)
+            web.evaluateJavascript(PLAY_JS, null)
+            if (++tick < 60) handler.postDelayed(this, if (playing) 3000L else 700L)
         }
     }
     private val hideTip = Runnable { tip.visibility = View.GONE }
 
-    @SuppressLint("SetJavaScriptEnabled")
+    @SuppressLint("SetJavaScriptEnabled", "AddJavascriptInterface")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON or WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         WindowInsetsControllerCompat(window, window.decorView).let {
             it.hide(WindowInsetsCompat.Type.systemBars())
@@ -61,6 +78,8 @@ class LiveActivity : ComponentActivity() {
             setBackgroundColor(Color.BLACK)
             isFocusable = false
             isFocusableInTouchMode = false
+            isVerticalScrollBarEnabled = false
+            isHorizontalScrollBarEnabled = false
             settings.apply {
                 javaScriptEnabled = true
                 domStorageEnabled = true
@@ -69,20 +88,33 @@ class LiveActivity : ComponentActivity() {
                 useWideViewPort = true
                 mixedContentMode = WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE
                 userAgentString = DESKTOP_UA
+                setSupportZoom(false)
             }
+            addJavascriptInterface(Bridge(), "AuraLive")
             webViewClient = object : WebViewClient() {
+                override fun shouldInterceptRequest(view: WebView, req: WebResourceRequest): WebResourceResponse? {
+                    // 网页里的图片、字体对看直播没用:不下载,省带宽,播放器更快拿到视频流
+                    if (req.isForMainFrame) return null
+                    val path = req.url.path?.lowercase() ?: return null
+                    if (BLOCK_EXT.any { path.endsWith(it) }) {
+                        return WebResourceResponse("text/plain", "utf-8", 204, "No Content", emptyMap(), ByteArrayInputStream(ByteArray(0)))
+                    }
+                    return null
+                }
+
+                override fun onPageStarted(view: WebView, url: String?, favicon: android.graphics.Bitmap?) {
+                    startInject()
+                }
+
                 override fun onPageFinished(view: WebView, url: String?) {
-                    tick = 0
-                    handler.removeCallbacks(keepPlaying)
-                    handler.postDelayed(keepPlaying, 800)
+                    startInject()
                 }
             }
             webChromeClient = object : WebChromeClient() {
                 override fun onShowCustomView(view: View, callback: CustomViewCallback) {
                     customView = view
                     customCb = callback
-                    root.addView(view, ViewGroup.LayoutParams(-1, -1))
-                    web.visibility = View.INVISIBLE
+                    root.addView(view, 1, ViewGroup.LayoutParams(-1, -1))
                 }
 
                 override fun onHideCustomView() {
@@ -90,11 +122,30 @@ class LiveActivity : ComponentActivity() {
                     customView = null
                     customCb?.onCustomViewHidden()
                     customCb = null
-                    web.visibility = View.VISIBLE
                 }
             }
         }
         root.addView(web, FrameLayout.LayoutParams(-1, -1))
+
+        // 出画前的黑色遮罩
+        cover = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            gravity = Gravity.CENTER
+            setBackgroundColor(Color.BLACK)
+            isClickable = false
+        }
+        coverTitle = TextView(this).apply {
+            setTextColor(Color.WHITE); textSize = 56f; typeface = Typeface.DEFAULT_BOLD; gravity = Gravity.CENTER
+        }
+        coverSpin = ProgressBar(this).apply { isIndeterminate = true }
+        coverMsg = TextView(this).apply {
+            setTextColor(0xCCFFFFFF.toInt()); textSize = 28f; gravity = Gravity.CENTER; setPadding(0, 36, 0, 0)
+        }
+        cover.addView(coverTitle)
+        cover.addView(coverSpin, LinearLayout.LayoutParams(140, 140).apply { topMargin = 48 })
+        cover.addView(coverMsg)
+        root.addView(cover, FrameLayout.LayoutParams(-1, -1))
+
         tip = TextView(this).apply {
             setTextColor(Color.WHITE)
             setBackgroundColor(0xB0000000.toInt())
@@ -107,11 +158,45 @@ class LiveActivity : ComponentActivity() {
         load()
     }
 
+    private fun startInject() {
+        tick = 0
+        handler.removeCallbacks(keepPlaying)
+        handler.post(keepPlaying)
+    }
+
     private fun load() {
         val ch = LiveChannels.all[index]
         liveSaveChannel(this, index)
-        showTip("${ch.title}  ·  正在打开…")
+        playing = false
+        val seq = ++loadSeq
+        coverTitle.text = ch.title
+        coverMsg.text = "正在打开,请稍候…"
+        coverSpin.visibility = View.VISIBLE
+        cover.visibility = View.VISIBLE
+        tip.visibility = View.GONE
+        web.stopLoading()
         web.loadUrl(ch.url)
+        handler.postDelayed({
+            if (seq == loadSeq && !playing) {
+                coverSpin.visibility = View.GONE
+                coverMsg.text = "暂时打不开这个频道\n按 上 / 下 键换台,按「返回」键退出"
+            }
+        }, 25_000)
+    }
+
+    private fun onPlaying() {
+        if (playing) return
+        playing = true
+        cover.visibility = View.GONE
+        showTip(LiveChannels.all[index].title)
+    }
+
+    private inner class Bridge {
+        @JavascriptInterface
+        fun playing() { handler.post { onPlaying() } }
+
+        @JavascriptInterface
+        fun log(s: String) { Log.i("AuraLive", s.take(2000)) }
     }
 
     private fun showTip(s: String) {
@@ -119,11 +204,6 @@ class LiveActivity : ComponentActivity() {
         tip.visibility = View.VISIBLE
         handler.removeCallbacks(hideTip)
         handler.postDelayed(hideTip, 3500)
-    }
-
-    /** 让页面里的视频有声播放并铺满屏幕(官方页面改版时尽力而为)。 */
-    private fun injectPlay() {
-        web.evaluateJavascript(PLAY_JS, null)
     }
 
     private fun toggle() {
@@ -163,6 +243,7 @@ class LiveActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
         web.onResume()
+        if (playing) startInject()
     }
 
     override fun onDestroy() {
@@ -175,19 +256,40 @@ class LiveActivity : ComponentActivity() {
 
     companion object {
         private const val EXTRA = "channel"
+        private val BLOCK_EXT = listOf(".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg", ".ico", ".woff", ".woff2", ".ttf", ".otf")
         private const val DESKTOP_UA =
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+
+        /**
+         * 找到页面里的 <video>:让它有声自动播放;给它和所有上级元素打标记,
+         * 其余元素全部隐藏,播放器铺满屏幕。不用 :has(),老版本 WebView 也能用。
+         */
         private const val PLAY_JS = """
 (function(){
   try{
+    var B=window.AuraLive;
+    var v=null,vs=document.getElementsByTagName('video');
+    for(var i=0;i<vs.length;i++){if(!v||vs[i].offsetWidth*vs[i].offsetHeight>v.offsetWidth*v.offsetHeight)v=vs[i];}
+    if(!window.__auraLogged){window.__auraLogged=1;
+      var ids=[];var all=document.querySelectorAll('[id]');for(var k=0;k<all.length&&ids.length<40;k++){var d=all[k].id;if(/play|video|live/i.test(d))ids.push(all[k].tagName+'#'+d);}
+      B&&B.log('url='+location.href+' videos='+vs.length+' iframes='+document.getElementsByTagName('iframe').length+' ids='+ids.join(','));}
+    if(!v)return;
+    if(!v.__aura){v.__aura=1;
+      v.addEventListener('playing',function(){B&&B.playing();});
+      v.addEventListener('timeupdate',function(){if(v.currentTime>0.3){B&&B.playing();}});
+      B&&B.log('video found src='+(v.currentSrc||v.src||'').slice(0,160));}
+    var olds=document.querySelectorAll('[data-aura-keep]');for(var j=0;j<olds.length;j++)olds[j].removeAttribute('data-aura-keep');
+    var e=v;while(e&&e.nodeType===1){e.setAttribute('data-aura-keep','1');e=e.parentElement;}
     var s=document.getElementById('aura_css');
-    if(!s){s=document.createElement('style');s.id='aura_css';
-      s.textContent='html,body{overflow:hidden!important;background:#000!important}'+
-      'video{position:fixed!important;left:0!important;top:0!important;width:100vw!important;height:100vh!important;z-index:2147483647!important;background:#000!important;object-fit:contain!important}';
-      document.head.appendChild(s);}
-    var v=document.querySelector('video');
-    if(v){v.muted=false;v.volume=1;if(v.paused){var p=v.play();if(p&&p.catch){p.catch(function(){})}}}
-  }catch(e){}
+    if(!s){s=document.createElement('style');s.id='aura_css';(document.head||document.documentElement).appendChild(s);}
+    s.textContent='html,body{overflow:hidden!important;background:#000!important;margin:0!important}'+
+      'body *:not([data-aura-keep]):not(video){visibility:hidden!important}'+
+      '[data-aura-keep]{transform:none!important;filter:none!important;animation:none!important;transition:none!important}'+
+      'video[data-aura-keep]{visibility:visible!important;position:fixed!important;left:0!important;top:0!important;width:100vw!important;height:100vh!important;max-width:none!important;max-height:none!important;z-index:2147483647!important;background:#000!important;object-fit:contain!important}';
+    v.muted=false;v.volume=1;
+    if(v.paused){var p=v.play();if(p&&p.catch){p.catch(function(){})}}
+    if(!v.paused&&v.currentTime>0.3){B&&B.playing();}
+  }catch(err){window.AuraLive&&window.AuraLive.log('js error '+err);}
 })()
 """
 

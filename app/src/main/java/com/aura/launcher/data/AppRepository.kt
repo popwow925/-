@@ -57,10 +57,14 @@ class AppRepository(private val context: Context) {
         runCatching { context.unregisterReceiver(receiver) }
     }
 
+    private var firstLoad = true
+
     fun reload() {
         reloadJob?.cancel()
+        val wait = !firstLoad
+        firstLoad = false
         reloadJob = scope.launch {
-            delay(150) // 合并短时间内连续到来的广播
+            if (wait) delay(150) // 合并短时间内连续到来的广播;开机第一次立即加载
             _apps.value = query()
         }
     }

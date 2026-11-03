@@ -29,6 +29,18 @@ APK=$(ls apk/release/*.apk 2>/dev/null | head -1)
 echo "installing $APK"
 adb install -r "$APK" 2>&1 | tee shots/install.txt
 
+# 启动耗时:先测冷启动(未预编译),再按 baseline profile 预编译后再测
+measure() {
+  for i in 1 2 3; do
+    adb shell am force-stop com.aura.launcher; sleep 1
+    adb shell am start -W -n com.aura.launcher/.MainActivity | grep -E "TotalTime|WaitTime" | tr '\n' ' '; echo
+    sleep 3
+  done
+}
+{ echo "== before profile compile"; measure
+  adb shell cmd package compile -f -m speed-profile com.aura.launcher
+  echo "== after speed-profile compile"; measure; } > shots/startup.txt 2>&1 || true
+
 adb logcat -c
 adb shell am start -n com.aura.launcher/.MainActivity 2>&1 | tee shots/start.txt
 sleep 10
@@ -130,9 +142,12 @@ cap 50-live 2
 key KEYCODE_DPAD_DOWN
 cap 51-live-focus 1
 key KEYCODE_DPAD_CENTER
-cap 52-live-opening 8
+cap 52-live-opening 3
+cap 52b-live-wait 20
 adb shell input keyevent KEYCODE_DPAD_DOWN
 cap 53-live-next 4
+adb logcat -d -s AuraLive > shots/live-log.txt 2>&1 || true
+cap 54-live-later 20
 adb shell input keyevent KEYCODE_BACK
 sleep 2
 
