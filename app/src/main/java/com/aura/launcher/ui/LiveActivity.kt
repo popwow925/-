@@ -11,6 +11,7 @@ import android.os.Looper
 import android.util.Log
 import android.view.Gravity
 import android.view.KeyEvent
+import android.view.SurfaceView
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
@@ -29,6 +30,15 @@ import androidx.activity.ComponentActivity
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.annotation.OptIn
+import androidx.media3.common.MediaItem
+import androidx.media3.common.MimeTypes
+import androidx.media3.common.PlaybackException
+import androidx.media3.common.Player
+import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.DefaultHttpDataSource
+import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.hls.HlsMediaSource
 import java.io.ByteArrayInputStream
 
 /**
@@ -53,10 +63,19 @@ class LiveActivity : ComponentActivity() {
     private var customView: View? = null
     private var customCb: WebChromeClient.CustomViewCallback? = null
     private var tick = 0
+    private lateinit var surface: SurfaceView
+    private var player: ExoPlayer? = null
+    /** 本频道是否已经交给原生播放器;失败后回退到网页自带播放器。 */
+    private var nativeUrl: String? = null
+    private var nativeFailed = false
 
     private val keepPlaying = object : Runnable {
         override fun run() {
-            web.evaluateJavascript(PLAY_JS, null)
+            if (player != null && !nativeFailed) {   // 原生播放器在放:只确保网页别出声
+                web.evaluateJavascript("(function(){var v=document.querySelectorAll('video');for(var i=0;i<v.length;i++){v[i].muted=true;}})()", null)
+            } else {
+                web.evaluateJavascript(PLAY_JS, null)
+            }
             if (++tick < 60) handler.postDelayed(this, if (playing) 3000L else 700L)
         }
     }
@@ -96,6 +115,14 @@ class LiveActivity : ComponentActivity() {
                     // 网页里的图片、字体对看直播没用:不下载,省带宽,播放器更快拿到视频流
                     if (req.isForMainFrame) return null
                     val path = req.url.path?.lowercase() ?: return null
+                    val u = req.url.toString()
+                    if (path.endsWith(".m3u8") || u.contains(".m3u8?")) {
+                        Log.i("AuraLive", "m3u8 " + u.take(300))
+                        val seq = loadSeq
+                        handler.post { onStreamFound(u, seq) }
+                    } else if (!BLOCK_EXT.any { path.endsWith(it) } && !path.endsWith(".ts") && !path.endsWith(".css")) {
+                        Log.i("AuraLive", "req " + u.take(200))
+                    }
                     if (BLOCK_EXT.any { path.endsWith(it) }) {
                         return WebResourceResponse("text/plain", "utf-8", 204, "No Content", emptyMap(), ByteArrayInputStream(ByteArray(0)))
                     }
@@ -126,6 +153,8 @@ class LiveActivity : ComponentActivity() {
             }
         }
         root.addView(web, FrameLayout.LayoutParams(-1, -1))
+        surface = SurfaceView(this).apply { visibility = View.GONE }
+        root.addView(surface, FrameLayout.LayoutParams(-1, -1))
 
         // 出画前的黑色遮罩
         cover = LinearLayout(this).apply {
@@ -169,6 +198,10 @@ class LiveActivity : ComponentActivity() {
         liveSaveChannel(this, index)
         playing = false
         val seq = ++loadSeq
+        stopNative()
+        nativeUrl = null
+        nativeFailed = false
+        web.visibility = View.VISIBLE
         coverTitle.text = ch.title
         coverMsg.text = "正在打开,请稍候…"
         coverSpin.visibility = View.VISIBLE
@@ -182,6 +215,61 @@ class LiveActivity : ComponentActivity() {
                 coverMsg.text = "暂时打不开这个频道\n按 上 / 下 键换台,按「返回」键退出"
             }
         }, 25_000)
+    }
+
+    /** 网页播放器请求了官方 HLS 地址:交给 ExoPlayer 原生解码,网页随即停掉省资源。 */
+    @OptIn(UnstableApi::class)
+    private fun onStreamFound(url: String, seq: Int) {
+        if (seq != loadSeq || nativeFailed || nativeUrl != null || isFinishing) return
+        nativeUrl = url
+        val ds = DefaultHttpDataSource.Factory()
+            .setUserAgent(DESKTOP_UA)
+            .setAllowCrossProtocolRedirects(true)
+            .setConnectTimeoutMs(10_000)
+            .setReadTimeoutMs(15_000)
+            .setDefaultRequestProperties(mapOf("Referer" to "https://tv.cctv.com/", "Origin" to "https://tv.cctv.com"))
+        val src = HlsMediaSource.Factory(ds).createMediaSource(
+            MediaItem.Builder().setUri(url).setMimeType(MimeTypes.APPLICATION_M3U8).build(),
+        )
+        val p = player ?: ExoPlayer.Builder(this).build().also { player = it }
+        p.setVideoSurfaceView(surface)
+        p.addListener(object : Player.Listener {
+            override fun onRenderedFirstFrame() {
+                if (seq != loadSeq) return
+                Log.i("AuraLive", "native first frame")
+                surface.visibility = View.VISIBLE
+                web.visibility = View.INVISIBLE
+                web.evaluateJavascript("(function(){var v=document.querySelectorAll('video');for(var i=0;i<v.length;i++){v[i].muted=true;v[i].pause();}})()", null)
+                web.onPause()
+                onPlaying()
+            }
+
+            override fun onPlayerError(error: PlaybackException) {
+                if (seq != loadSeq) return
+                Log.i("AuraLive", "native error " + error.errorCodeName + " " + (error.cause?.message ?: ""))
+                nativeFailed = true
+                handler.post {
+                    stopNative()
+                    web.visibility = View.VISIBLE
+                    web.onResume()
+                }
+            }
+        })
+        surface.visibility = View.VISIBLE
+        p.setMediaSource(src)
+        p.playWhenReady = true
+        p.prepare()
+    }
+
+    private fun stopNative() {
+        player?.let {
+            it.stop()
+            it.clearMediaItems()
+            it.release()
+        }
+        player = null
+        if (::surface.isInitialized) surface.visibility = View.GONE
+        if (::web.isInitialized) web.onResume()
     }
 
     private fun onPlaying() {
@@ -207,6 +295,7 @@ class LiveActivity : ComponentActivity() {
     }
 
     private fun toggle() {
+        player?.let { if (nativeUrl != null && !nativeFailed) { it.playWhenReady = !it.playWhenReady; return } }
         web.evaluateJavascript(
             "(function(){var v=document.querySelector('video');if(v){if(v.paused){v.play()}else{v.pause()}}})()", null,
         )
@@ -236,18 +325,21 @@ class LiveActivity : ComponentActivity() {
 
     override fun onPause() {
         super.onPause()
+        player?.pause()
         web.onPause()
         handler.removeCallbacks(keepPlaying)
     }
 
     override fun onResume() {
         super.onResume()
-        web.onResume()
+        player?.let { it.play() } ?: web.onResume()
         if (playing) startInject()
     }
 
     override fun onDestroy() {
         handler.removeCallbacksAndMessages(null)
+        player?.release()
+        player = null
         (web.parent as? ViewGroup)?.removeView(web)
         web.loadUrl("about:blank")
         web.destroy()

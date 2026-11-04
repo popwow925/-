@@ -149,14 +149,6 @@ cap 53-live-next 4
 adb logcat -d -s AuraLive > shots/live-log.txt 2>&1 || true
 cap 54-live-later 20
 
-# 宣传片素材:各央视频道的真实直播画面
-mkdir -p shots/promo
-for ch in 6 8 0 4 13 2 9 14; do
-  adb shell am start -n com.aura.launcher/.ui.LiveActivity --ei channel $ch > /dev/null 2>&1 || true
-  sleep 18; adb exec-out screencap -p > shots/promo/ch$ch-a.png
-  sleep 7;  adb exec-out screencap -p > shots/promo/ch$ch-b.png
-  adb shell input keyevent KEYCODE_BACK; sleep 2
-done
 adb shell input keyevent KEYCODE_BACK
 sleep 2
 
