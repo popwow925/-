@@ -157,7 +157,7 @@ cap 55-gecko-opening 8
 cap 56-gecko-wait 25
 cap 57-gecko-wait2 20
 adb logcat -d -s AuraLive > shots/gecko-log.txt 2>&1 || true
-adb logcat -d | grep -i -E "gecko|FATAL|AndroidRuntime" | head -60 > shots/gecko-full.txt 2>&1 || true
+adb logcat -d | grep -i -E "gecko|FATAL|AndroidRuntime" | grep -v -E "GeckoLibLoad|GeckoLoader|ServiceAllocator" | head -250 > shots/gecko-full.txt 2>&1 || true
 adb shell input keyevent KEYCODE_BACK; sleep 2
 
 adb shell input keyevent KEYCODE_BACK
