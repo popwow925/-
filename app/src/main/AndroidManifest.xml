@@ -64,7 +64,7 @@
         <!-- 央视直播:全屏网页播放官方公开直播页 -->
         <activity
             android:name=".ui.LiveActivity"
-            android:exported="false"
+            android:exported="true"
             android:launchMode="singleTop"
             android:screenOrientation="landscape"
             android:theme="@style/Theme.Aura.Player"
