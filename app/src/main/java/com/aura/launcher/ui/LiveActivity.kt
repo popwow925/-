@@ -68,6 +68,7 @@ class LiveActivity : ComponentActivity() {
     /** 本频道是否已经交给原生播放器;失败后回退到网页自带播放器。 */
     private var nativeUrl: String? = null
     private var nativeFailed = false
+    private var oldWebView = false
     /** 诊断信息:打不开时显示在屏幕上,方便拍照反馈。 */
     @Volatile private var diag = linkedMapOf<String, String>()
     private fun note(k: String, v: String) { synchronized(this) { diag[k] = v }; Log.i("AuraLive", "$k=$v") }
@@ -235,7 +236,14 @@ class LiveActivity : ComponentActivity() {
                 coverSpin.visibility = View.GONE
                 val wv = runCatching { WebView.getCurrentWebViewPackage()?.let { it.packageName.substringAfterLast('.') + " " + it.versionName } }.getOrNull() ?: "?"
                 val info = synchronized(this) { diag.entries.joinToString("  ·  ") { it.key + ":" + it.value } }
-                coverMsg.text = "暂时打不开这个频道\n按 上 / 下 键换台,按「返回」键退出\n\n" +
+                val major = wv.substringAfterLast(' ').substringBefore('.').toIntOrNull() ?: 999
+                oldWebView = major < 90
+                val head = if (oldWebView) {
+                    "电视的网页内核太旧(版本 $major),播不了央视的新播放器\n按「确定」键去更新「Android System WebView」,更新后再来\n按「返回」键退出\n\n"
+                } else {
+                    "暂时打不开这个频道\n按 上 / 下 键换台,按「返回」键退出\n\n"
+                }
+                coverMsg.text = head +
                     "诊断(拍照发给开发者):内核 $wv  ·  " + (info.ifEmpty { "网页没有运行" })
                 coverMsg.textSize = 24f
             }
@@ -284,6 +292,17 @@ class LiveActivity : ComponentActivity() {
         p.setMediaSource(src)
         p.playWhenReady = true
         p.prepare()
+    }
+
+    /** 去应用商店更新系统 WebView(电视上的央视播放器需要较新的内核)。 */
+    private fun openWebViewUpdate() {
+        val pkg = runCatching { WebView.getCurrentWebViewPackage()?.packageName }.getOrNull() ?: "com.google.android.webview"
+        val tries = listOf(
+            Intent(Intent.ACTION_VIEW, android.net.Uri.parse("market://details?id=$pkg")),
+            Intent(Intent.ACTION_VIEW, android.net.Uri.parse("https://play.google.com/store/apps/details?id=$pkg")),
+        )
+        for (i in tries) if (runCatching { startActivity(i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }.isSuccess) return
+        showTip("没找到应用商店,请用「应用商店」页或本地安装更新 WebView")
     }
 
     private fun stopNative() {
@@ -344,7 +363,10 @@ class LiveActivity : ComponentActivity() {
             when (e.keyCode) {
                 KeyEvent.KEYCODE_DPAD_UP, KeyEvent.KEYCODE_CHANNEL_UP, KeyEvent.KEYCODE_PAGE_UP -> { step(-1); return true }
                 KeyEvent.KEYCODE_DPAD_DOWN, KeyEvent.KEYCODE_CHANNEL_DOWN, KeyEvent.KEYCODE_PAGE_DOWN -> { step(1); return true }
-                KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER, KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE -> { toggle(); return true }
+                KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER, KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE -> {
+                    if (oldWebView && !playing) openWebViewUpdate() else toggle()
+                    return true
+                }
                 KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.KEYCODE_DPAD_RIGHT, KeyEvent.KEYCODE_INFO, KeyEvent.KEYCODE_MENU -> {
                     showTip("${LiveChannels.all[index].title}    上/下 换台    返回 退出"); return true
                 }
