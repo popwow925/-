@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.aura.launcher"
-    compileSdk = 35
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.aura.launcher"
@@ -72,7 +72,7 @@ dependencies {
     // 影视播放:只要 ExoPlayer 内核,控制界面自己用 Compose 画(不引入 media3-ui)
     implementation("androidx.media3:media3-exoplayer:1.4.1")
     // 内置浏览器内核(GeckoView):老电视的系统 WebView 太旧时,用它打开央视官方直播页
-    val gecko = "159.0.20261102144711"
+    val gecko = "126.+"
     // omni 含各种 CPU 的库;下面的 splits 会按 CPU 拆成单独的安装包
     implementation("org.mozilla.geckoview:geckoview-omni:$gecko")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
