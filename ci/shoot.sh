@@ -150,10 +150,12 @@ cap 53-live-next 4
 adb logcat -d -s AuraLive > shots/live-log.txt 2>&1 || true
 cap 54-live-later 20
 # 内置 Gecko 浏览器内核:强制用它打开 CCTV-1
+adb shell am force-stop com.aura.launcher; sleep 2
 adb logcat -c
 adb shell am start -n com.aura.launcher/.ui.LiveActivity --ei channel 0 --es engine gecko > shots/gecko-start.txt 2>&1 || true
-cap 55-gecko-opening 6
-cap 56-gecko-wait 30
+cap 55-gecko-opening 8
+cap 56-gecko-wait 25
+cap 57-gecko-wait2 20
 adb logcat -d -s AuraLive > shots/gecko-log.txt 2>&1 || true
 adb logcat -d | grep -i -E "gecko|FATAL|AndroidRuntime" | head -60 > shots/gecko-full.txt 2>&1 || true
 adb shell input keyevent KEYCODE_BACK; sleep 2
