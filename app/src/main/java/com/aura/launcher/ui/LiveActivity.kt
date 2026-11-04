@@ -11,7 +11,6 @@ import android.os.Looper
 import android.util.Log
 import android.view.Gravity
 import android.view.KeyEvent
-import android.view.SurfaceView
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
@@ -30,26 +29,23 @@ import androidx.activity.ComponentActivity
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import androidx.annotation.OptIn
-import androidx.media3.common.MediaItem
-import androidx.media3.common.MimeTypes
-import androidx.media3.common.PlaybackException
-import androidx.media3.common.Player
-import androidx.media3.common.util.UnstableApi
-import androidx.media3.datasource.DefaultHttpDataSource
-import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.exoplayer.hls.HlsMediaSource
 import java.io.ByteArrayInputStream
+import org.mozilla.geckoview.GeckoSession
+import org.mozilla.geckoview.GeckoSessionSettings
+import org.mozilla.geckoview.GeckoView
 
 /**
- * 央视直播:全屏网页打开央视官方公开直播页。
- * - 出画前盖一层纯黑"正在打开 CCTV-X"遮罩,老人看不到网页本身;
- * - 视频开始播放后只保留播放器,铺满全屏;网页图片、字体不加载,出画更快;
- * - 25 秒还没出画就提示换台/返回。
+ * 央视直播:全屏打开央视官方公开直播页,没有任何浏览器界面。
+ * - 系统 WebView 够新就用它;太旧(老电视常见)就用内置的 GeckoView 浏览器内核;
+ * - 出画前盖一层纯黑"正在打开 CCTV-X"遮罩;开始播放后只保留播放器,铺满全屏;
+ * - 25 秒还没出画就提示换台/返回,并显示诊断信息。
  * 遥控器:上/下 或 频道+/- 换台,确定 暂停/播放,左/右/菜单 显示台标,返回 退出。
  */
 class LiveActivity : ComponentActivity() {
-    private lateinit var web: WebView
+    private var web: WebView? = null
+    private var geckoView: GeckoView? = null
+    private var geckoSession: GeckoSession? = null
+    private var useGecko = false
     private lateinit var root: FrameLayout
     private lateinit var cover: LinearLayout
     private lateinit var coverTitle: TextView
@@ -63,23 +59,14 @@ class LiveActivity : ComponentActivity() {
     private var customView: View? = null
     private var customCb: WebChromeClient.CustomViewCallback? = null
     private var tick = 0
-    private lateinit var surface: SurfaceView
-    private var player: ExoPlayer? = null
-    /** 本频道是否已经交给原生播放器;失败后回退到网页自带播放器。 */
-    private var nativeUrl: String? = null
-    private var nativeFailed = false
-    private var oldWebView = false
+
     /** 诊断信息:打不开时显示在屏幕上,方便拍照反馈。 */
     @Volatile private var diag = linkedMapOf<String, String>()
     private fun note(k: String, v: String) { synchronized(this) { diag[k] = v }; Log.i("AuraLive", "$k=$v") }
 
     private val keepPlaying = object : Runnable {
         override fun run() {
-            if (player != null && !nativeFailed) {   // 原生播放器在放:只确保网页别出声
-                web.evaluateJavascript("(function(){var v=document.querySelectorAll('video');for(var i=0;i<v.length;i++){v[i].muted=true;}})()", null)
-            } else {
-                web.evaluateJavascript(PLAY_JS, null)
-            }
+            web?.evaluateJavascript(PLAY_JS, null)
             if (++tick < 60) handler.postDelayed(this, if (playing) 3000L else 700L)
         }
     }
@@ -97,7 +84,52 @@ class LiveActivity : ComponentActivity() {
         index = intent.getIntExtra(EXTRA, 0).coerceIn(LiveChannels.all.indices)
 
         root = FrameLayout(this).apply { setBackgroundColor(Color.BLACK) }
-        web = WebView(this).apply {
+
+        val wvVersion = webViewVersion()
+        val wvMajor = wvVersion.substringAfterLast(' ').substringBefore('.').toIntOrNull() ?: 0
+        useGecko = intent.getStringExtra(ENGINE) == "gecko" || (intent.getStringExtra(ENGINE) != "webview" && wvMajor < 90)
+        note("内核", if (useGecko) "内置 Gecko(系统 WebView $wvVersion)" else "系统 WebView $wvVersion")
+        if (useGecko) createGecko() else createWebView()
+
+        // 出画前的黑色遮罩
+        cover = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            gravity = Gravity.CENTER
+            setBackgroundColor(Color.BLACK)
+            isClickable = false
+        }
+        coverTitle = TextView(this).apply {
+            setTextColor(Color.WHITE); textSize = 56f; typeface = Typeface.DEFAULT_BOLD; gravity = Gravity.CENTER
+        }
+        coverSpin = ProgressBar(this).apply { isIndeterminate = true }
+        coverMsg = TextView(this).apply {
+            setTextColor(0xCCFFFFFF.toInt()); textSize = 28f; gravity = Gravity.CENTER; setPadding(0, 36, 0, 0)
+        }
+        cover.addView(coverTitle)
+        cover.addView(coverSpin, LinearLayout.LayoutParams(140, 140).apply { topMargin = 48 })
+        cover.addView(coverMsg)
+        root.addView(cover, FrameLayout.LayoutParams(-1, -1))
+
+        tip = TextView(this).apply {
+            setTextColor(Color.WHITE)
+            setBackgroundColor(0xB0000000.toInt())
+            textSize = 34f
+            setPadding(48, 24, 48, 24)
+            visibility = View.GONE
+        }
+        root.addView(tip, FrameLayout.LayoutParams(-2, -2, Gravity.TOP or Gravity.START).apply { setMargins(64, 56, 0, 0) })
+        setContentView(root)
+        load()
+    }
+
+    private fun webViewVersion(): String =
+        runCatching { WebView.getCurrentWebViewPackage()?.let { it.packageName.substringAfterLast('.') + " " + it.versionName } }
+            .getOrNull() ?: "无"
+
+    // ------------------------------------------------------------ 系统 WebView
+    @SuppressLint("SetJavaScriptEnabled", "AddJavascriptInterface")
+    private fun createWebView() {
+        val w = WebView(this).apply {
             setBackgroundColor(Color.BLACK)
             isFocusable = false
             isFocusableInTouchMode = false
@@ -116,26 +148,16 @@ class LiveActivity : ComponentActivity() {
             addJavascriptInterface(Bridge(), "AuraLive")
             webViewClient = object : WebViewClient() {
                 override fun shouldInterceptRequest(view: WebView, req: WebResourceRequest): WebResourceResponse? {
-                    // 网页里的图片、字体对看直播没用:不下载,省带宽,播放器更快拿到视频流
+                    // 网页里的图片、字体对看直播没用:不下载,省带宽
                     if (req.isForMainFrame) return null
                     val path = req.url.path?.lowercase() ?: return null
-                    val u = req.url.toString()
-                    if (path.endsWith(".m3u8") || u.contains(".m3u8?")) {
-                        note("流", "已拿到"); Log.i("AuraLive", "m3u8 " + u.take(300))
-                        val seq = loadSeq
-                        handler.post { onStreamFound(u, seq) }
-                    } else if (!BLOCK_EXT.any { path.endsWith(it) } && !path.endsWith(".ts") && !path.endsWith(".css")) {
-                        Log.i("AuraLive", "req " + u.take(200))
-                    }
                     if (BLOCK_EXT.any { path.endsWith(it) }) {
                         return WebResourceResponse("text/plain", "utf-8", 204, "No Content", emptyMap(), ByteArrayInputStream(ByteArray(0)))
                     }
                     return null
                 }
 
-                override fun onPageStarted(view: WebView, url: String?, favicon: android.graphics.Bitmap?) {
-                    startInject()
-                }
+                override fun onPageStarted(view: WebView, url: String?, favicon: android.graphics.Bitmap?) { startInject() }
 
                 override fun onReceivedError(view: WebView, request: WebResourceRequest, error: android.webkit.WebResourceError) {
                     if (request.isForMainFrame) note("网页", "加载失败 " + error.errorCode + " " + error.description)
@@ -172,39 +194,52 @@ class LiveActivity : ComponentActivity() {
                 }
             }
         }
-        root.addView(web, FrameLayout.LayoutParams(-1, -1))
-        surface = SurfaceView(this).apply { visibility = View.GONE }
-        root.addView(surface, FrameLayout.LayoutParams(-1, -1))
+        web = w
+        root.addView(w, FrameLayout.LayoutParams(-1, -1))
+    }
 
-        // 出画前的黑色遮罩
-        cover = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            gravity = Gravity.CENTER
+    // ------------------------------------------------------------ 内置 GeckoView
+    private fun createGecko() {
+        val rt = LiveGecko.runtime(this)
+        val session = GeckoSession(
+            GeckoSessionSettings.Builder()
+                .usePrivateMode(true)
+                .userAgentMode(GeckoSessionSettings.USER_AGENT_MODE_DESKTOP)
+                .viewportMode(GeckoSessionSettings.VIEWPORT_MODE_DESKTOP)
+                .build(),
+        )
+        session.progressDelegate = object : GeckoSession.ProgressDelegate {
+            override fun onPageStop(session: GeckoSession, success: Boolean) {
+                note("网页", if (success) "已打开" else "加载失败")
+            }
+        }
+        session.contentDelegate = object : GeckoSession.ContentDelegate {
+            override fun onCrash(session: GeckoSession) { note("浏览器", "崩溃") }
+            override fun onKill(session: GeckoSession) { note("浏览器", "被系统结束") }
+        }
+        session.open(rt)
+        geckoSession = session
+        val gv = GeckoView(this).apply {
             setBackgroundColor(Color.BLACK)
-            isClickable = false
+            isFocusable = false
+            isFocusableInTouchMode = false
         }
-        coverTitle = TextView(this).apply {
-            setTextColor(Color.WHITE); textSize = 56f; typeface = Typeface.DEFAULT_BOLD; gravity = Gravity.CENTER
+        gv.setSession(session)
+        geckoView = gv
+        root.addView(gv, FrameLayout.LayoutParams(-1, -1))
+        LiveGecko.onMessage = { type, data ->
+            handler.post {
+                when (type) {
+                    "playing" -> onPlaying()
+                    "log" -> {
+                        Log.i("AuraLive", data.take(300))
+                        if (data.startsWith("url=")) note("页面脚本", "已运行")
+                        if (data.startsWith("video found")) note("视频元素", "有")
+                        if (data.startsWith("js error")) note("脚本", data.take(80))
+                    }
+                }
+            }
         }
-        coverSpin = ProgressBar(this).apply { isIndeterminate = true }
-        coverMsg = TextView(this).apply {
-            setTextColor(0xCCFFFFFF.toInt()); textSize = 28f; gravity = Gravity.CENTER; setPadding(0, 36, 0, 0)
-        }
-        cover.addView(coverTitle)
-        cover.addView(coverSpin, LinearLayout.LayoutParams(140, 140).apply { topMargin = 48 })
-        cover.addView(coverMsg)
-        root.addView(cover, FrameLayout.LayoutParams(-1, -1))
-
-        tip = TextView(this).apply {
-            setTextColor(Color.WHITE)
-            setBackgroundColor(0xB0000000.toInt())
-            textSize = 34f
-            setPadding(48, 24, 48, 24)
-            visibility = View.GONE
-        }
-        root.addView(tip, FrameLayout.LayoutParams(-2, -2, Gravity.TOP or Gravity.START).apply { setMargins(64, 56, 0, 0) })
-        setContentView(root)
-        load()
     }
 
     private fun startInject() {
@@ -218,102 +253,27 @@ class LiveActivity : ComponentActivity() {
         liveSaveChannel(this, index)
         playing = false
         val seq = ++loadSeq
-        stopNative()
-        nativeUrl = null
-        nativeFailed = false
-        synchronized(this) { diag = linkedMapOf() }
+        synchronized(this) { val k = diag["内核"]; diag = linkedMapOf(); if (k != null) diag["内核"] = k }
         coverMsg.textSize = 28f
-        web.visibility = View.VISIBLE
         coverTitle.text = ch.title
         coverMsg.text = "正在打开,请稍候…"
         coverSpin.visibility = View.VISIBLE
         cover.visibility = View.VISIBLE
         tip.visibility = View.GONE
-        web.stopLoading()
-        web.loadUrl(ch.url)
+        if (useGecko) {
+            geckoSession?.load(GeckoSession.Loader().uri(ch.url))
+        } else {
+            web?.stopLoading()
+            web?.loadUrl(ch.url)
+        }
         handler.postDelayed({
             if (seq == loadSeq && !playing) {
                 coverSpin.visibility = View.GONE
-                val wv = runCatching { WebView.getCurrentWebViewPackage()?.let { it.packageName.substringAfterLast('.') + " " + it.versionName } }.getOrNull() ?: "?"
                 val info = synchronized(this) { diag.entries.joinToString("  ·  ") { it.key + ":" + it.value } }
-                val major = wv.substringAfterLast(' ').substringBefore('.').toIntOrNull() ?: 999
-                oldWebView = major < 90
-                val head = if (oldWebView) {
-                    "电视的网页内核太旧(版本 $major),播不了央视的新播放器\n按「确定」键去更新「Android System WebView」,更新后再来\n按「返回」键退出\n\n"
-                } else {
-                    "暂时打不开这个频道\n按 上 / 下 键换台,按「返回」键退出\n\n"
-                }
-                coverMsg.text = head +
-                    "诊断(拍照发给开发者):内核 $wv  ·  " + (info.ifEmpty { "网页没有运行" })
+                coverMsg.text = "暂时打不开这个频道\n按 上 / 下 键换台,按「返回」键退出\n\n诊断(拍照发给开发者):" + info
                 coverMsg.textSize = 24f
             }
         }, 25_000)
-    }
-
-    /** 网页播放器请求了官方 HLS 地址:交给 ExoPlayer 原生解码,网页随即停掉省资源。 */
-    @OptIn(UnstableApi::class)
-    private fun onStreamFound(url: String, seq: Int) {
-        if (seq != loadSeq || nativeFailed || nativeUrl != null || isFinishing) return
-        nativeUrl = url
-        val ds = DefaultHttpDataSource.Factory()
-            .setUserAgent(DESKTOP_UA)
-            .setAllowCrossProtocolRedirects(true)
-            .setConnectTimeoutMs(10_000)
-            .setReadTimeoutMs(15_000)
-            .setDefaultRequestProperties(mapOf("Referer" to "https://tv.cctv.com/", "Origin" to "https://tv.cctv.com"))
-        val src = HlsMediaSource.Factory(ds).createMediaSource(
-            MediaItem.Builder().setUri(url).setMimeType(MimeTypes.APPLICATION_M3U8).build(),
-        )
-        val p = player ?: ExoPlayer.Builder(this).build().also { player = it }
-        p.setVideoSurfaceView(surface)
-        p.addListener(object : Player.Listener {
-            override fun onRenderedFirstFrame() {
-                if (seq != loadSeq) return
-                note("原生", "出画")
-                surface.visibility = View.VISIBLE
-                web.visibility = View.INVISIBLE
-                web.evaluateJavascript("(function(){var v=document.querySelectorAll('video');for(var i=0;i<v.length;i++){v[i].muted=true;v[i].pause();}})()", null)
-                web.onPause()
-                onPlaying()
-            }
-
-            override fun onPlayerError(error: PlaybackException) {
-                if (seq != loadSeq) return
-                note("原生", "错误 " + error.errorCodeName + " " + (error.cause?.message ?: "").take(60))
-                nativeFailed = true
-                handler.post {
-                    stopNative()
-                    web.visibility = View.VISIBLE
-                    web.onResume()
-                }
-            }
-        })
-        surface.visibility = View.VISIBLE
-        p.setMediaSource(src)
-        p.playWhenReady = true
-        p.prepare()
-    }
-
-    /** 去应用商店更新系统 WebView(电视上的央视播放器需要较新的内核)。 */
-    private fun openWebViewUpdate() {
-        val pkg = runCatching { WebView.getCurrentWebViewPackage()?.packageName }.getOrNull() ?: "com.google.android.webview"
-        val tries = listOf(
-            Intent(Intent.ACTION_VIEW, android.net.Uri.parse("market://details?id=$pkg")),
-            Intent(Intent.ACTION_VIEW, android.net.Uri.parse("https://play.google.com/store/apps/details?id=$pkg")),
-        )
-        for (i in tries) if (runCatching { startActivity(i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }.isSuccess) return
-        showTip("没找到应用商店,请用「应用商店」页或本地安装更新 WebView")
-    }
-
-    private fun stopNative() {
-        player?.let {
-            it.stop()
-            it.clearMediaItems()
-            it.release()
-        }
-        player = null
-        if (::surface.isInitialized) surface.visibility = View.GONE
-        if (::web.isInitialized) web.onResume()
     }
 
     private fun onPlaying() {
@@ -345,11 +305,19 @@ class LiveActivity : ComponentActivity() {
         handler.postDelayed(hideTip, 3500)
     }
 
+    /** 暂停 / 播放:Gecko 靠扩展里的脚本,这里用一次遥控器"确定"事件交给页面。 */
     private fun toggle() {
-        player?.let { if (nativeUrl != null && !nativeFailed) { it.playWhenReady = !it.playWhenReady; return } }
-        web.evaluateJavascript(
-            "(function(){var v=document.querySelector('video');if(v){if(v.paused){v.play()}else{v.pause()}}})()", null,
-        )
+        if (useGecko) {
+            geckoView?.let { gv ->
+                val down = KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_SPACE)
+                val up = KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_SPACE)
+                gv.dispatchKeyEvent(down); gv.dispatchKeyEvent(up)
+            }
+        } else {
+            web?.evaluateJavascript(
+                "(function(){var v=document.querySelector('video');if(v){if(v.paused){v.play()}else{v.pause()}}})()", null,
+            )
+        }
     }
 
     private fun step(d: Int) {
@@ -363,14 +331,11 @@ class LiveActivity : ComponentActivity() {
             when (e.keyCode) {
                 KeyEvent.KEYCODE_DPAD_UP, KeyEvent.KEYCODE_CHANNEL_UP, KeyEvent.KEYCODE_PAGE_UP -> { step(-1); return true }
                 KeyEvent.KEYCODE_DPAD_DOWN, KeyEvent.KEYCODE_CHANNEL_DOWN, KeyEvent.KEYCODE_PAGE_DOWN -> { step(1); return true }
-                KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER, KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE -> {
-                    if (oldWebView && !playing) openWebViewUpdate() else toggle()
-                    return true
-                }
+                KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER, KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE -> { toggle(); return true }
                 KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.KEYCODE_DPAD_RIGHT, KeyEvent.KEYCODE_INFO, KeyEvent.KEYCODE_MENU -> {
                     showTip("${LiveChannels.all[index].title}    上/下 换台    返回 退出"); return true
                 }
-                KeyEvent.KEYCODE_BACK -> { if (customView != null) web.webChromeClient?.onHideCustomView() else finish(); return true }
+                KeyEvent.KEYCODE_BACK -> { if (customView != null) web?.webChromeClient?.onHideCustomView() else finish(); return true }
             }
         }
         if (e.keyCode == KeyEvent.KEYCODE_BACK) return true
@@ -379,37 +344,37 @@ class LiveActivity : ComponentActivity() {
 
     override fun onPause() {
         super.onPause()
-        player?.pause()
-        web.onPause()
+        web?.onPause()
         handler.removeCallbacks(keepPlaying)
     }
 
     override fun onResume() {
         super.onResume()
-        player?.let { it.play() } ?: web.onResume()
-        if (playing) startInject()
+        web?.onResume()
+        if (playing && !useGecko) startInject()
     }
 
     override fun onDestroy() {
         handler.removeCallbacksAndMessages(null)
-        player?.release()
-        player = null
-        (web.parent as? ViewGroup)?.removeView(web)
-        web.loadUrl("about:blank")
-        web.destroy()
+        LiveGecko.onMessage = null
+        geckoSession?.close()
+        geckoSession = null
+        web?.let {
+            (it.parent as? ViewGroup)?.removeView(it)
+            it.loadUrl("about:blank")
+            it.destroy()
+        }
+        web = null
         super.onDestroy()
     }
 
     companion object {
         private const val EXTRA = "channel"
+        private const val ENGINE = "engine"
         private val BLOCK_EXT = listOf(".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg", ".ico", ".woff", ".woff2", ".ttf", ".otf")
         private const val DESKTOP_UA =
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
 
-        /**
-         * 找到页面里的 <video>:让它有声自动播放;给它和所有上级元素打标记,
-         * 其余元素全部隐藏,播放器铺满屏幕。不用 :has(),老版本 WebView 也能用。
-         */
         private const val PLAY_JS = """
 (function(){
   try{

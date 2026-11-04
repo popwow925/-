@@ -24,7 +24,8 @@ adb shell input keyevent KEYCODE_WAKEUP || true
 adb shell wm size > shots/wm-size.txt 2>&1 || true
 adb shell wm density >> shots/wm-size.txt 2>&1 || true
 
-APK=$(ls apk/release/*.apk 2>/dev/null | head -1)
+APK=$(ls apk/release/*x86_64*.apk 2>/dev/null | head -1)
+[ -z "$APK" ] && APK=$(ls apk/release/*.apk 2>/dev/null | head -1)
 [ -z "$APK" ] && APK=$(ls apk/*.apk 2>/dev/null | head -1)
 echo "installing $APK"
 adb install -r "$APK" 2>&1 | tee shots/install.txt
@@ -148,6 +149,14 @@ adb shell input keyevent KEYCODE_DPAD_DOWN
 cap 53-live-next 4
 adb logcat -d -s AuraLive > shots/live-log.txt 2>&1 || true
 cap 54-live-later 20
+# 内置 Gecko 浏览器内核:强制用它打开 CCTV-1
+adb logcat -c
+adb shell am start -n com.aura.launcher/.ui.LiveActivity --ei channel 0 --es engine gecko > shots/gecko-start.txt 2>&1 || true
+cap 55-gecko-opening 6
+cap 56-gecko-wait 30
+adb logcat -d -s AuraLive > shots/gecko-log.txt 2>&1 || true
+adb logcat -d | grep -i -E "gecko|FATAL|AndroidRuntime" | head -60 > shots/gecko-full.txt 2>&1 || true
+adb shell input keyevent KEYCODE_BACK; sleep 2
 
 adb shell input keyevent KEYCODE_BACK
 sleep 2

@@ -20,6 +20,11 @@ dependencyResolutionManagement {
         }
         google()
         mavenCentral()
+        // GeckoView(内置浏览器内核)只在 Mozilla 的仓库里
+        maven {
+            url = uri("https://maven.mozilla.org/maven2/")
+            content { includeGroup("org.mozilla.geckoview") }
+        }
     }
 }
 
