@@ -205,7 +205,7 @@ class LiveActivity : ComponentActivity() {
             GeckoSessionSettings.Builder()
                 .usePrivateMode(true)
                 .userAgentMode(GeckoSessionSettings.USER_AGENT_MODE_DESKTOP)
-                .viewportMode(GeckoSessionSettings.VIEWPORT_MODE_DESKTOP)
+                .viewportMode(GeckoSessionSettings.VIEWPORT_MODE_MOBILE)
                 .build(),
         )
         session.progressDelegate = object : GeckoSession.ProgressDelegate {

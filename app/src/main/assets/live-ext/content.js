@@ -12,6 +12,10 @@
         window.__auraLogged = 1;
         post("log", "url=" + location.href + " videos=" + vs.length);
       }
+      // 让页面按电视屏幕的真实宽度排版,视频才能铺满(否则按 980px 桌面宽度排,只占屏幕一角)
+      var mv = document.querySelector("meta[name=viewport]");
+      if (!mv) { mv = document.createElement("meta"); mv.name = "viewport"; (document.head || document.documentElement).appendChild(mv); }
+      if (mv.content !== "width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1") mv.content = "width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1";
       if (!v) return;
       if (!v.__aura) {
         v.__aura = 1;
