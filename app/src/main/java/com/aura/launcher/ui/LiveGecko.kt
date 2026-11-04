@@ -25,9 +25,14 @@ object LiveGecko {
 
     fun runtime(ctx: Context): GeckoRuntime {
         rt?.let { return it }
+        // 通过配置文件设置引擎参数:允许无手势自动播放(电视上没有"点一下")
+        val cfg = java.io.File(ctx.applicationContext.cacheDir, "gecko-config.yaml")
+        try {
+            cfg.writeText("prefs:\n  media.autoplay.default: 0\n  media.autoplay.blocking_policy: 0\n  media.autoplay.block-event.enabled: false\n")
+        } catch (_: Throwable) {}
         val settings = GeckoRuntimeSettings.Builder()
             .consoleOutput(true)
-            .autoplayDefault(GeckoRuntimeSettings.AUTOPLAY_DEFAULT_ALLOWED)
+            .configFilePath(cfg.absolutePath)
             .build()
         val r = GeckoRuntime.create(ctx.applicationContext, settings)
         rt = r
