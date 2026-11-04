@@ -36,15 +36,13 @@ jobs:
           name: aura-apk
           path: |
             app/build/outputs/apk/release/*.apk
-            app/build/outputs/apk/debug/*.apk
 
       - name: Publish build output
         if: always()
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          mkdir -p out/apk
-          cp app/build/outputs/apk/release/*.apk out/apk/ 2>/dev/null || true
+          mkdir -p out
           bash ci/publish.sh aura-ci-build out
 
   screenshots:
