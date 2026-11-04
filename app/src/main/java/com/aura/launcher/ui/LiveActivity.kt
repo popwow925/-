@@ -68,6 +68,9 @@ class LiveActivity : ComponentActivity() {
     /** 本频道是否已经交给原生播放器;失败后回退到网页自带播放器。 */
     private var nativeUrl: String? = null
     private var nativeFailed = false
+    /** 诊断信息:打不开时显示在屏幕上,方便拍照反馈。 */
+    @Volatile private var diag = linkedMapOf<String, String>()
+    private fun note(k: String, v: String) { synchronized(this) { diag[k] = v }; Log.i("AuraLive", "$k=$v") }
 
     private val keepPlaying = object : Runnable {
         override fun run() {
@@ -117,7 +120,7 @@ class LiveActivity : ComponentActivity() {
                     val path = req.url.path?.lowercase() ?: return null
                     val u = req.url.toString()
                     if (path.endsWith(".m3u8") || u.contains(".m3u8?")) {
-                        Log.i("AuraLive", "m3u8 " + u.take(300))
+                        note("流", "已拿到"); Log.i("AuraLive", "m3u8 " + u.take(300))
                         val seq = loadSeq
                         handler.post { onStreamFound(u, seq) }
                     } else if (!BLOCK_EXT.any { path.endsWith(it) } && !path.endsWith(".ts") && !path.endsWith(".css")) {
@@ -133,11 +136,27 @@ class LiveActivity : ComponentActivity() {
                     startInject()
                 }
 
+                override fun onReceivedError(view: WebView, request: WebResourceRequest, error: android.webkit.WebResourceError) {
+                    if (request.isForMainFrame) note("网页", "加载失败 " + error.errorCode + " " + error.description)
+                }
+
+                override fun onReceivedHttpError(view: WebView, request: WebResourceRequest, resp: WebResourceResponse) {
+                    if (request.isForMainFrame) note("网页", "HTTP " + resp.statusCode)
+                }
+
                 override fun onPageFinished(view: WebView, url: String?) {
+                    if ("网页" !in diag) note("网页", "已打开")
                     startInject()
                 }
             }
             webChromeClient = object : WebChromeClient() {
+                override fun onConsoleMessage(m: android.webkit.ConsoleMessage): Boolean {
+                    if (m.messageLevel() == android.webkit.ConsoleMessage.MessageLevel.ERROR && "报错" !in diag) {
+                        note("报错", m.message().take(70))
+                    }
+                    return false
+                }
+
                 override fun onShowCustomView(view: View, callback: CustomViewCallback) {
                     customView = view
                     customCb = callback
@@ -201,6 +220,8 @@ class LiveActivity : ComponentActivity() {
         stopNative()
         nativeUrl = null
         nativeFailed = false
+        synchronized(this) { diag = linkedMapOf() }
+        coverMsg.textSize = 28f
         web.visibility = View.VISIBLE
         coverTitle.text = ch.title
         coverMsg.text = "正在打开,请稍候…"
@@ -212,7 +233,11 @@ class LiveActivity : ComponentActivity() {
         handler.postDelayed({
             if (seq == loadSeq && !playing) {
                 coverSpin.visibility = View.GONE
-                coverMsg.text = "暂时打不开这个频道\n按 上 / 下 键换台,按「返回」键退出"
+                val wv = runCatching { WebView.getCurrentWebViewPackage()?.let { it.packageName.substringAfterLast('.') + " " + it.versionName } }.getOrNull() ?: "?"
+                val info = synchronized(this) { diag.entries.joinToString("  ·  ") { it.key + ":" + it.value } }
+                coverMsg.text = "暂时打不开这个频道\n按 上 / 下 键换台,按「返回」键退出\n\n" +
+                    "诊断(拍照发给开发者):内核 $wv  ·  " + (info.ifEmpty { "网页没有运行" })
+                coverMsg.textSize = 24f
             }
         }, 25_000)
     }
@@ -236,7 +261,7 @@ class LiveActivity : ComponentActivity() {
         p.addListener(object : Player.Listener {
             override fun onRenderedFirstFrame() {
                 if (seq != loadSeq) return
-                Log.i("AuraLive", "native first frame")
+                note("原生", "出画")
                 surface.visibility = View.VISIBLE
                 web.visibility = View.INVISIBLE
                 web.evaluateJavascript("(function(){var v=document.querySelectorAll('video');for(var i=0;i<v.length;i++){v[i].muted=true;v[i].pause();}})()", null)
@@ -246,7 +271,7 @@ class LiveActivity : ComponentActivity() {
 
             override fun onPlayerError(error: PlaybackException) {
                 if (seq != loadSeq) return
-                Log.i("AuraLive", "native error " + error.errorCodeName + " " + (error.cause?.message ?: ""))
+                note("原生", "错误 " + error.errorCodeName + " " + (error.cause?.message ?: "").take(60))
                 nativeFailed = true
                 handler.post {
                     stopNative()
@@ -284,7 +309,14 @@ class LiveActivity : ComponentActivity() {
         fun playing() { handler.post { onPlaying() } }
 
         @JavascriptInterface
-        fun log(s: String) { Log.i("AuraLive", s.take(2000)) }
+        fun log(s: String) {
+            Log.i("AuraLive", s.take(2000))
+            when {
+                s.startsWith("url=") -> note("网页", "已运行 " + Regex("videos=\\d+").find(s)?.value.orEmpty())
+                s.startsWith("video found") -> note("网页视频", "有")
+                s.startsWith("js error") -> note("脚本", s.take(80))
+            }
+        }
     }
 
     private fun showTip(s: String) {
