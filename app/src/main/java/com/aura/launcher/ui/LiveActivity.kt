@@ -236,10 +236,29 @@ class LiveActivity : ComponentActivity() {
                         if (data.startsWith("url=")) note("页面脚本", "已运行")
                         if (data.startsWith("video found")) note("视频元素", "有")
                         if (data.startsWith("js error")) note("脚本", data.take(80))
+                        if (data.startsWith("video state paused=true") && !playing) geckoTap()
                     }
                 }
             }
         }
+    }
+
+    private var lastTap = 0L
+    private var tapCount = 0
+
+    /** Gecko 默认拦截"没人操作就自动播放":给画面发一次真实的"点击",相当于用户点了一下。 */
+    private fun geckoTap() {
+        val gv = geckoView ?: return
+        val now = android.os.SystemClock.uptimeMillis()
+        if (now - lastTap < 2500 || tapCount >= 10) return
+        lastTap = now; tapCount++
+        val x = gv.width / 2f; val y = gv.height / 2f
+        val d = android.view.MotionEvent.obtain(now, now, android.view.MotionEvent.ACTION_DOWN, x, y, 0)
+        val u = android.view.MotionEvent.obtain(now, now + 60, android.view.MotionEvent.ACTION_UP, x, y, 0)
+        d.source = android.view.InputDevice.SOURCE_TOUCHSCREEN; u.source = android.view.InputDevice.SOURCE_TOUCHSCREEN
+        gv.dispatchTouchEvent(d)
+        handler.postDelayed({ gv.dispatchTouchEvent(u); d.recycle(); u.recycle() }, 60)
+        Log.i("AuraLive", "gecko tap #$tapCount")
     }
 
     private fun startInject() {
@@ -252,6 +271,7 @@ class LiveActivity : ComponentActivity() {
         val ch = LiveChannels.all[index]
         liveSaveChannel(this, index)
         playing = false
+        tapCount = 0
         val seq = ++loadSeq
         synchronized(this) { val k = diag["内核"]; diag = linkedMapOf(); if (k != null) diag["内核"] = k }
         coverMsg.textSize = 28f
