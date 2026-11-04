@@ -3,3 +3,7 @@
 
 -keep class org.mozilla.** { *; }
 -dontwarn org.mozilla.**
+
+-dontwarn java.beans.**
+-dontwarn org.yaml.snakeyaml.**
+-dontwarn javax.**
