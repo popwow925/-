@@ -24,7 +24,7 @@ adb shell input keyevent KEYCODE_WAKEUP || true
 adb shell wm size > shots/wm-size.txt 2>&1 || true
 adb shell wm density >> shots/wm-size.txt 2>&1 || true
 
-APK=$(ls apk/release/*x86_64*.apk 2>/dev/null | head -1)
+APK=$(find apk -name "*x86_64*.apk" 2>/dev/null | head -1)
 [ -z "$APK" ] && APK=$(ls apk/release/*.apk 2>/dev/null | head -1)
 [ -z "$APK" ] && APK=$(ls apk/*.apk 2>/dev/null | head -1)
 echo "installing $APK"
