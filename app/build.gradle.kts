@@ -73,9 +73,8 @@ dependencies {
     implementation("androidx.media3:media3-exoplayer:1.4.1")
     // 内置浏览器内核(GeckoView):老电视的系统 WebView 太旧时,用它打开央视官方直播页
     val gecko = "159.0.20261102144711"
-    implementation("org.mozilla.geckoview:geckoview-arm64-v8a:$gecko")
-    implementation("org.mozilla.geckoview:geckoview-armeabi-v7a:$gecko")
-    implementation("org.mozilla.geckoview:geckoview-x86_64:$gecko")
+    // omni 含各种 CPU 的库;下面的 splits 会按 CPU 拆成单独的安装包
+    implementation("org.mozilla.geckoview:geckoview-omni:$gecko")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
     // 启动加速:安装后按下面的 baseline-prof.txt 预编译常用代码
     implementation("androidx.profileinstaller:profileinstaller:1.3.1")
