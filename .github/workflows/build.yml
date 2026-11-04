@@ -29,20 +29,22 @@ jobs:
         run: |
           set -o pipefail
           mkdir -p out
-          gradle assembleRelease --no-daemon --stacktrace 2>&1 | tee out/build.log
+          gradle assembleDebug assembleRelease --no-daemon --stacktrace 2>&1 | tee out/build.log
 
       - uses: actions/upload-artifact@v4
         with:
           name: aura-apk
           path: |
             app/build/outputs/apk/release/*.apk
+            app/build/outputs/apk/debug/*.apk
 
       - name: Publish build output
         if: always()
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          mkdir -p out
+          mkdir -p out/apk
+          cp app/build/outputs/apk/release/*.apk out/apk/ 2>/dev/null || true
           bash ci/publish.sh aura-ci-build out
 
   screenshots:
@@ -71,17 +73,6 @@ jobs:
           "$BT/apksigner" sign --ks stub-out/stub.jks --ks-pass pass:android \
             --out stub-out/demo.apk stub-out/unsigned.apk
           ls -la stub-out
-
-      - name: Install ffmpeg (generates the demo videos for the mock family hub)
-        run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq ffmpeg fonts-dejavu-core
-          ffmpeg -hide_banner -filters 2>/dev/null | grep -E " gradients | drawtext "
-
-      - name: Start mock family hub (real API output + generated demo videos)
-        run: |
-          bash ci/mockhub/run.sh
-          curl -s http://127.0.0.1:8080/api/tv/hello; echo
 
       - name: Enable KVM
         run: |

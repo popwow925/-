@@ -26,7 +26,8 @@ object LiveGecko {
     fun runtime(ctx: Context): GeckoRuntime {
         rt?.let { return it }
         val settings = GeckoRuntimeSettings.Builder()
-            .consoleOutput(false)
+            .consoleOutput(true)
+            .autoplayDefault(GeckoRuntimeSettings.AUTOPLAY_DEFAULT_ALLOWED)
             .build()
         val r = GeckoRuntime.create(ctx.applicationContext, settings)
         rt = r
