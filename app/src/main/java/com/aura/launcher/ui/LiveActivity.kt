@@ -236,6 +236,9 @@ class LiveActivity : ComponentActivity() {
                         if (data.startsWith("url=")) note("页面脚本", "已运行")
                         if (data.startsWith("video found")) note("视频元素", "有")
                         if (data.startsWith("js error")) note("脚本", data.take(80))
+                        if (data.startsWith("video state")) note("视频", data.removePrefix("video state ").substringBefore(" src=").take(90))
+                        if (data.startsWith("play rejected")) note("播放被拒", data.removePrefix("play rejected ").take(60))
+                        if (data.startsWith("video event")) note("事件", data.removePrefix("video event ").take(40))
                         if (data.startsWith("video state paused=true") && !playing) geckoTap()
                     }
                 }
@@ -276,7 +279,7 @@ class LiveActivity : ComponentActivity() {
         synchronized(this) { val k = diag["内核"]; diag = linkedMapOf(); if (k != null) diag["内核"] = k }
         coverMsg.textSize = 28f
         coverTitle.text = ch.title
-        coverMsg.text = "正在打开,请稍候…"
+        coverMsg.text = if (useGecko) "正在打开,请稍候…\n(这台电视第一次可能要一两分钟)" else "正在打开,请稍候…"
         coverSpin.visibility = View.VISIBLE
         cover.visibility = View.VISIBLE
         tip.visibility = View.GONE
@@ -293,7 +296,7 @@ class LiveActivity : ComponentActivity() {
                 coverMsg.text = "暂时打不开这个频道\n按 上 / 下 键换台,按「返回」键退出\n\n诊断(拍照发给开发者):" + info
                 coverMsg.textSize = 24f
             }
-        }, 25_000)
+        }, if (useGecko) 90_000 else 25_000)
     }
 
     private fun onPlaying() {
