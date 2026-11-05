@@ -1,0 +1,250 @@
+11-05 14:24:10.130  5624  5624 I AuraLive: 内核=内置 Gecko(系统 WebView webview 101.0.4951.74)
+11-05 14:24:10.139  5624  5624 I GeckoRuntime: Adding debug configuration from: /data/user/0/com.aura.launcher/cache/gecko-config.yaml
+11-05 14:24:10.139  5624  5624 D GeckoDebugConfig: Adding prefs from debug config: {media.autoplay.default=0, media.autoplay.blocking_policy=0, media.autoplay.block-event.enabled=false}
+11-05 14:24:10.140  5624  5624 D GeckoThread: State changed to LAUNCHED
+11-05 14:24:10.142  5624  5642 I GeckoThread: preparing to run Gecko
+11-05 14:24:10.142  5624  5624 D GeckoRuntime: Lifecycle: onCreate
+11-05 14:24:10.146  5624  5642 D GeckoThread: State changed to MOZGLUE_READY
+11-05 14:24:10.156  5624  5624 D GeckoRuntime: Lifecycle: onStart
+11-05 14:24:10.156  5624  5624 D GeckoRuntime: Lifecycle: onResume
+11-05 14:24:10.157  5624  5624 D GeckoNetworkManager: Incoming event start for state OffNoListeners -> OnNoListeners
+11-05 14:24:10.157  5624  5624 D GeckoNetworkManager: New network state: UP, ETHERNET, ETHERNET
+11-05 14:24:10.167  5624  5624 D GeckoScreenOrientation: updating to new orientation LANDSCAPE_PRIMARY
+11-05 14:24:10.200  5624  5642 D GeckoThread: State changed to LIBS_READY
+11-05 14:24:10.203  5624  5642 W GeckoThread: zerdatime 309662 - runGecko
+11-05 14:24:10.295  5624  5642 I Gecko:DumpUtils: Fifo watcher disabled via pref.
+11-05 14:24:10.312  5624  5642 D GeckoAppShell: System memory: 1462MB.
+11-05 14:24:10.314  5624  5642 D GeckoThread: State changed to JNI_READY
+11-05 14:24:10.331   525   552 I ActivityManager: Start proc 5658:com.aura.launcher:tab19/u0a93 for service {com.aura.launcher/org.mozilla.gecko.process.GeckoChildProcessServices$tab19}
+11-05 14:24:10.366  5658  5658 D GeckoThread: State changed to LAUNCHED
+11-05 14:24:10.367  5658  5676 I GeckoThread: preparing to run Gecko
+11-05 14:24:10.382  5624  5642 I GeckoConsole: No chrome package registered for chrome://browser/content/built_in_addons.json
+11-05 14:24:10.395  5624  5642 D GeckoThread: State changed to PROFILE_READY
+11-05 14:24:10.403  5624  5642 D GeckoThread: State changed to RUNNING
+11-05 14:24:10.477  5624  5624 D GeckoNetworkManager: Incoming event receivedUpdate for state OnNoListeners -> OnNoListeners
+11-05 14:24:10.477  5624  5624 D GeckoNetworkManager: New network state: UP, ETHERNET, ETHERNET
+11-05 14:24:10.546   525   552 I ActivityManager: Start proc 5687:com.aura.launcher:gpu/u0a93 for service {com.aura.launcher/org.mozilla.gecko.process.GeckoChildProcessServices$gpu}
+11-05 14:24:10.590  5687  5687 D GeckoThread: State changed to LAUNCHED
+11-05 14:24:10.590  5687  5703 I GeckoThread: preparing to run Gecko
+11-05 14:24:10.611  5624  5624 D GeckoNetworkManager: Incoming event enableNotifications for state OnNoListeners -> OnWithListeners
+11-05 14:24:10.612  5624  5624 D GeckoNetworkManager: New network state: UP, ETHERNET, ETHERNET
+11-05 14:24:10.613  5624  5624 D GeckoNetworkManager: Incoming event receivedUpdate for state OnWithListeners -> OnWithListeners
+11-05 14:24:10.613  5624  5624 D GeckoNetworkManager: New network state: UP, ETHERNET, ETHERNET
+11-05 14:24:10.617  5687  5703 D GeckoThread: State changed to MOZGLUE_READY
+11-05 14:24:10.632  5687  5703 D GeckoThread: State changed to LIBS_READY
+11-05 14:24:10.632  5687  5703 W GeckoThread: zerdatime 310092 - runGecko
+11-05 14:24:10.636  5687  5703 D GeckoThread: State changed to RUNNING
+11-05 14:24:10.656  5624  5642 E GeckoConsole: [JavaScript Error: "Error: File resource://default-theme/ does not contain a valid manifest" {file: "resource://gre/modules/addons/XPIInstall.sys.mjs" line: 703}]
+11-05 14:24:10.656  5624  5642 E GeckoConsole: [JavaScript Error: "Error: File resource://default-theme/ does not contain a valid manifest" {file: "resource://gre/modules/addons/XPIInstall.sys.mjs" line: 703}]
+11-05 14:24:10.737  5658  5676 D GeckoThread: State changed to MOZGLUE_READY
+11-05 14:24:10.751  5658  5676 D GeckoThread: State changed to LIBS_READY
+11-05 14:24:10.751  5658  5676 W GeckoThread: zerdatime 310211 - runGecko
+11-05 14:24:10.756  5624  5642 W GeckoEventDispatcher: No listener for GeckoView:LocationChange
+11-05 14:24:10.766  5624  5642 I GeckoSession: zerdatime 310226 - chrome startup finished
+11-05 14:24:10.791  5624  5624 D GeckoSession: handleMessage GeckoView:PageStart uri=about:blank
+11-05 14:24:10.791  5624  5624 D GeckoSession: handleMessage GeckoView:PageStop uri=null
+11-05 14:24:10.828  5658  5676 D GeckoThread: State changed to RUNNING
+11-05 14:24:10.930  5624  5624 D GeckoSession: handleMessage GeckoView:ProgressChanged uri=null
+11-05 14:24:10.930  5624  5624 D GeckoSession: handleMessage GeckoView:PageStart uri=https://tv.cctv.com/live/cctv1/
+11-05 14:24:11.040  5624  5642 W GeckoEventDispatcher: No listener for GeckoView:WebExtension:OnInstalling
+11-05 14:24:11.049  5624  5624 D GeckoSession: handleMessage GeckoView:SecurityChanged uri=null
+11-05 14:24:11.102  5624  5642 W GeckoEventDispatcher: No listener for GeckoView:WebExtension:OnInstalled
+11-05 14:24:11.103  5624  5642 W GeckoEventDispatcher: No listener for GeckoView:WebExtension:OnReady
+11-05 14:24:11.115  5624  5642 D GeckoIdleService: Registering Idle observer callback
+11-05 14:24:11.115  5624  5642 D GeckoIdleService: Register idle observer 0x924e2c80 for 180 seconds
+11-05 14:24:11.115  5624  5642 D GeckoIdleService: Register: adjusting next switch from -1 to 180 seconds
+11-05 14:24:11.115  5624  5642 D GeckoIdleService: next timeout 180000 msec from now
+11-05 14:24:11.115  5624  5642 D GeckoIdleService: SetTimerExpiryIfBefore: next timeout 180000 msec from now
+11-05 14:24:11.115  5624  5642 D GeckoIdleService: reset timer expiry to 180010 msec from now
+11-05 14:24:11.115  5624  5642 D GeckoIdleService: Register idle observer 0x924db314 for 5 seconds
+11-05 14:24:11.115  5624  5642 D GeckoIdleService: Register: adjusting next switch from 180 to 5 seconds
+11-05 14:24:11.115  5624  5642 D GeckoIdleService: next timeout 4999 msec from now
+11-05 14:24:11.115  5624  5642 D GeckoIdleService: SetTimerExpiryIfBefore: next timeout 4999 msec from now
+11-05 14:24:11.115  5624  5642 D GeckoIdleService: reset timer expiry to 5009 msec from now
+11-05 14:24:11.120  5624  5642 D GeckoIdleService: Get idle time: time since reset 5 msec
+11-05 14:24:11.397  5624  5642 I Gecko   : console.error: services.settings: 
+11-05 14:24:11.398  5624  5642 E GeckoConsole: [JavaScript Error: "main/url-classifier-skip-urls Signature failed  InvalidSignatureError: Invalid content signature (main/url-classifier-skip-urls) using 'remote-settings.content-signature.mozilla.org-2026-12-14-18-01-22.chain'"]
+11-05 14:24:11.398  5624  5642 I Gecko   :   main/url-classifier-skip-urls Signature failed  InvalidSignatureError: Invalid content signature (main/url-classifier-skip-urls) using 'remote-settings.content-signature.mozilla.org-2026-12-14-18-01-22.chain'
+11-05 14:24:11.423  5624  5642 I Gecko   : console.error: services.settings: 
+11-05 14:24:11.423  5624  5642 E GeckoConsole: [JavaScript Error: "main/url-classifier-skip-urls local data was corrupted"]
+11-05 14:24:11.423  5624  5642 I Gecko   :   main/url-classifier-skip-urls local data was corrupted
+11-05 14:24:11.423  5624  5642 W GeckoConsole: [JavaScript Warning: "main/url-classifier-skip-urls Signature verified failed. Retry from scratch"]
+11-05 14:24:11.423  5624  5642 I Gecko   : console.warn: services.settings: main/url-classifier-skip-urls Signature verified failed. Retry from scratch
+11-05 14:24:11.457  5624  5642 I Gecko   : console.error: services.settings: 
+11-05 14:24:11.457  5624  5642 E GeckoConsole: [JavaScript Error: "main/cookie-banner-rules-list Signature failed  InvalidSignatureError: Invalid content signature (main/cookie-banner-rules-list) using 'remote-settings.content-signature.mozilla.org-2026-12-14-18-01-22.chain'"]
+11-05 14:24:11.458  5624  5642 I Gecko   :   main/cookie-banner-rules-list Signature failed  InvalidSignatureError: Invalid content signature (main/cookie-banner-rules-list) using 'remote-settings.content-signature.mozilla.org-2026-12-14-18-01-22.chain'
+11-05 14:24:11.556  5624  5642 I Gecko   : console.error: services.settings: 
+11-05 14:24:11.556  5624  5642 E GeckoConsole: [JavaScript Error: "main/cookie-banner-rules-list local data was corrupted"]
+11-05 14:24:11.556  5624  5642 I Gecko   :   main/cookie-banner-rules-list local data was corrupted
+11-05 14:24:11.557  5624  5642 W GeckoConsole: [JavaScript Warning: "main/cookie-banner-rules-list Signature verified failed. Retry from scratch"]
+11-05 14:24:11.557  5624  5642 I Gecko   : console.warn: services.settings: main/cookie-banner-rules-list Signature verified failed. Retry from scratch
+11-05 14:24:11.558  5658  5676 I Gecko   : console.warn: LoginRecipes: "Falling back to a synchronous message for: https://tv.cctv.com."
+11-05 14:24:11.576  5624  5642 I Gecko   : console.error: services.settings: 
+11-05 14:24:11.576  5624  5642 E GeckoConsole: [JavaScript Error: "main/partitioning-exempt-urls Signature failed  InvalidSignatureError: Invalid content signature (main/partitioning-exempt-urls) using 'remote-settings.content-signature.mozilla.org-2026-12-14-18-01-22.chain'"]
+11-05 14:24:11.576  5624  5642 I Gecko   :   main/partitioning-exempt-urls Signature failed  InvalidSignatureError: Invalid content signature (main/partitioning-exempt-urls) using 'remote-settings.content-signature.mozilla.org-2026-12-14-18-01-22.chain'
+11-05 14:24:11.585  5624  5642 I Gecko   : console.error: services.settings: 
+11-05 14:24:11.585  5624  5642 E GeckoConsole: [JavaScript Error: "main/fingerprinting-protection-overrides Signature failed  InvalidSignatureError: Invalid content signature (main/fingerprinting-protection-overrides) using 'remote-settings.content-signature.mozilla.org-2026-12-14-18-01-22.chain'"]
+11-05 14:24:11.585  5624  5642 I Gecko   :   main/fingerprinting-protection-overrides Signature failed  InvalidSignatureError: Invalid content signature (main/fingerprinting-protection-overrides) using 'remote-settings.content-signature.mozilla.org-2026-12-14-18-01-22.chain'
+11-05 14:24:11.639  5624  5642 I Gecko   : console.error: services.settings: 
+11-05 14:24:11.639  5624  5642 E GeckoConsole: [JavaScript Error: "main/anti-tracking-url-decoration Signature failed  InvalidSignatureError: Invalid content signature (main/anti-tracking-url-decoration) using 'remote-settings.content-signature.mozilla.org-2026-12-14-18-01-22.chain'"]
+11-05 14:24:11.639  5624  5642 I Gecko   :   main/anti-tracking-url-decoration Signature failed  InvalidSignatureError: Invalid content signature (main/anti-tracking-url-decoration) using 'remote-settings.content-signature.mozilla.org-2026-12-14-18-01-22.chain'
+11-05 14:24:11.641  5624  5624 D AutofillSupport: handleMessage GeckoView:StartAutofill
+11-05 14:24:11.642  5624  5624 D AutofillSupport: handleMessage GeckoView:AddAutofill
+11-05 14:24:11.646  5624  5642 I Gecko   : console.error: services.settings: 
+11-05 14:24:11.646  5624  5642 E GeckoConsole: [JavaScript Error: "main/partitioning-exempt-urls local data was corrupted"]
+11-05 14:24:11.646  5624  5642 I Gecko   :   main/partitioning-exempt-urls local data was corrupted
+11-05 14:24:11.646  5624  5642 W GeckoConsole: [JavaScript Warning: "main/partitioning-exempt-urls Signature verified failed. Retry from scratch"]
+11-05 14:24:11.646  5624  5642 I Gecko   : console.warn: services.settings: main/partitioning-exempt-urls Signature verified failed. Retry from scratch
+11-05 14:24:11.658  5624  5642 I Gecko   : console.error: services.settings: 
+11-05 14:24:11.658  5624  5642 E GeckoConsole: [JavaScript Error: "main/url-classifier-skip-urls Signature failed again InvalidSignatureError: Invalid content signature (main/url-classifier-skip-urls) using 'remote-settings.content-signature.mozilla.org-2026-12-14-18-01-22.chain'"]
+11-05 14:24:11.658  5624  5642 I Gecko   :   main/url-classifier-skip-urls Signature failed again InvalidSignatureError: Invalid content signature (main/url-classifier-skip-urls) using 'remote-settings.content-signature.mozilla.org-2026-12-14-18-01-22.chain'
+11-05 14:24:11.672  5624  5642 I Gecko   : console.error: services.settings: 
+11-05 14:24:11.672  5624  5642 E GeckoConsole: [JavaScript Error: "main/fingerprinting-protection-overrides local data was corrupted"]
+11-05 14:24:11.672  5624  5642 I Gecko   :   main/fingerprinting-protection-overrides local data was corrupted
+11-05 14:24:11.673  5624  5642 W GeckoConsole: [JavaScript Warning: "main/fingerprinting-protection-overrides Signature verified failed. Retry from scratch"]
+11-05 14:24:11.673  5624  5642 I Gecko   : console.warn: services.settings: main/fingerprinting-protection-overrides Signature verified failed. Retry from scratch
+11-05 14:24:11.700  5624  5642 I Gecko   : console.error: services.settings: 
+11-05 14:24:11.701  5624  5642 E GeckoConsole: [JavaScript Error: "main/anti-tracking-url-decoration local data was corrupted"]
+11-05 14:24:11.701  5624  5642 I Gecko   :   main/anti-tracking-url-decoration local data was corrupted
+11-05 14:24:11.701  5624  5642 W GeckoConsole: [JavaScript Warning: "main/anti-tracking-url-decoration Signature verified failed. Retry from scratch"]
+11-05 14:24:11.701  5624  5642 I Gecko   : console.warn: services.settings: main/anti-tracking-url-decoration Signature verified failed. Retry from scratch
+11-05 14:24:11.816  5624  5642 I Gecko   : console.error: (new InvalidSignatureError("Invalid content signature (main/url-classifier-skip-urls) using 'remote-settings.content-signature.mozilla.org-2026-12-14-18-01-22.chain'", "resource://services-settings/RemoteSettingsClient.sys.mjs", 165))
+11-05 14:24:11.816  5624  5642 E GeckoConsole: [JavaScript Error: "InvalidSignatureError: Invalid content signature (main/url-classifier-skip-urls) using 'remote-settings.content-signature.mozilla.org-2026-12-14-18-01-22.chain'"]
+11-05 14:24:11.917  5624  5642 W GeckoEventDispatcher: No listener for GeckoView:Autocomplete:Fetch:Login
+11-05 14:24:11.959  5624  5642 I Gecko   : console.error: services.settings: 
+11-05 14:24:11.959  5624  5642 E GeckoConsole: [JavaScript Error: "main/cookie-banner-rules-list Signature failed again InvalidSignatureError: Invalid content signature (main/cookie-banner-rules-list) using 'remote-settings.content-signature.mozilla.org-2026-12-14-18-01-22.chain'"]
+11-05 14:24:11.959  5624  5642 I Gecko   :   main/cookie-banner-rules-list Signature failed again InvalidSignatureError: Invalid content signature (main/cookie-banner-rules-list) using 'remote-settings.content-signature.mozilla.org-2026-12-14-18-01-22.chain'
+11-05 14:24:11.963  5624  5642 I Gecko   : console.error: services.settings: 
+11-05 14:24:11.964  5624  5642 E GeckoConsole: [JavaScript Error: "main/partitioning-exempt-urls Signature failed again InvalidSignatureError: Invalid content signature (main/partitioning-exempt-urls) using 'remote-settings.content-signature.mozilla.org-2026-12-14-18-01-22.chain'"]
+11-05 14:24:11.964  5624  5642 I Gecko   :   main/partitioning-exempt-urls Signature failed again InvalidSignatureError: Invalid content signature (main/partitioning-exempt-urls) using 'remote-settings.content-signature.mozilla.org-2026-12-14-18-01-22.chain'
+11-05 14:24:11.978  5624  5642 I Gecko   : console.error: services.settings: 
+11-05 14:24:11.978  5624  5642 E GeckoConsole: [JavaScript Error: "main/fingerprinting-protection-overrides Signature failed again InvalidSignatureError: Invalid content signature (main/fingerprinting-protection-overrides) using 'remote-settings.content-signature.mozilla.org-2026-12-14-18-01-22.chain'"]
+11-05 14:24:11.978  5624  5642 I Gecko   :   main/fingerprinting-protection-overrides Signature failed again InvalidSignatureError: Invalid content signature (main/fingerprinting-protection-overrides) using 'remote-settings.content-signature.mozilla.org-2026-12-14-18-01-22.chain'
+11-05 14:24:11.980  5624  5642 I Gecko   : console.error: services.settings: 
+11-05 14:24:11.980  5624  5642 E GeckoConsole: [JavaScript Error: "main/anti-tracking-url-decoration Signature failed again InvalidSignatureError: Invalid content signature (main/anti-tracking-url-decoration) using 'remote-settings.content-signature.mozilla.org-2026-12-14-18-01-22.chain'"]
+11-05 14:24:11.980  5624  5642 I Gecko   :   main/anti-tracking-url-decoration Signature failed again InvalidSignatureError: Invalid content signature (main/anti-tracking-url-decoration) using 'remote-settings.content-signature.mozilla.org-2026-12-14-18-01-22.chain'
+11-05 14:24:12.027  5624  5642 I Gecko   : console.error: (new InvalidSignatureError("Invalid content signature (main/cookie-banner-rules-list) using 'remote-settings.content-signature.mozilla.org-2026-12-14-18-01-22.chain'", "resource://services-settings/RemoteSettingsClient.sys.mjs", 165))
+11-05 14:24:12.027  5624  5642 E GeckoConsole: [JavaScript Error: "InvalidSignatureError: Invalid content signature (main/cookie-banner-rules-list) using 'remote-settings.content-signature.mozilla.org-2026-12-14-18-01-22.chain'"]
+11-05 14:24:12.028  5624  5642 I Gecko   : console.error: (new InvalidSignatureError("Invalid content signature (main/partitioning-exempt-urls) using 'remote-settings.content-signature.mozilla.org-2026-12-14-18-01-22.chain'", "resource://services-settings/RemoteSettingsClient.sys.mjs", 165))
+11-05 14:24:12.028  5624  5642 E GeckoConsole: [JavaScript Error: "InvalidSignatureError: Invalid content signature (main/partitioning-exempt-urls) using 'remote-settings.content-signature.mozilla.org-2026-12-14-18-01-22.chain'"]
+11-05 14:24:12.041  5624  5642 I Gecko   : console.error: (new InvalidSignatureError("Invalid content signature (main/fingerprinting-protection-overrides) using 'remote-settings.content-signature.mozilla.org-2026-12-14-18-01-22.chain'", "resource://services-settings/RemoteSettingsClient.sys.mjs", 165))
+11-05 14:24:12.041  5624  5642 E GeckoConsole: [JavaScript Error: "InvalidSignatureError: Invalid content signature (main/fingerprinting-protection-overrides) using 'remote-settings.content-signature.mozilla.org-2026-12-14-18-01-22.chain'"]
+11-05 14:24:12.042  5624  5642 I Gecko   : console.error: (new InvalidSignatureError("Invalid content signature (main/anti-tracking-url-decoration) using 'remote-settings.content-signature.mozilla.org-2026-12-14-18-01-22.chain'", "resource://services-settings/RemoteSettingsClient.sys.mjs", 165))
+11-05 14:24:12.042  5624  5642 E GeckoConsole: [JavaScript Error: "InvalidSignatureError: Invalid content signature (main/anti-tracking-url-decoration) using 'remote-settings.content-signature.mozilla.org-2026-12-14-18-01-22.chain'"]
+11-05 14:24:12.056  5624  5624 D GeckoSession: handleMessage GeckoView:StateUpdated uri=null
+11-05 14:24:12.132  5624  5624 D AutofillSupport: handleMessage GeckoView:AddAutofill
+11-05 14:24:12.136  5624  5624 D AutofillSupport: handleMessage GeckoView:AddAutofill
+11-05 14:24:12.137  5624  5624 D AutofillSupport: handleMessage GeckoView:AddAutofill
+11-05 14:24:12.138  5624  5624 D AutofillSupport: handleMessage GeckoView:AddAutofill
+11-05 14:24:12.138  5624  5624 D AutofillSupport: handleMessage GeckoView:AddAutofill
+11-05 14:24:12.757  5624  5624 D GeckoSession: handleMessage GeckoView:ProgressChanged uri=null
+11-05 14:24:12.759  5624  5642 W GeckoEventDispatcher: No listener for GeckoView:Autocomplete:Fetch:Login
+11-05 14:24:12.935  5624  5624 D WebExtension: handleMessage GeckoView:WebExtension:Message
+11-05 14:24:13.148  5624  5642 I Gecko   : console.error: services.settings: 
+11-05 14:24:13.148  5624  5642 E GeckoConsole: [JavaScript Error: "main/translations-models Signature failed  InvalidSignatureError: Invalid content signature (main/translations-models) using 'remote-settings.content-signature.mozilla.org-2026-12-14-18-01-22.chain'"]
+11-05 14:24:13.148  5624  5642 I Gecko   :   main/translations-models Signature failed  InvalidSignatureError: Invalid content signature (main/translations-models) using 'remote-settings.content-signature.mozilla.org-2026-12-14-18-01-22.chain'
+11-05 14:24:13.174  5624  5642 I Gecko   : console.error: services.settings: 
+11-05 14:24:13.174  5624  5642 E GeckoConsole: [JavaScript Error: "main/translations-models local data was corrupted"]
+11-05 14:24:13.174  5624  5642 I Gecko   :   main/translations-models local data was corrupted
+11-05 14:24:13.174  5624  5642 W GeckoConsole: [JavaScript Warning: "main/translations-models Signature verified failed. Retry from scratch"]
+11-05 14:24:13.174  5624  5642 I Gecko   : console.warn: services.settings: main/translations-models Signature verified failed. Retry from scratch
+11-05 14:24:13.512  5624  5642 I Gecko   : console.error: services.settings: 
+11-05 14:24:13.512  5624  5642 E GeckoConsole: [JavaScript Error: "main/translations-models Signature failed again InvalidSignatureError: Invalid content signature (main/translations-models) using 'remote-settings.content-signature.mozilla.org-2026-12-14-18-01-22.chain'"]
+11-05 14:24:13.512  5624  5642 I Gecko   :   main/translations-models Signature failed again InvalidSignatureError: Invalid content signature (main/translations-models) using 'remote-settings.content-signature.mozilla.org-2026-12-14-18-01-22.chain'
+11-05 14:24:13.536  5624  5642 I Gecko   : console.error: (new InvalidSignatureError("Invalid content signature (main/translations-models) using 'remote-settings.content-signature.mozilla.org-2026-12-14-18-01-22.chain'", "resource://services-settings/RemoteSettingsClient.sys.mjs", 165))
+11-05 14:24:13.536  5624  5642 E GeckoConsole: [JavaScript Error: "InvalidSignatureError: Invalid content signature (main/translations-models) using 'remote-settings.content-signature.mozilla.org-2026-12-14-18-01-22.chain'"]
+11-05 14:24:14.006  5624  5624 D GeckoSession: handleMessage GeckoView:ProgressChanged uri=null
+11-05 14:24:14.113   525   552 I ActivityManager: Start proc 5915:com.aura.launcher:utility/u0a93 for service {com.aura.launcher/org.mozilla.gecko.process.GeckoChildProcessServices$utility}
+11-05 14:24:14.116  5624  5642 W GeckoEventDispatcher: No listener for GeckoView:ContentPermission
+11-05 14:24:14.116  5624  5642 W GeckoEventDispatcher: No listener for GeckoView:ContentPermission
+11-05 14:24:14.116  5624  5642 I Gecko   : console.error: "Permission error:" "No listener for GeckoView:ContentPermission"
+11-05 14:24:14.116  5624  5642 E GeckoConsole: [JavaScript Error: "Permission error: No listener for GeckoView:ContentPermission"]
+11-05 14:24:14.117  5624  5642 I Gecko   : console.error: "Permission error:" "No listener for GeckoView:ContentPermission"
+11-05 14:24:14.117  5624  5642 E GeckoConsole: [JavaScript Error: "Permission error: No listener for GeckoView:ContentPermission"]
+11-05 14:24:14.257  5915  5915 D GeckoThread: State changed to LAUNCHED
+11-05 14:24:14.260  5915  5929 I GeckoThread: preparing to run Gecko
+11-05 14:24:14.280  5915  5929 D GeckoThread: State changed to MOZGLUE_READY
+11-05 14:24:14.302  5915  5929 D GeckoThread: State changed to LIBS_READY
+11-05 14:24:14.303  5915  5929 W GeckoThread: zerdatime 313762 - runGecko
+11-05 14:24:14.318  5915  5929 D GeckoThread: State changed to RUNNING
+11-05 14:24:14.929  5658  5676 I Gecko   : [GFX1-]: Couldn't sanitize GL_RENDERER "Android Emulator OpenGL ES Translator (Google SwiftShader)"
+11-05 14:24:16.125  5624  5642 D GeckoIdleService: Get idle time: time since reset 5010 msec
+11-05 14:24:16.127  5624  5642 D GeckoIdleService: Idle timer callback: current idle time 5010 msec
+11-05 14:24:16.127  5624  5642 D GeckoIdleService: next timeout 174988 msec from now
+11-05 14:24:16.127  5624  5642 D GeckoIdleService: SetTimerExpiryIfBefore: next timeout 174988 msec from now
+11-05 14:24:16.127  5624  5642 D GeckoIdleService: reset timer expiry to 174998 msec from now
+11-05 14:24:16.127  5624  5642 D GeckoIdleService: Idle timer callback: tell observer 0x924db314 user is idle
+11-05 14:24:17.122  5624  5624 D WebExtension: handleMessage GeckoView:WebExtension:Message
+11-05 14:24:17.132  5624  5624 D WebExtension: handleMessage GeckoView:WebExtension:Message
+11-05 14:24:17.144  5624  5624 I AuraLive: gecko tap #1
+11-05 14:24:17.144  5624  5624 D WebExtension: handleMessage GeckoView:WebExtension:Message
+11-05 14:24:17.144  5624  5642 D GeckoIdleService: next timeout 5000 msec from now
+11-05 14:24:17.144  5624  5642 D GeckoIdleService: SetTimerExpiryIfBefore: next timeout 5000 msec from now
+11-05 14:24:17.144  5624  5642 D GeckoIdleService: reset timer expiry to 5010 msec from now
+11-05 14:24:17.144  5624  5642 D GeckoIdleService: Reset idle timeout: tell observer 0x924db314 user is back
+11-05 14:24:18.798  5624  5624 D WebExtension: handleMessage GeckoView:WebExtension:Message
+11-05 14:24:18.841  5624  5624 D GeckoSession: handleMessage GeckoView:StateUpdated uri=null
+11-05 14:24:20.055  5624  5624 D GeckoSession: handleMessage GeckoView:ProgressChanged uri=null
+11-05 14:24:20.057  5624  5624 D AutofillSupport: handleMessage GeckoView:AddAutofill
+11-05 14:24:20.059  5624  5624 D AutofillSupport: handleMessage GeckoView:AddAutofill
+11-05 14:24:20.062  5624  5624 D GeckoSession: handleMessage GeckoView:PageStop uri=null
+11-05 14:24:20.921  5624  5624 D WebExtension: handleMessage GeckoView:WebExtension:Message
+11-05 14:24:21.077  5624  5624 D GeckoSession: handleMessage GeckoView:StateUpdated uri=null
+11-05 14:24:22.161  5624  5642 D GeckoIdleService: Get idle time: time since reset 4956 msec
+11-05 14:24:22.161  5624  5642 D GeckoIdleService: Idle timer callback: current idle time 4956 msec
+11-05 14:24:22.161  5624  5642 D GeckoIdleService: next timeout 43 msec from now
+11-05 14:24:22.161  5624  5642 D GeckoIdleService: SetTimerExpiryIfBefore: next timeout 43 msec from now
+11-05 14:24:22.161  5624  5642 D GeckoIdleService: reset timer expiry to 53 msec from now
+11-05 14:24:22.214  5624  5642 D GeckoIdleService: Get idle time: time since reset 5009 msec
+11-05 14:24:22.214  5624  5642 D GeckoIdleService: Idle timer callback: current idle time 5009 msec
+11-05 14:24:22.214  5624  5642 D GeckoIdleService: next timeout 174990 msec from now
+11-05 14:24:22.214  5624  5642 D GeckoIdleService: SetTimerExpiryIfBefore: next timeout 174990 msec from now
+11-05 14:24:22.214  5624  5642 D GeckoIdleService: reset timer expiry to 175000 msec from now
+11-05 14:24:22.214  5624  5642 D GeckoIdleService: Idle timer callback: tell observer 0x924db314 user is idle
+11-05 14:24:23.722  5624  5624 D WebExtension: handleMessage GeckoView:WebExtension:Message
+11-05 14:24:26.430  5624  5624 D WebExtension: handleMessage GeckoView:WebExtension:Message
+11-05 14:24:26.442   525   552 I ActivityManager: Start proc 6005:com.aura.launcher:media/u0a93 for service {com.aura.launcher/org.mozilla.gecko.media.MediaManager}
+11-05 14:24:26.554  5624  5624 D WebExtension: handleMessage GeckoView:WebExtension:Message
+11-05 14:24:26.809  5624  5624 D WebExtension: handleMessage GeckoView:WebExtension:Message
+11-05 14:24:26.811  5624  5624 D WebExtension: handleMessage GeckoView:WebExtension:Message
+11-05 14:24:28.792  5624  5624 D WebExtension: handleMessage GeckoView:WebExtension:Message
+11-05 14:24:32.420  5624  5624 D WebExtension: handleMessage GeckoView:WebExtension:Message
+11-05 14:24:32.638  5658  5676 W GeckoViewAutoFill[C]: Cannot perform autofill undefined
+11-05 14:24:32.645  5658  5676 W GeckoViewAutoFill[C]: Cannot perform autofill undefined
+11-05 14:24:32.645  5658  5676 W GeckoViewAutoFill[C]: Cannot perform autofill undefined
+11-05 14:24:32.646  5658  5676 W GeckoViewAutoFill[C]: Cannot perform autofill undefined
+11-05 14:24:32.646  5658  5676 W GeckoViewAutoFill[C]: Cannot perform autofill undefined
+11-05 14:24:32.646  5658  5676 W GeckoViewAutoFill[C]: Cannot perform autofill undefined
+11-05 14:24:36.153  5624  5624 D WebExtension: handleMessage GeckoView:WebExtension:Message
+11-05 14:24:39.946  5624  5624 D WebExtension: handleMessage GeckoView:WebExtension:Message
+11-05 14:24:40.635  5624  5642 I Gecko   : console.error: services.settings: 
+11-05 14:24:40.636  5624  5642 E GeckoConsole: [JavaScript Error: "blocklists/addons-bloomfilters Signature failed  InvalidSignatureError: Invalid content signature (blocklists/addons-bloomfilters) using 'remote-settings.content-signature.mozilla.org-2026-12-14-18-01-22.chain'"]
+11-05 14:24:40.636  5624  5642 I Gecko   :   blocklists/addons-bloomfilters Signature failed  InvalidSignatureError: Invalid content signature (blocklists/addons-bloomfilters) using 'remote-settings.content-signature.mozilla.org-2026-12-14-18-01-22.chain'
+11-05 14:24:40.645  5624  5642 I Gecko   : console.error: services.settings: 
+11-05 14:24:40.649  5624  5642 E GeckoConsole: [JavaScript Error: "blocklists/addons-bloomfilters local data was corrupted"]
+11-05 14:24:40.649  5624  5642 I Gecko   :   blocklists/addons-bloomfilters local data was corrupted
+11-05 14:24:40.649  5624  5642 W GeckoConsole: [JavaScript Warning: "blocklists/addons-bloomfilters Signature verified failed. Retry from scratch"]
+11-05 14:24:40.649  5624  5642 I Gecko   : console.warn: services.settings: blocklists/addons-bloomfilters Signature verified failed. Retry from scratch
+11-05 14:24:40.759  5624  5642 I Gecko   : console.error: services.settings: 
+11-05 14:24:40.760  5624  5642 E GeckoConsole: [JavaScript Error: "blocklists/addons-bloomfilters Signature failed again InvalidSignatureError: Invalid content signature (blocklists/addons-bloomfilters) using 'remote-settings.content-signature.mozilla.org-2026-12-14-18-01-22.chain'"]
+11-05 14:24:40.760  5624  5642 I Gecko   :   blocklists/addons-bloomfilters Signature failed again InvalidSignatureError: Invalid content signature (blocklists/addons-bloomfilters) using 'remote-settings.content-signature.mozilla.org-2026-12-14-18-01-22.chain'
+11-05 14:24:40.764  5624  5642 I Gecko   : console.error: services.settings: 
+11-05 14:24:40.764  5624  5642 E GeckoConsole: [JavaScript Error: "InvalidSignatureError: Invalid content signature (blocklists/addons-bloomfilters) using 'remote-settings.content-signature.mozilla.org-2026-12-14-18-01-22.chain'"]
+11-05 14:24:40.764  5624  5642 I Gecko   :   Message: InvalidSignatureError: Invalid content signature (blocklists/addons-bloomfilters) using 'remote-settings.content-signature.mozilla.org-2026-12-14-18-01-22.chain'
+11-05 14:24:40.764  5624  5642 I Gecko   :   Stack:
+11-05 14:24:40.764  5624  5642 I Gecko   :     InvalidSignatureError@resource://services-settings/RemoteSettingsClient.sys.mjs:165:5
+11-05 14:24:40.764  5624  5642 I Gecko   : _validateCollectionSignature@resource://services-settings/RemoteSettingsClient.sys.mjs:1021:13
+11-05 14:24:40.764  5624  5642 I Gecko   : 
+11-05 14:24:40.953  5624  5642 I Gecko   : console.error: services.settings: 
+11-05 14:24:40.953  5624  5642 E GeckoConsole: [JavaScript Error: "security-state/cert-revocations Signature failed  InvalidSignatureError: Invalid content signature (security-state/cert-revocations) using 'onecrl.content-signature.mozilla.org-2026-12-15-22-12-40.chain'"]
+11-05 14:24:40.953  5624  5642 I Gecko   :   security-state/cert-revocations Signature failed  InvalidSignatureError: Invalid content signature (security-state/cert-revocations) using 'onecrl.content-signature.mozilla.org-2026-12-15-22-12-40.chain'
+11-05 14:24:40.955  5624  5642 I Gecko   : console.error: services.settings: 
+11-05 14:24:40.955  5624  5642 E GeckoConsole: [JavaScript Error: "security-state/cert-revocations local data was corrupted"]
+11-05 14:24:40.955  5624  5642 I Gecko   :   security-state/cert-revocations local data was corrupted
+11-05 14:24:40.955  5624  5642 W GeckoConsole: [JavaScript Warning: "security-state/cert-revocations Signature verified failed. Retry from scratch"]
+11-05 14:24:40.955  5624  5642 I Gecko   : console.warn: services.settings: security-state/cert-revocations Signature verified failed. Retry from scratch
+11-05 14:24:41.057  5624  5642 I Gecko   : console.error: services.settings: 
+11-05 14:24:41.058  5624  5642 E GeckoConsole: [JavaScript Error: "security-state/cert-revocations Signature failed again InvalidSignatureError: Invalid content signature (security-state/cert-revocations) using 'onecrl.content-signature.mozilla.org-2026-12-15-22-12-40.chain'"]
+11-05 14:24:41.058  5624  5642 I Gecko   :   security-state/cert-revocations Signature failed again InvalidSignatureError: Invalid content signature (security-state/cert-revocations) using 'onecrl.content-signature.mozilla.org-2026-12-15-22-12-40.chain'
+11-05 14:24:41.064  5624  5642 I Gecko   : console.error: services.settings: 
+11-05 14:24:41.065  5624  5642 E GeckoConsole: [JavaScript Error: "InvalidSignatureError: Invalid content signature (security-state/cert-revocations) using 'onecrl.content-signature.mozilla.org-2026-12-15-22-12-40.chain'"]

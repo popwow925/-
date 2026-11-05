@@ -1,0 +1,8 @@
+--------- beginning of main
+11-05 14:23:14.197  4103  4103 I AuraLive: 内核=系统 WebView webview 101.0.4951.74
+11-05 14:23:15.066  4103  5437 I AuraLive: url=https://tv.cctv.com/live/cctv1/ videos=0 iframes=0 ids=
+11-05 14:23:15.067  4103  5437 I AuraLive: 网页=已运行 videos=0
+11-05 14:23:22.416  4103  5437 I AuraLive: video found src=
+11-05 14:23:22.416  4103  5437 I AuraLive: 网页视频=有
+11-05 14:23:43.111  4103  5437 I AuraLive: url=https://tv.cctv.com/live/cctv2/ videos=0 iframes=0 ids=
+11-05 14:23:43.111  4103  5437 I AuraLive: 网页=已运行 videos=0

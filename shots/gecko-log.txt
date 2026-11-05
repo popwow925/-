@@ -1,0 +1,45 @@
+--------- beginning of main
+11-05 14:24:10.130  5624  5624 I AuraLive: 内核=内置 Gecko(系统 WebView webview 101.0.4951.74)
+11-05 14:24:10.792  5624  5624 I AuraLive: 网页=已打开
+11-05 14:24:12.935  5624  5624 I AuraLive: url=https://tv.cctv.com/live/cctv1/ videos=0
+11-05 14:24:12.935  5624  5624 I AuraLive: 页面脚本=已运行
+11-05 14:24:17.126  5624  5624 I AuraLive: video found
+11-05 14:24:17.127  5624  5624 I AuraLive: 视频元素=有
+11-05 14:24:17.132  5624  5624 I AuraLive: video state paused=true ready=0 net=0 t=0.0 size=0x0 drop=0/0 err=- src=
+11-05 14:24:17.132  5624  5624 I AuraLive: 视频=paused=true ready=0 net=0 t=0.0 size=0x0 drop=0/0 err=-
+11-05 14:24:17.144  5624  5624 I AuraLive: gecko tap #1
+11-05 14:24:17.144  5624  5624 I AuraLive: play rejected NotAllowedError:The play method is not allowed by the user agent or the platform in the current context, possibly because the user denied permission.
+11-05 14:24:17.144  5624  5624 I AuraLive: 播放被拒=NotAllowedError:The play method is not allowed by the user a
+11-05 14:24:18.798  5624  5624 I AuraLive: video event waiting
+11-05 14:24:18.798  5624  5624 I AuraLive: 事件=waiting
+11-05 14:24:20.062  5624  5624 I AuraLive: 网页=已打开
+11-05 14:24:20.922  5624  5624 I AuraLive: video state paused=false ready=0 net=0 t=0.0 size=0x0 drop=0/0 err=- src=
+11-05 14:24:20.922  5624  5624 I AuraLive: 视频=paused=false ready=0 net=0 t=0.0 size=0x0 drop=0/0 err=-
+11-05 14:24:23.722  5624  5624 I AuraLive: video state paused=false ready=0 net=2 t=0.0 size=0x0 drop=0/0 err=- src=blob:https://tv.cctv.com/c8116dbc-a543-45de-b9b7-355006e4318
+11-05 14:24:23.722  5624  5624 I AuraLive: 视频=paused=false ready=0 net=2 t=0.0 size=0x0 drop=0/0 err=-
+11-05 14:24:26.430  5624  5624 I AuraLive: video event loadedmetadata
+11-05 14:24:26.430  5624  5624 I AuraLive: 事件=loadedmetadata
+11-05 14:24:26.554  5624  5624 I AuraLive: video state paused=false ready=1 net=2 t=0.1 size=1280x720 drop=0/0 err=- src=blob:https://tv.cctv.com/c8116dbc-a543-45de-b9b7-355006e4318
+11-05 14:24:26.554  5624  5624 I AuraLive: 视频=paused=false ready=1 net=2 t=0.1 size=1280x720 drop=0/0 err=-
+11-05 14:24:26.809  5624  5624 I AuraLive: video event canplay
+11-05 14:24:26.809  5624  5624 I AuraLive: 事件=canplay
+11-05 14:24:32.420  5624  5624 I AuraLive: video state paused=false ready=4 net=2 t=4.7 size=1280x720 drop=0/115 err=- src=blob:https://tv.cctv.com/c8116dbc-a543-45de-b9b7-355006e4318
+11-05 14:24:32.420  5624  5624 I AuraLive: 视频=paused=false ready=4 net=2 t=4.7 size=1280x720 drop=0/115 err=-
+11-05 14:24:36.153  5624  5624 I AuraLive: video state paused=false ready=4 net=2 t=8.4 size=1280x720 drop=0/207 err=- src=blob:https://tv.cctv.com/c8116dbc-a543-45de-b9b7-355006e4318
+11-05 14:24:36.153  5624  5624 I AuraLive: 视频=paused=false ready=4 net=2 t=8.4 size=1280x720 drop=0/207 err=-
+11-05 14:24:39.946  5624  5624 I AuraLive: video state paused=false ready=4 net=2 t=10.8 size=1280x720 drop=0/303 err=- src=blob:https://tv.cctv.com/c8116dbc-a543-45de-b9b7-355006e4318
+11-05 14:24:39.946  5624  5624 I AuraLive: 视频=paused=false ready=4 net=2 t=10.8 size=1280x720 drop=0/303 err=-
+11-05 14:24:42.777  5624  5624 I AuraLive: video state paused=false ready=4 net=2 t=15.0 size=1280x720 drop=0/373 err=- src=blob:https://tv.cctv.com/c8116dbc-a543-45de-b9b7-355006e4318
+11-05 14:24:42.777  5624  5624 I AuraLive: 视频=paused=false ready=4 net=2 t=15.0 size=1280x720 drop=0/373 err=-
+11-05 14:24:47.529  5624  5624 I AuraLive: video state paused=false ready=4 net=2 t=19.8 size=1280x720 drop=0/492 err=- src=blob:https://tv.cctv.com/c8116dbc-a543-45de-b9b7-355006e4318
+11-05 14:24:47.529  5624  5624 I AuraLive: 视频=paused=false ready=4 net=2 t=19.8 size=1280x720 drop=0/492 err=-
+11-05 14:24:51.349  5624  5624 I AuraLive: video state paused=false ready=4 net=2 t=23.6 size=1280x720 drop=0/588 err=- src=blob:https://tv.cctv.com/c8116dbc-a543-45de-b9b7-355006e4318
+11-05 14:24:51.349  5624  5624 I AuraLive: 视频=paused=false ready=4 net=2 t=23.6 size=1280x720 drop=0/588 err=-
+11-05 14:24:54.149  5624  5624 I AuraLive: video state paused=false ready=4 net=2 t=26.4 size=1280x720 drop=0/658 err=- src=blob:https://tv.cctv.com/c8116dbc-a543-45de-b9b7-355006e4318
+11-05 14:24:54.149  5624  5624 I AuraLive: 视频=paused=false ready=4 net=2 t=26.4 size=1280x720 drop=0/658 err=-
+11-05 14:24:58.439  5624  5624 I AuraLive: video state paused=false ready=4 net=2 t=30.7 size=1280x720 drop=0/765 err=- src=blob:https://tv.cctv.com/c8116dbc-a543-45de-b9b7-355006e4318
+11-05 14:24:58.439  5624  5624 I AuraLive: 视频=paused=false ready=4 net=2 t=30.7 size=1280x720 drop=0/765 err=-
+11-05 14:25:02.799  5624  5624 I AuraLive: video state paused=false ready=4 net=2 t=35.0 size=1280x720 drop=0/874 err=- src=blob:https://tv.cctv.com/c8116dbc-a543-45de-b9b7-355006e4318
+11-05 14:25:02.799  5624  5624 I AuraLive: 视频=paused=false ready=4 net=2 t=35.0 size=1280x720 drop=0/874 err=-
+11-05 14:25:07.208  5624  5624 I AuraLive: video state paused=false ready=4 net=2 t=37.8 size=1280x720 drop=0/984 err=- src=blob:https://tv.cctv.com/c8116dbc-a543-45de-b9b7-355006e4318
+11-05 14:25:07.208  5624  5624 I AuraLive: 视频=paused=false ready=4 net=2 t=37.8 size=1280x720 drop=0/984 err=-

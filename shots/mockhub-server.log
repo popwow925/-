@@ -1,0 +1,108 @@
+[mockhub] UDP discovery on 47821
+[mockhub] listening on 8080 items: 9
+[mockhub] 127.0.0.1 "GET /api/tv/hello HTTP/1.1" 200 -
+[mockhub] 127.0.0.1 "GET /api/tv/hello HTTP/1.1" 200 -
+[mockhub] 127.0.0.1 "GET /api/tv/hello HTTP/1.1" 200 -
+[mockhub] discovery reply -> ('127.0.0.1', 41517)
+[mockhub] discovery reply -> ('127.0.0.1', 41517)
+[mockhub] 127.0.0.1 "GET /api/tv/hello HTTP/1.1" 200 -
+[mockhub] 127.0.0.1 "GET /api/tv/library?caps=h264%2Caac%2Cmp3%2Chevc%2Cvp9%2Cav1%2Copus%2Cflac%2Cvorbis HTTP/1.1" 200 -
+[mockhub] 127.0.0.1 "GET /tv/thumb/2?v=1793514698 HTTP/1.1" 200 -
+[mockhub] 127.0.0.1 "GET /tv/thumb/3?v=1793514698 HTTP/1.1" 200 -
+[mockhub] 127.0.0.1 "GET /tv/thumb/5?v=1793514698 HTTP/1.1" 200 -
+[mockhub] 127.0.0.1 "GET /tv/poster/4?v=1793514698 HTTP/1.1" 200 -
+[mockhub] 127.0.0.1 "GET /tv/poster/5?v=1793514698 HTTP/1.1" 200 -
+[mockhub] 127.0.0.1 "GET /tv/thumb/4?v=1793514698 HTTP/1.1" 200 -
+[mockhub] 127.0.0.1 "GET /tv/poster/3?v=1793514698 HTTP/1.1" 200 -
+[mockhub] 127.0.0.1 "GET /tv/poster/9?v=1793514698 HTTP/1.1" 200 -
+[mockhub] 127.0.0.1 "GET /tv/poster/1?v=1793514698 HTTP/1.1" 200 -
+[mockhub] 127.0.0.1 "GET /tv/poster/6?v=1793514698 HTTP/1.1" 200 -
+[mockhub] 127.0.0.1 "GET /tv/thumb/6?v=1793514698 HTTP/1.1" 200 -
+[mockhub] 127.0.0.1 "GET /api/tv/library?caps=h264%2Caac%2Cmp3%2Chevc%2Cvp9%2Cav1%2Copus%2Cflac%2Cvorbis HTTP/1.1" 200 -
+[mockhub] 127.0.0.1 "GET /api/tv/library?caps=h264%2Caac%2Cmp3%2Chevc%2Cvp9%2Cav1%2Copus%2Cflac%2Cvorbis HTTP/1.1" 200 -
+[mockhub] 127.0.0.1 "GET /api/tv/library?caps=h264%2Caac%2Cmp3%2Chevc%2Cvp9%2Cav1%2Copus%2Cflac%2Cvorbis HTTP/1.1" 200 -
+[mockhub] 127.0.0.1 "GET /api/tv/library?caps=h264%2Caac%2Cmp3%2Chevc%2Cvp9%2Cav1%2Copus%2Cflac%2Cvorbis HTTP/1.1" 200 -
+[mockhub] 127.0.0.1 "GET /api/tv/library?caps=h264%2Caac%2Cmp3%2Chevc%2Cvp9%2Cav1%2Copus%2Cflac%2Cvorbis HTTP/1.1" 200 -
+[mockhub] 127.0.0.1 "GET /api/tv/library?caps=h264%2Caac%2Cmp3%2Chevc%2Cvp9%2Cav1%2Copus%2Cflac%2Cvorbis HTTP/1.1" 200 -
+[mockhub] 127.0.0.1 "GET /tv/thumb/6?v=1793514698 HTTP/1.1" 200 -
+[mockhub] 127.0.0.1 "GET /tv/poster/6?v=1793514698 HTTP/1.1" 200 -
+[mockhub] 127.0.0.1 "GET /api/tv/library?caps=h264%2Caac%2Cmp3%2Chevc%2Cvp9%2Cav1%2Copus%2Cflac%2Cvorbis HTTP/1.1" 200 -
+[mockhub] 127.0.0.1 "GET /api/tv/item/6?caps=h264%2Caac%2Cmp3%2Chevc%2Cvp9%2Cav1%2Copus%2Cflac%2Cvorbis HTTP/1.1" 200 -
+[mockhub] 127.0.0.1 "GET /tv/stream/6 HTTP/1.1" 200 -
+[mockhub] 127.0.0.1 "GET /api/tv/library?caps=h264%2Caac%2Cmp3%2Chevc%2Cvp9%2Cav1%2Copus%2Cflac%2Cvorbis HTTP/1.1" 200 -
+[mockhub] 127.0.0.1 "GET /api/tv/library?caps=h264%2Caac%2Cmp3%2Chevc%2Cvp9%2Cav1%2Copus%2Cflac%2Cvorbis HTTP/1.1" 200 -
+[mockhub] 127.0.0.1 "GET /api/tv/library?caps=h264%2Caac%2Cmp3%2Chevc%2Cvp9%2Cav1%2Copus%2Cflac%2Cvorbis HTTP/1.1" 200 -
+[mockhub] 127.0.0.1 "GET /api/tv/library?caps=h264%2Caac%2Cmp3%2Chevc%2Cvp9%2Cav1%2Copus%2Cflac%2Cvorbis HTTP/1.1" 200 -
+[mockhub] progress 6 pos=0 watched=False
+[mockhub] 127.0.0.1 "POST /api/tv/progress HTTP/1.1" 200 -
+[mockhub] 127.0.0.1 "GET /api/tv/library?caps=h264%2Caac%2Cmp3%2Chevc%2Cvp9%2Cav1%2Copus%2Cflac%2Cvorbis HTTP/1.1" 200 -
+[mockhub] progress 6 pos=42 watched=False
+[mockhub] 127.0.0.1 "POST /api/tv/progress HTTP/1.1" 200 -
+[mockhub] 127.0.0.1 "GET /api/tv/library?caps=h264%2Caac%2Cmp3%2Chevc%2Cvp9%2Cav1%2Copus%2Cflac%2Cvorbis HTTP/1.1" 200 -
+[mockhub] 127.0.0.1 "GET /api/tv/library?caps=h264%2Caac%2Cmp3%2Chevc%2Cvp9%2Cav1%2Copus%2Cflac%2Cvorbis HTTP/1.1" 200 -
+[mockhub] progress 6 pos=46 watched=False
+[mockhub] 127.0.0.1 "POST /api/tv/progress HTTP/1.1" 200 -
+[mockhub] progress 6 pos=47 watched=False
+[mockhub] 127.0.0.1 "POST /api/tv/progress HTTP/1.1" 200 -
+[mockhub] 127.0.0.1 "GET /api/tv/library?caps=h264%2Caac%2Cmp3%2Chevc%2Cvp9%2Cav1%2Copus%2Cflac%2Cvorbis HTTP/1.1" 200 -
+[mockhub] 127.0.0.1 "GET /api/tv/library?caps=h264%2Caac%2Cmp3%2Chevc%2Cvp9%2Cav1%2Copus%2Cflac%2Cvorbis HTTP/1.1" 200 -
+[mockhub] 127.0.0.1 "GET /api/tv/library?caps=h264%2Caac%2Cmp3%2Chevc%2Cvp9%2Cav1%2Copus%2Cflac%2Cvorbis HTTP/1.1" 200 -
+[mockhub] progress 6 pos=51 watched=False
+[mockhub] 127.0.0.1 "POST /api/tv/progress HTTP/1.1" 200 -
+[mockhub] progress 6 pos=51 watched=False
+[mockhub] 127.0.0.1 "POST /api/tv/progress HTTP/1.1" 200 -
+[mockhub] 127.0.0.1 "GET /api/tv/library?caps=h264%2Caac%2Cmp3%2Chevc%2Cvp9%2Cav1%2Copus%2Cflac%2Cvorbis HTTP/1.1" 200 -
+[mockhub] 127.0.0.1 "GET /api/tv/library?caps=h264%2Caac%2Cmp3%2Chevc%2Cvp9%2Cav1%2Copus%2Cflac%2Cvorbis HTTP/1.1" 200 -
+[mockhub] 127.0.0.1 "GET /api/tv/library?caps=h264%2Caac%2Cmp3%2Chevc%2Cvp9%2Cav1%2Copus%2Cflac%2Cvorbis HTTP/1.1" 200 -
+[mockhub] 127.0.0.1 "GET /tv/thumb/1?v=1793514698 HTTP/1.1" 200 -
+[mockhub] 127.0.0.1 "GET /tv/thumb/9?v=1793514698 HTTP/1.1" 200 -
+[mockhub] 127.0.0.1 "GET /api/tv/library?caps=h264%2Caac%2Cmp3%2Chevc%2Cvp9%2Cav1%2Copus%2Cflac%2Cvorbis HTTP/1.1" 200 -
+[mockhub] 127.0.0.1 "GET /tv/thumb/9?v=1793514698 HTTP/1.1" 200 -
+[mockhub] 127.0.0.1 "GET /tv/poster/9?v=1793514698 HTTP/1.1" 200 -
+[mockhub] 127.0.0.1 "GET /api/tv/library?caps=h264%2Caac%2Cmp3%2Chevc%2Cvp9%2Cav1%2Copus%2Cflac%2Cvorbis HTTP/1.1" 200 -
+[mockhub] 127.0.0.1 "GET /api/tv/library?caps=h264%2Caac%2Cmp3%2Chevc%2Cvp9%2Cav1%2Copus%2Cflac%2Cvorbis HTTP/1.1" 200 -
+[mockhub] 127.0.0.1 "GET /api/tv/item/9?caps=h264%2Caac%2Cmp3%2Chevc%2Cvp9%2Cav1%2Copus%2Cflac%2Cvorbis HTTP/1.1" 200 -
+[mockhub] 127.0.0.1 "GET /tv/stream/9 HTTP/1.1" 200 -
+[mockhub] 127.0.0.1 "GET /api/tv/library?caps=h264%2Caac%2Cmp3%2Chevc%2Cvp9%2Cav1%2Copus%2Cflac%2Cvorbis HTTP/1.1" 200 -
+[mockhub] progress 9 pos=0 watched=True
+[mockhub] 127.0.0.1 "POST /api/tv/progress HTTP/1.1" 200 -
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 41038)
+Traceback (most recent call last):
+  File "/usr/lib/python3.12/socketserver.py", line 692, in process_request_thread
+    self.finish_request(request, client_address)
+  File "/usr/lib/python3.12/socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "/usr/lib/python3.12/socketserver.py", line 761, in __init__
+    self.handle()
+  File "/usr/lib/python3.12/http/server.py", line 438, in handle
+    self.handle_one_request()
+  File "/usr/lib/python3.12/http/server.py", line 404, in handle_one_request
+    self.raw_requestline = self.rfile.readline(65537)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/socket.py", line 707, in readinto
+    return self._sock.recv_into(b)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+ConnectionResetError: [Errno 104] Connection reset by peer
+----------------------------------------
+[mockhub] 127.0.0.1 "GET /tv/stream/9 HTTP/1.1" 206 -
+[mockhub] 127.0.0.1 "GET /api/tv/library?caps=h264%2Caac%2Cmp3%2Chevc%2Cvp9%2Cav1%2Copus%2Cflac%2Cvorbis HTTP/1.1" 200 -
+[mockhub] 127.0.0.1 "GET /api/tv/item/7?caps=h264%2Caac%2Cmp3%2Chevc%2Cvp9%2Cav1%2Copus%2Cflac%2Cvorbis HTTP/1.1" 200 -
+[mockhub] progress 9 pos=0 watched=True
+[mockhub] 127.0.0.1 "POST /api/tv/progress HTTP/1.1" 200 -
+[mockhub] 127.0.0.1 "GET /tv/thumb/7?v=1793514698 HTTP/1.1" 200 -
+[mockhub] 127.0.0.1 "GET /api/tv/library?caps=h264%2Caac%2Cmp3%2Chevc%2Cvp9%2Cav1%2Copus%2Cflac%2Cvorbis HTTP/1.1" 200 -
+[mockhub] 127.0.0.1 "GET /api/tv/library?caps=h264%2Caac%2Cmp3%2Chevc%2Cvp9%2Cav1%2Copus%2Cflac%2Cvorbis HTTP/1.1" 200 -
+[mockhub] 127.0.0.1 "GET /api/tv/library?caps=h264%2Caac%2Cmp3%2Chevc%2Cvp9%2Cav1%2Copus%2Cflac%2Cvorbis HTTP/1.1" 200 -
+[mockhub] 127.0.0.1 "GET /api/tv/item/7?caps=h264%2Caac%2Cmp3%2Chevc%2Cvp9%2Cav1%2Copus%2Cflac%2Cvorbis HTTP/1.1" 200 -
+[mockhub] 127.0.0.1 "GET /tv/stream/7 HTTP/1.1" 200 -
+[mockhub] 127.0.0.1 "GET /api/tv/library?caps=h264%2Caac%2Cmp3%2Chevc%2Cvp9%2Cav1%2Copus%2Cflac%2Cvorbis HTTP/1.1" 200 -
+[mockhub] 127.0.0.1 "GET /api/tv/library?caps=h264%2Caac%2Cmp3%2Chevc%2Cvp9%2Cav1%2Copus%2Cflac%2Cvorbis HTTP/1.1" 200 -
+[mockhub] 127.0.0.1 "GET /api/tv/library?caps=h264%2Caac%2Cmp3%2Chevc%2Cvp9%2Cav1%2Copus%2Cflac%2Cvorbis HTTP/1.1" 200 -
+[mockhub] progress 7 pos=0 watched=False
+[mockhub] 127.0.0.1 "POST /api/tv/progress HTTP/1.1" 200 -
+[mockhub] progress 7 pos=0 watched=False
+[mockhub] 127.0.0.1 "POST /api/tv/progress HTTP/1.1" 200 -
+[mockhub] 127.0.0.1 "GET /api/tv/library?caps=h264%2Caac%2Cmp3%2Chevc%2Cvp9%2Cav1%2Copus%2Cflac%2Cvorbis HTTP/1.1" 200 -
+[mockhub] 127.0.0.1 "GET /api/tv/library?caps=h264%2Caac%2Cmp3%2Chevc%2Cvp9%2Cav1%2Copus%2Cflac%2Cvorbis HTTP/1.1" 200 -
+[mockhub] 127.0.0.1 "GET /api/tv/library?caps=h264%2Caac%2Cmp3%2Chevc%2Cvp9%2Cav1%2Copus%2Cflac%2Cvorbis HTTP/1.1" 200 -

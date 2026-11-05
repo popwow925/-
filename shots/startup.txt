@@ -1,0 +1,9 @@
+== before profile compile
+TotalTime: 2038 WaitTime: 2060 
+TotalTime: 920 WaitTime: 921 
+TotalTime: 958 WaitTime: 964 
+Success
+== after speed-profile compile
+TotalTime: 924 WaitTime: 926 
+TotalTime: 899 WaitTime: 900 
+TotalTime: 674 WaitTime: 677 
