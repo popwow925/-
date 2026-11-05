@@ -1,0 +1,2 @@
+bbb5337e445bc22ab1ed77e37057734fca662d2d107df2ba412058f4173d3371  app/build/outputs/apk/release/app-arm64-v8a-release.apk
+53be7dc483d924e74a1c4bf06870edb0745bf61532220eee5e3e231647ca5fb7  app/build/outputs/apk/release/app-armeabi-v7a-release.apk
