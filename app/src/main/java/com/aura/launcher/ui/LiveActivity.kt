@@ -236,6 +236,7 @@ class LiveActivity : ComponentActivity() {
                         if (data.startsWith("url=")) note("页面脚本", "已运行")
                         if (data.startsWith("video found")) note("视频元素", "有")
                         if (data.startsWith("js error")) note("脚本", data.take(80))
+                        if (data.startsWith("video state")) lastStat = data.removePrefix("video state ").substringBefore(" err=").take(120)
                         if (data.startsWith("video state")) note("视频", data.removePrefix("video state ").substringBefore(" src=").take(90))
                         if (data.startsWith("play rejected")) note("播放被拒", data.removePrefix("play rejected ").take(60))
                         if (data.startsWith("video event")) note("事件", data.removePrefix("video event ").take(40))
@@ -246,6 +247,7 @@ class LiveActivity : ComponentActivity() {
         }
     }
 
+    @Volatile private var lastStat = ""
     private var lastTap = 0L
     private var tapCount = 0
 
@@ -356,7 +358,7 @@ class LiveActivity : ComponentActivity() {
                 KeyEvent.KEYCODE_DPAD_DOWN, KeyEvent.KEYCODE_CHANNEL_DOWN, KeyEvent.KEYCODE_PAGE_DOWN -> { step(1); return true }
                 KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER, KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE -> { toggle(); return true }
                 KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.KEYCODE_DPAD_RIGHT, KeyEvent.KEYCODE_INFO, KeyEvent.KEYCODE_MENU -> {
-                    showTip("${LiveChannels.all[index].title}    上/下 换台    返回 退出"); return true
+                    showTip("${LiveChannels.all[index].title}    上/下 换台    返回 退出" + (if (useGecko && lastStat.isNotEmpty()) "\n$lastStat" else "")); return true
                 }
                 KeyEvent.KEYCODE_BACK -> { if (customView != null) web?.webChromeClient?.onHideCustomView() else finish(); return true }
             }

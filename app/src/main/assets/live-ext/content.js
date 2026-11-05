@@ -38,8 +38,9 @@
       v.muted = false; v.volume = 1;
       if ((window.__auraN = (window.__auraN || 0) + 1) % 9 === 1) {
         var er = v.error ? (v.error.code + ":" + v.error.message) : "-";
+        var q = ""; try { var pq = v.getVideoPlaybackQuality(); q = " drop=" + pq.droppedVideoFrames + "/" + pq.totalVideoFrames; } catch (e2) {}
         post("log", "video state paused=" + v.paused + " ready=" + v.readyState + " net=" + v.networkState +
-          " t=" + v.currentTime.toFixed(1) + " size=" + v.videoWidth + "x" + v.videoHeight + " err=" + er +
+          " t=" + v.currentTime.toFixed(1) + " size=" + v.videoWidth + "x" + v.videoHeight + q + " err=" + er +
           " src=" + (v.currentSrc || v.src || "").slice(0, 60));
       }
       if (v.paused) { var p = v.play(); if (p && p.catch) p.catch(function (e) { var m = String(e && e.name) + ":" + String(e && e.message); if (window.__auraPE !== m) { window.__auraPE = m; post("log", "play rejected " + m); } }); }
