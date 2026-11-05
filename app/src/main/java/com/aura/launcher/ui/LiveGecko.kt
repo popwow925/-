@@ -28,7 +28,7 @@ object LiveGecko {
         // 通过配置文件设置引擎参数:允许无手势自动播放(电视上没有"点一下")
         val cfg = java.io.File(ctx.applicationContext.cacheDir, "gecko-config.yaml")
         try {
-            cfg.writeText("prefs:\n  media.autoplay.default: 0\n  media.autoplay.blocking_policy: 0\n  media.autoplay.block-event.enabled: false\n")
+            cfg.writeText("prefs:\n  media.autoplay.default: 0\n  media.autoplay.blocking_policy: 0\n  media.autoplay.block-event.enabled: false\n  browser.safebrowsing.malware.enabled: false\n  browser.safebrowsing.phishing.enabled: false\n  privacy.trackingprotection.enabled: false\n  app.update.enabled: false\n  datareporting.healthreport.uploadEnabled: false\n  toolkit.telemetry.enabled: false\n  network.http.speculative-parallel-limit: 6\n  network.dns.disablePrefetch: false\n")
         } catch (_: Throwable) {}
         val settings = GeckoRuntimeSettings.Builder()
             .consoleOutput(true)

@@ -36,7 +36,7 @@
         "[data-aura-keep]{transform:none!important;filter:none!important;animation:none!important;transition:none!important}" +
         "video[data-aura-keep]{visibility:visible!important;position:fixed!important;left:0!important;top:0!important;width:100vw!important;height:100vh!important;max-width:none!important;max-height:none!important;z-index:2147483647!important;background:#000!important;object-fit:contain!important}";
       v.muted = false; v.volume = 1;
-      if ((window.__auraN = (window.__auraN || 0) + 1) % 4 === 1) {
+      if ((window.__auraN = (window.__auraN || 0) + 1) % 9 === 1) {
         var er = v.error ? (v.error.code + ":" + v.error.message) : "-";
         post("log", "video state paused=" + v.paused + " ready=" + v.readyState + " net=" + v.networkState +
           " t=" + v.currentTime.toFixed(1) + " size=" + v.videoWidth + "x" + v.videoHeight + " err=" + er +
@@ -46,6 +46,6 @@
       if (!v.paused && v.currentTime > 0.3 && !sent) { sent = true; post("playing"); }
     } catch (err) { post("log", "js error " + err); }
   }
-  setInterval(tick, 700);
+  setInterval(tick, 300);
   tick();
 })();

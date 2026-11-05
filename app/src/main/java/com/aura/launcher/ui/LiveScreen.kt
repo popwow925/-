@@ -157,5 +157,9 @@ object LiveWarmup {
         if (done) return
         done = true
         runCatching { android.webkit.WebView(ctx.applicationContext).destroy() }
+        // 系统 WebView 太旧的电视会用内置浏览器内核:提前把它启动好,点进频道就不用再等引擎启动
+        val ver = runCatching { android.webkit.WebView.getCurrentWebViewPackage()?.versionName }.getOrNull().orEmpty()
+        val major = ver.substringBefore('.').toIntOrNull() ?: 0
+        if (major in 1..89) runCatching { LiveGecko.runtime(ctx.applicationContext) }
     }
 }
