@@ -2,33 +2,10 @@
   "manifest_version": 2,
   "name": "Aura Live",
   "version": "1.0",
-  "browser_specific_settings": {
-    "gecko": {
-      "id": "live@aura"
-    }
-  },
-  "permissions": [
-    "nativeMessaging",
-    "geckoViewAddons",
-    "webRequest",
-    "webRequestBlocking",
-    "https://*/*",
-    "http://*/*"
-  ],
-  "background": {
-    "scripts": [
-      "background.js"
-    ]
-  },
+  "browser_specific_settings": { "gecko": { "id": "live@aura" } },
+  "permissions": ["nativeMessaging", "geckoViewAddons"],
+  "background": { "scripts": ["background.js"] },
   "content_scripts": [
-    {
-      "matches": [
-        "https://tv.cctv.com/*"
-      ],
-      "js": [
-        "content.js"
-      ],
-      "run_at": "document_start"
-    }
+    { "matches": ["https://tv.cctv.com/*"], "js": ["content.js"], "run_at": "document_idle" }
   ]
 }
