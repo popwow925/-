@@ -42,7 +42,12 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          mkdir -p out
+          mkdir -p out/apk
+          for a in arm64-v8a armeabi-v7a; do
+            f=app/build/outputs/apk/release/app-$a-release.apk
+            [ -f "$f" ] && split -b 80m -d "$f" out/apk/$a.part. && sha256sum "$f" >> out/apk/SHA256.txt
+          done
+          ls -la out/apk || true
           bash ci/publish.sh aura-ci-build out
 
   screenshots:
